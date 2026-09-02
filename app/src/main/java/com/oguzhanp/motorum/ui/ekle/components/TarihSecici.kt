@@ -1,5 +1,6 @@
-package com.oguzhanp.motorum.ui.ekle
+package com.oguzhanp.motorum.ui.ekle.components
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.DatePicker
@@ -13,6 +14,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.util.formatTarih
 
 // Tarih gosterimi + takvim diyalogu.
@@ -25,8 +29,6 @@ fun TarihSecici(
     modifier: Modifier = Modifier
 ) {
     var acik by remember { mutableStateOf(false) }
-
-
 
     OutlinedTextField(
         value = formatTarih(tarihMillis),
@@ -62,5 +64,17 @@ fun TarihSecici(
         ) {
             DatePicker(state = durum)
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TarihSeciciPreview() {
+    MotorumTheme {
+        TarihSecici(
+            tarihMillis = System.currentTimeMillis(),
+            onTarihSec = {},
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }

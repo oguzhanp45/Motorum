@@ -19,28 +19,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.ui.navigation.Routes
-import com.oguzhanp.motorum.viewmodel.KayitViewModel
+import com.oguzhanp.motorum.ui.theme.MotorumTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun AnaSayfa(
     viewModel: KayitViewModel,
     navController: NavController
 ) {
-    // ViewModel'deki StateFlow'lari Compose'un anlayacagi degere cevirir.
-    // Liste degisince bu ekran kendiliginden yeniden cizilir.
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    AnaSayfaIcerik(
+        uiState = uiState,
+        onEkleTikla = { navController.navigate(Routes.KAYIT_EKLE) }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AnaSayfaIcerik(
+    uiState: KayitUiState,
+    onEkleTikla: () -> Unit
+) {
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate(Routes.KAYIT_EKLE) }
-            ) {
+            FloatingActionButton(onClick = onEkleTikla) {
                 Icon(Icons.Default.Add, contentDescription = "Kayıt ekle")
             }
         }
@@ -73,3 +83,13 @@ fun AnaSayfa(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+private fun AnaSayfaIcerikPreview() {
+    MotorumTheme {
+        AnaSayfaIcerik(
+            uiState = KayitUiState(),
+            onEkleTikla = {}
+        )
+    }
+}

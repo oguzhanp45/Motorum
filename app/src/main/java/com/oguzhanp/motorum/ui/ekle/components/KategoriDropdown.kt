@@ -1,6 +1,7 @@
-package com.oguzhanp.motorum.ui.ekle
+package com.oguzhanp.motorum.ui.ekle.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -10,7 +11,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.model.Kategori
+import com.oguzhanp.motorum.ui.theme.MotorumTheme
 
 // Kategori secimi icin acilir menu.
 // Kendi ic durumu: menu acik mi (acik). Disariyi ilgilendirmedigi icin burada tutuluyor.
@@ -56,5 +60,17 @@ fun KategoriDropdown(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun KategoriDropdownPreview() {
+    MotorumTheme {
+        KategoriDropdown(
+            secili = Kategori.YAKIT,
+            onSecim = {},
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }

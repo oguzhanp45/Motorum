@@ -8,8 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.oguzhanp.motorum.ui.ekle.KayitEkleSayfasi
 import com.oguzhanp.motorum.ui.home.AnaSayfa
+import com.oguzhanp.motorum.ui.home.KayitViewModel
 import com.oguzhanp.motorum.ui.navigation.Routes
-import com.oguzhanp.motorum.viewmodel.KayitViewModel
 
 // Uygulamanin kokü: NavHost burada.
 @Composable
@@ -33,8 +33,9 @@ fun MotorumApp() {
             )
         }
         composable(Routes.KAYIT_EKLE) {
+            // ekleViewModel verilmiyor: ekran onu kendisi uretiyor (viewModel() varsayilani)
             KayitEkleSayfasi(
-                viewModel = viewModel,
+                kayitViewModel = viewModel,
                 navController = navController
             )
         }
