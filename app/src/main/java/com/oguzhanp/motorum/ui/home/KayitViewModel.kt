@@ -21,17 +21,17 @@ class KayitViewModel : ViewModel() {
 
 
     fun ekle(kayit: Kayit) {
-        val state = _uiState.value
         _uiState.update {
+            val yeniListe = it.kayitlar + kayit
             it.copy(
-                kayitlar = state.kayitlar + kayit,
-                toplamTutar = state.toplamTutar + kayit.tutar,
-                toplamLitre = state.toplamLitre + kayit.litre
+                kayitlar = yeniListe,
+                // Toplamlar her zaman listeden turer. Birikimli toplasaydik
+                // silme ve duzenleme geldiginde toplam listeyle uyusmazdi.
+                // oyuzden degistirildi.
+                toplamTutar = yeniListe.sumOf { k -> k.tutar },
+                toplamLitre = yeniListe.sumOf { k -> k.litre }
             )
         }
-
-        //yani en yeni kayıt listenin en üstünde görünür.
-        //Sona istersen _kayitlar.value + kayit olmalı
     }
 
 }
