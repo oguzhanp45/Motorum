@@ -26,10 +26,9 @@ data class KayitFormu(
     private val litreGecersiz: Boolean get() = (litre ?: 0.0) <= 0.0
     private val tutarGecersiz: Boolean get() = (tutar ?: 0.0) <= 0.0
 
-    /** Form kaydedilebilir mi? Hata bayraklarindan bagimsiz, girdiye bakar. */
+    // Form kaydedilebilir mi? girdiye bakar
     val gecerli: Boolean get() = !litreGecersiz && !tutarGecersiz
 
-    /** Hata bayraklari isaretlenmis YENI bir form dondurur. Mevcut nesne degismez. */
     fun dogrula(): KayitFormu = copy(
         litreHatali = litreGecersiz,
         tutarHatali = tutarGecersiz

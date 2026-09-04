@@ -27,11 +27,29 @@ class KayitViewModel : ViewModel() {
                 kayitlar = yeniListe,
                 // Toplamlar her zaman listeden turer. Birikimli toplasaydik
                 // silme ve duzenleme geldiginde toplam listeyle uyusmazdi.
-                // oyuzden degistirildi.
                 toplamTutar = yeniListe.sumOf { k -> k.tutar },
                 toplamLitre = yeniListe.sumOf { k -> k.litre }
             )
         }
     }
 
+    fun duzenle(kayit: Kayit) {
+        _uiState.update {
+            val yeniListe = it.kayitlar.map { mevcut ->
+                if (mevcut.id == kayit.id) kayit else mevcut
+            }
+            it.copy(
+                kayitlar = yeniListe,
+                toplamTutar = yeniListe.sumOf { k -> k.tutar },
+                toplamLitre = yeniListe.sumOf { k -> k.litre }
+            )
+        }
+    }
+    //map ile listeyi gezip aynı id'li kaydı yenisiyle değiştiriyor, diğerlerine dokunmuyor.
+    // Toplamlar sumOf ile yeniden hesaplanıyor;
+    // birikimli bıraksaydık düzenlemede eski değer de yeni değer de sayılırdı
+
+    // Listeyi tutan yer burasi oldugu icin degistiren fonksiyonlar da burada.
+    // Ileride veri katmani (KayitDeposu) eklenirse ekle/duzenle/sil oraya tasinacak;
+    // ekran ViewModel'leri listeyi degil depoyu cagirir ileride yapilabilir.
 }

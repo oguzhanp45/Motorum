@@ -1,5 +1,6 @@
 package com.oguzhanp.motorum.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,8 +23,12 @@ import com.oguzhanp.motorum.util.formatTl
 
 // LazyColumn'un tek bir satiri.
 @Composable
-fun KayitSatiri(kayit: Kayit, modifier: Modifier = Modifier) {
-    Card(modifier = modifier) {
+fun KayitSatiri(
+    kayit: Kayit,
+    onTikla: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(modifier = modifier.clickable { onTikla() }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -66,6 +71,7 @@ private fun KayitSatiriPreview() {
                 tutar = 620.0,
                 not = "Shell, tam depo"
             ),
+            onTikla = {},
             modifier = Modifier.padding(16.dp)
         )
     }
