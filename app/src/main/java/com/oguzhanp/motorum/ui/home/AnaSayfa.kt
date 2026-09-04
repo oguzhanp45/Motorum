@@ -37,7 +37,8 @@ fun AnaSayfa(
 
     AnaSayfaIcerik(
         uiState = uiState,
-        onEkleTikla = { navController.navigate(Routes.KAYIT_EKLE) }
+        onEkleTikla = { navController.navigate(Routes.KAYIT_EKLE) },
+        onKayitTikla = { id -> navController.navigate("kayit_detay/$id") }
     )
 }
 
@@ -45,7 +46,8 @@ fun AnaSayfa(
 @Composable
 fun AnaSayfaIcerik(
     uiState: KayitUiState,
-    onEkleTikla: () -> Unit
+    onEkleTikla: () -> Unit,
+    onKayitTikla: (String) -> Unit
 ) {
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) },
@@ -76,7 +78,14 @@ fun AnaSayfaIcerik(
                 items(
                     uiState.kayitlar.sortedByDescending { it.tarihMillis },
                     key = { it.id }) { kayit ->
-                    KayitSatiri(kayit = kayit, modifier = Modifier.fillMaxWidth())
+                    KayitSatiri(
+                        kayit = kayit,
+                        onTikla = { onKayitTikla(kayit.id) },
+                        //KayitSatiri — Modifier.clickable { onTikla() }.
+                        // Satır hangi kaydın olduğunu bilir ama nereye gidileceğini bilmez;
+                        //onTikla = { onKayitTikla(kayit.id) } ile id'yi yukarı taşır.
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }
@@ -89,7 +98,8 @@ private fun AnaSayfaIcerikPreview() {
     MotorumTheme {
         AnaSayfaIcerik(
             uiState = KayitUiState(),
-            onEkleTikla = {}
+            onEkleTikla = {},
+            onKayitTikla = {}
         )
     }
 }

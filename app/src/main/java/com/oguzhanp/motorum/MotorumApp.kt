@@ -1,11 +1,11 @@
 package com.oguzhanp.motorum
 
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.oguzhanp.motorum.ui.detay.KayitDetaySayfasi
 import com.oguzhanp.motorum.ui.ekle.KayitEkleSayfasi
 import com.oguzhanp.motorum.ui.home.AnaSayfa
 import com.oguzhanp.motorum.ui.home.KayitViewModel
@@ -37,6 +37,14 @@ fun MotorumApp() {
             KayitEkleSayfasi(
                 kayitViewModel = viewModel,
                 navController = navController
+            )
+        }
+        composable(Routes.KAYIT_DETAY) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: return@composable
+            KayitDetaySayfasi(
+                kayitViewModel = viewModel,
+                navController = navController,
+                kayitId = id
             )
         }
     }
