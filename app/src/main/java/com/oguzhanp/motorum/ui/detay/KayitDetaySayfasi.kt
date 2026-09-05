@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -21,19 +20,16 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.Kayit
-import com.oguzhanp.motorum.ui.ekle.components.TarihSecici
 import com.oguzhanp.motorum.ui.form.KayitFormu
+import com.oguzhanp.motorum.ui.form.YakitAlanlari
 import com.oguzhanp.motorum.ui.home.KayitViewModel
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
-
-private const val ALAN_HATA_MESAJI = "Zorunlu alan — geçerli bir sayı girin"
 
 @Composable
 fun KayitDetaySayfasi(
@@ -52,13 +48,14 @@ fun KayitDetaySayfasi(
     var detay by remember(kayit.id) {
         mutableStateOf(
             KayitDetayUiState(
-                form = KayitFormu(
-                    kategori = kayit.kategori,
-                    tarihMillis = kayit.tarihMillis,
-                    litreYazi = kayit.litre.toString(),
-                    tutarYazi = kayit.tutar.toString(),
-                    not = kayit.not
-                )
+                form = when (kayit) {
+                    is Kayit.Yakit -> KayitFormu.Yakit(
+                        tarihMillis = kayit.tarihMillis,
+                        litreYazi = kayit.litre.toString(),
+                        tutarYazi = kayit.tutar.toString(),
+                        not = kayit.not
+                    )
+                }
             )
         )
     }
@@ -76,16 +73,19 @@ fun KayitDetaySayfasi(
         onGuncelle = {
             val kontrol = detay.form.dogrula()
             if (kontrol.gecerli) {
-                kayitViewModel.duzenle(
-                    Kayit(
-                        id = kayitId,
-                        kategori = kontrol.kategori,
-                        tarihMillis = kontrol.tarihMillis,
-                        litre = kontrol.litre!!,
-                        tutar = kontrol.tutar!!,
-                        not = kontrol.not.trim()
+                // Form gecerliyse kayit nesnesi uretiliyor. litre/tutar sadece Yakit'te
+                // oldugu icin tip daraltmadan erisilemiyor.
+                when (kontrol) {
+                    is KayitFormu.Yakit -> kayitViewModel.duzenle(
+                        Kayit.Yakit(
+                            id = kayitId,
+                            tarihMillis = kontrol.tarihMillis,
+                            litre = kontrol.litre!!,
+                            tutar = kontrol.tutar!!,
+                            not = kontrol.not.trim()
+                        )
                     )
-                )
+                }
                 navController.popBackStack()
             } else {
                 detay = detay.copy(form = kontrol)
@@ -133,41 +133,19 @@ fun KayitDetayIcerik(
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            TarihSecici(
-                tarihMillis = form.tarihMillis,
-                onTarihSec = { onFormDegis(form.copy(tarihMillis = it)) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = form.litreYazi,
-                onValueChange = { onFormDegis(form.copy(litreYazi = it, litreHatali = false)) },
-                label = { Text("Litre") },
-                isError = form.litreHatali,
-                supportingText = {
-                    if (form.litreHatali) Text(ALAN_HATA_MESAJI)
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = form.tutarYazi,
-                onValueChange = { onFormDegis(form.copy(tutarYazi = it, tutarHatali = false)) },
-                label = { Text("Tutar (₺)") },
-                isError = form.tutarHatali,
-                supportingText = {
-                    if (form.tutarHatali) Text(ALAN_HATA_MESAJI)
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Alan blogu kategoriye gore secilir. Yeni kategori eklendiginde
+            // derleyici bu when'in eksik oldugunu gosterir.
+            when (form) {
+                is KayitFormu.Yakit -> YakitAlanlari(
+                    form = form,
+                    onDegis = onFormDegis,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             OutlinedTextField(
                 value = form.not,
-                onValueChange = { onFormDegis(form.copy(not = it)) },
+                onValueChange = { onFormDegis(form.notDegistir(it)) },
                 label = { Text("Not (isteğe bağlı)") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -205,7 +183,7 @@ fun KayitDetayIcerik(
 private fun KayitDetayIcerikPreview() {
     MotorumTheme {
         KayitDetayIcerik(
-            form = KayitFormu(),
+            form = KayitFormu.Yakit(),
             silmeOnayiGoster = false,
             onFormDegis = {},
             onSilmeOnayiDegis = {},

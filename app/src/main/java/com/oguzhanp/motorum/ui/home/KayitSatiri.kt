@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.oguzhanp.motorum.model.Kategori
 import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.util.formatLitre
@@ -99,7 +98,12 @@ fun KayitSatiri(
                     }
                     Column(horizontalAlignment = Alignment.End) {
                         Text(formatTl(kayit.tutar), style = MaterialTheme.typography.titleSmall)
-                        Text(formatLitre(kayit.litre), style = MaterialTheme.typography.bodySmall)
+                        // litre artik Kayit arayuzunde yok, sadece Yakit'te.
+                        // Erisebilmek icin tip daraltiyoruz.
+                        when (kayit) {
+                            is Kayit.Yakit ->
+                                Text(formatLitre(kayit.litre), style = MaterialTheme.typography.bodySmall)
+                        }
                     }
                 }
                 // Not bos degilse ikinci satir olarak goster
@@ -120,8 +124,7 @@ fun KayitSatiri(
 private fun KayitSatiriPreview() {
     MotorumTheme {
         KayitSatiri(
-            kayit = Kayit(
-                kategori = Kategori.YAKIT,
+            kayit = Kayit.Yakit(
                 tarihMillis = System.currentTimeMillis(),
                 litre = 12.5,
                 tutar = 620.0,
