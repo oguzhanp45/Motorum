@@ -38,7 +38,8 @@ fun AnaSayfa(
     AnaSayfaIcerik(
         uiState = uiState,
         onEkleTikla = { navController.navigate(Routes.KAYIT_EKLE) },
-        onKayitTikla = { id -> navController.navigate("kayit_detay/$id") }
+        onKayitTikla = { id -> navController.navigate("kayit_detay/$id") },
+        onKayitSil = { id -> viewModel.sil(id) }
     )
 }
 
@@ -47,7 +48,8 @@ fun AnaSayfa(
 fun AnaSayfaIcerik(
     uiState: KayitUiState,
     onEkleTikla: () -> Unit,
-    onKayitTikla: (String) -> Unit
+    onKayitTikla: (String) -> Unit,
+    onKayitSil: (String) -> Unit
 ) {
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) },
@@ -81,6 +83,7 @@ fun AnaSayfaIcerik(
                     KayitSatiri(
                         kayit = kayit,
                         onTikla = { onKayitTikla(kayit.id) },
+                        onSil = { onKayitSil(kayit.id) },
                         //KayitSatiri — Modifier.clickable { onTikla() }.
                         // Satır hangi kaydın olduğunu bilir ama nereye gidileceğini bilmez;
                         //onTikla = { onKayitTikla(kayit.id) } ile id'yi yukarı taşır.
@@ -99,7 +102,8 @@ private fun AnaSayfaIcerikPreview() {
         AnaSayfaIcerik(
             uiState = KayitUiState(),
             onEkleTikla = {},
-            onKayitTikla = {}
+            onKayitTikla = {},
+            onKayitSil = {}
         )
     }
 }

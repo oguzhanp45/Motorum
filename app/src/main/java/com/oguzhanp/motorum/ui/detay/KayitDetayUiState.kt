@@ -3,5 +3,6 @@ package com.oguzhanp.motorum.ui.detay
 import com.oguzhanp.motorum.ui.form.KayitFormu
 
 data class KayitDetayUiState(
-    val form: KayitFormu
+    val form: KayitFormu,
+    val silmeOnayiGoster: Boolean = false // Diyalog acik mi?
 )

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -15,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -39,10 +42,8 @@ fun KayitDetaySayfasi(
     kayitId: String
 ) {
     val uiState by kayitViewModel.uiState.collectAsStateWithLifecycle()
-
-    // Kayit silinirse liste guncellenir ama ekran bir kare daha cizilebilir.
-    // O anda find null doner; cizmeden geri donuyoruz.güvenlik
     val kayit = uiState.kayitlar.find { it.id == kayitId }
+
     if (kayit == null) {
         LaunchedEffect(Unit) { navController.popBackStack() }
         return
@@ -64,7 +65,13 @@ fun KayitDetaySayfasi(
 
     KayitDetayIcerik(
         form = detay.form,
+        silmeOnayiGoster = detay.silmeOnayiGoster,
         onFormDegis = { yeniForm -> detay = detay.copy(form = yeniForm) },
+        onSilmeOnayiDegis = { goster -> detay = detay.copy(silmeOnayiGoster = goster) },
+        onSil = {
+            navController.popBackStack() // Once geri don, sonra sil. Tersi olsaydi liste guncellenince ekran bir kez daha
+            kayitViewModel.sil(kayitId) // cizilir, find null doner ve ustteki LaunchedEffect ikinci bir popBackStack cagirirdi.
+        },
         onGeri = { navController.popBackStack() },
         onGuncelle = {
             val kontrol = detay.form.dogrula()
@@ -91,7 +98,10 @@ fun KayitDetaySayfasi(
 @Composable
 fun KayitDetayIcerik(
     form: KayitFormu,
+    silmeOnayiGoster: Boolean,
     onFormDegis: (KayitFormu) -> Unit,
+    onSilmeOnayiDegis: (Boolean) -> Unit,// Diyalogu acmak ve iptal etmek ayni islem.true/false yapmak.
+    onSil: () -> Unit,
     onGuncelle: () -> Unit,
     onGeri: () -> Unit
 ) {
@@ -102,6 +112,11 @@ fun KayitDetayIcerik(
                 navigationIcon = {
                     IconButton(onClick = onGeri) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { onSilmeOnayiDegis(true) }) {
+                        Icon(Icons.Default.Delete, contentDescription = "Sil")
                     }
                 }
             )
@@ -165,6 +180,24 @@ fun KayitDetayIcerik(
             }
         }
     }
+
+    // Compose'da diyalog gosterilmez, VAR ya da YOK olur.
+    // Kosul true iken AlertDialog eklenir, false iken hic cizilmez.
+    if (silmeOnayiGoster) {
+        AlertDialog(
+            // Disari tiklama ve geri tusu buraya duser.
+            // Burada false yazmazsak diyalog kapanmaz.
+            onDismissRequest = { onSilmeOnayiDegis(false) },
+            title = { Text("Kaydı sil") },
+            text = { Text("Bu kaydı silmek istediğinize emin misiniz?") },
+            confirmButton = {
+                TextButton(onClick = onSil) { Text("Sil") }
+            },
+            dismissButton = {
+                TextButton(onClick = { onSilmeOnayiDegis(false) }) { Text("İptal") }
+            }
+        )
+    }
 }
 
 @Preview(showBackground = true)
@@ -173,7 +206,10 @@ private fun KayitDetayIcerikPreview() {
     MotorumTheme {
         KayitDetayIcerik(
             form = KayitFormu(),
+            silmeOnayiGoster = false,
             onFormDegis = {},
+            onSilmeOnayiDegis = {},
+            onSil = {},
             onGuncelle = {},
             onGeri = {}
         )
