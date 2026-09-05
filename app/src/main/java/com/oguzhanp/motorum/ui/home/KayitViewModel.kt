@@ -28,7 +28,8 @@ class KayitViewModel : ViewModel() {
                 // Toplamlar her zaman listeden turer. Birikimli toplasaydik
                 // silme ve duzenleme geldiginde toplam listeyle uyusmazdi.
                 toplamTutar = yeniListe.sumOf { k -> k.tutar },
-                toplamLitre = yeniListe.sumOf { k -> k.litre }
+                // litre sadece yakit kayitlarinda var, once o tipe suzuluyor.
+                toplamLitre = yeniListe.filterIsInstance<Kayit.Yakit>().sumOf { k -> k.litre }
             )
         }
     }
@@ -41,7 +42,7 @@ class KayitViewModel : ViewModel() {
             it.copy(
                 kayitlar = yeniListe,
                 toplamTutar = yeniListe.sumOf { k -> k.tutar },
-                toplamLitre = yeniListe.sumOf { k -> k.litre }
+                toplamLitre = yeniListe.filterIsInstance<Kayit.Yakit>().sumOf { k -> k.litre }
             )
         }
     }
@@ -55,7 +56,7 @@ class KayitViewModel : ViewModel() {
             it.copy(
                 kayitlar = yeniListe,
                 toplamTutar = yeniListe.sumOf { k -> k.tutar },
-                toplamLitre = yeniListe.sumOf { k -> k.litre }
+                toplamLitre = yeniListe.filterIsInstance<Kayit.Yakit>().sumOf { k -> k.litre }
             )
         }
     }

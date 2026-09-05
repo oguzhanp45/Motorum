@@ -8,5 +8,5 @@ import com.oguzhanp.motorum.ui.form.KayitFormu
  //nurayı kayit formu olarak ayirdik cunkü 2 ekranda aynı kontroller yapılıyor
  //oyüzden aynı kontoller kayit formu sayesinde 2 yerdede uzun uzun yazılmadi.
 data class KayitEkleUiState(
-    val form: KayitFormu = KayitFormu()
+    val form: KayitFormu = KayitFormu.Yakit()
 )
