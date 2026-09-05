@@ -25,4 +25,23 @@ sealed interface Kayit {
         // Kategori tipten turuyor, ayri alan olarak tasinmiyor.
         override val kategori get() = Kategori.YAKIT
     }
+
+    data class RoadTrip(
+        override val id: String = UUID.randomUUID().toString(),
+        override val tutar: Double = 0.0,   // yol masrafi, girilmezse 0
+        override val not: String = "",
+        val baslangic: TripNoktasi,
+        val bitis: TripNoktasi? = null,     // null = yolculuk devam ediyor
+        // Mola iki ucun degil, yolculugun kendisinin olayi: baslangic ile bitis
+        // arasinda gerceklesiyor, o yuzden burada duruyor.
+        val molalar: List<Mola> = emptyList()
+    ) : Kayit {
+        override val kategori get() = Kategori.ROAD_TRIP
+        // Tarih baslangictan turuyor, ayrica kopyalanmiyor.
+        override val tarihMillis get() = baslangic.tarihMillis
+
+        // Gidilen yol iki km degerinin farki; ayri alan olarak saklanmiyor ki
+        // km duzeltilince mesafe eskimesin. Yolculuk bitmediyse henuz belli degil: 0.
+        val mesafe: Int get() = bitis?.let { it.km - baslangic.km } ?: 0
+    }
 }

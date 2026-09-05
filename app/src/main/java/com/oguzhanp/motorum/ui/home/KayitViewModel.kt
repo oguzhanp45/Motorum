@@ -29,7 +29,9 @@ class KayitViewModel : ViewModel() {
                 // silme ve duzenleme geldiginde toplam listeyle uyusmazdi.
                 toplamTutar = yeniListe.sumOf { k -> k.tutar },
                 // litre sadece yakit kayitlarinda var, once o tipe suzuluyor.
-                toplamLitre = yeniListe.filterIsInstance<Kayit.Yakit>().sumOf { k -> k.litre }
+                toplamLitre = yeniListe.filterIsInstance<Kayit.Yakit>().sumOf { k -> k.litre },
+                // mesafe devam eden yolculukta 0 donduruyor, toplama etkisi yok.
+                toplamKm = yeniListe.filterIsInstance<Kayit.RoadTrip>().sumOf { k -> k.mesafe }
             )
         }
     }
@@ -42,7 +44,8 @@ class KayitViewModel : ViewModel() {
             it.copy(
                 kayitlar = yeniListe,
                 toplamTutar = yeniListe.sumOf { k -> k.tutar },
-                toplamLitre = yeniListe.filterIsInstance<Kayit.Yakit>().sumOf { k -> k.litre }
+                toplamLitre = yeniListe.filterIsInstance<Kayit.Yakit>().sumOf { k -> k.litre },
+                toplamKm = yeniListe.filterIsInstance<Kayit.RoadTrip>().sumOf { k -> k.mesafe }
             )
         }
     }
@@ -56,7 +59,8 @@ class KayitViewModel : ViewModel() {
             it.copy(
                 kayitlar = yeniListe,
                 toplamTutar = yeniListe.sumOf { k -> k.tutar },
-                toplamLitre = yeniListe.filterIsInstance<Kayit.Yakit>().sumOf { k -> k.litre }
+                toplamLitre = yeniListe.filterIsInstance<Kayit.Yakit>().sumOf { k -> k.litre },
+                toplamKm = yeniListe.filterIsInstance<Kayit.RoadTrip>().sumOf { k -> k.mesafe }
             )
         }
     }

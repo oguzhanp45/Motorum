@@ -69,6 +69,7 @@ fun AnaSayfaIcerik(
             ToplamCard(
                 toplamTutar = uiState.toplamTutar,
                 toplamLitre = uiState.toplamLitre,
+                toplamKm = uiState.toplamKm,
                 modifier = Modifier.fillMaxWidth()
             )
 

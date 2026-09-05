@@ -2,31 +2,31 @@ package com.oguzhanp.motorum.ui.ekle.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
-import com.oguzhanp.motorum.util.formatTarih
+import com.oguzhanp.motorum.util.formatSaat
 
-// Tarih gosterimi + takvim diyalogu.
-// Compose'da diyalog "gosterilmez", VAR ya da YOK olur: if (acik) { ... }
-// tarihMillis null olabilir: road trip'te tarih secilmemis olabiliyor, kutu bos gorunur.
+// Saat gosterimi + saat secici diyalogu. TarihSecici ile ayni kalip.
+// Material3'te hazir bir TimePickerDialog yok, TimePicker bir AlertDialog icine konuyor.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TarihSecici(
-    tarihMillis: Long?,
-    onTarihSec: (Long) -> Unit,
+fun SaatSecici(
+    saat: Int?,
+    dakika: Int?,
+    onSaatSec: (Int, Int) -> Unit,
     modifier: Modifier = Modifier,
     hatali: Boolean = false,
     destekMetni: String? = null
@@ -34,55 +34,55 @@ fun TarihSecici(
     var acik by remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        value = if (tarihMillis == null) "" else formatTarih(tarihMillis),
+        value = if (saat == null || dakika == null) "" else formatSaat(saat, dakika),
         onValueChange = { },
         readOnly = true,
-        label = { Text("Tarih") },
+        label = { Text("Saat") },
         isError = hatali,
         supportingText = {
             if (hatali && destekMetni != null) Text(destekMetni)
         },
         trailingIcon = {
             IconButton(onClick = { acik = true }) {
-                Icon(Icons.Default.DateRange, contentDescription = "Tarih sec")
+                Icon(Icons.Default.Schedule, contentDescription = "Saat sec")
             }
         },
         modifier = modifier
     )
 
     if (acik) {
-        // Takvimin kendi ic durumu: hangi ay gorunuyor, hangi gun secili
-        val durum = rememberDatePickerState(
-            initialSelectedDateMillis = tarihMillis ?: System.currentTimeMillis()
+        val durum = rememberTimePickerState(
+            initialHour = saat ?: 0,
+            initialMinute = dakika ?: 0,
+            is24Hour = true
         )
 
-        DatePickerDialog(
+        AlertDialog(
             onDismissRequest = { acik = false },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        // Kullanici gun secmeden Tamam'a basabilir -> nullable
-                        durum.selectedDateMillis?.let { onTarihSec(it) }
+                        onSaatSec(durum.hour, durum.minute)
                         acik = false
                     }
                 ) { Text("Tamam") }
             },
             dismissButton = {
                 TextButton(onClick = { acik = false }) { Text("Iptal") }
-            }
-        ) {
-            DatePicker(state = durum)
-        }
+            },
+            text = { TimePicker(state = durum) }
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun TarihSeciciPreview() {
+private fun SaatSeciciPreview() {
     MotorumTheme {
-        TarihSecici(
-            tarihMillis = System.currentTimeMillis(),
-            onTarihSec = {},
+        SaatSecici(
+            saat = 9,
+            dakika = 30,
+            onSaatSec = { _, _ -> },
             modifier = Modifier.padding(16.dp)
         )
     }

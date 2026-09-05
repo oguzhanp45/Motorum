@@ -14,13 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.util.formatKm
 import com.oguzhanp.motorum.util.formatLitre
 import com.oguzhanp.motorum.util.formatTl
 
+// Uc toplam esit onemde, o yuzden ayni yazi boyutunda.
+// headlineSmall yerine titleMedium: uc rakam dar ekranda yan yana sigsin.
 @Composable
 fun ToplamCard(
     toplamTutar: Double,
     toplamLitre: Double,
+    toplamKm: Int,
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier) {
@@ -32,11 +36,15 @@ fun ToplamCard(
         ) {
             Column {
                 Text("Toplam Tutar", style = MaterialTheme.typography.labelMedium)
-                Text(formatTl(toplamTutar), style = MaterialTheme.typography.headlineSmall)
+                Text(formatTl(toplamTutar), style = MaterialTheme.typography.titleMedium)
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Toplam Litre", style = MaterialTheme.typography.labelMedium)
+                Text(formatLitre(toplamLitre), style = MaterialTheme.typography.titleMedium)
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text("Toplam Litre", style = MaterialTheme.typography.labelMedium)
-                Text(formatLitre(toplamLitre), style = MaterialTheme.typography.headlineSmall)
+                Text("Toplam Km", style = MaterialTheme.typography.labelMedium)
+                Text(formatKm(toplamKm), style = MaterialTheme.typography.titleMedium)
             }
         }
     }
@@ -49,6 +57,7 @@ private fun ToplamCardPreview() {
         ToplamCard(
             toplamTutar = 4250.75,
             toplamLitre = 88.4,
+            toplamKm = 1240,
             modifier = Modifier.padding(16.dp)
         )
     }
