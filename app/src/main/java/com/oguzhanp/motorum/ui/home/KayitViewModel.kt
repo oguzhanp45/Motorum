@@ -49,6 +49,20 @@ class KayitViewModel : ViewModel() {
     // Toplamlar sumOf ile yeniden hesaplanıyor;
     // birikimli bıraksaydık düzenlemede eski değer de yeni değer de sayılırdı
 
+    fun sil(id: String) { // Silmek icin tam kayit gerekmiyor, "hangisi" bilgisi yetiyor.
+        _uiState.update {
+            val yeniListe = it.kayitlar.filter { mevcut -> mevcut.id != id }
+            it.copy(
+                kayitlar = yeniListe,
+                toplamTutar = yeniListe.sumOf { k -> k.tutar },
+                toplamLitre = yeniListe.sumOf { k -> k.litre }
+            )
+        }
+    }
+    // filter id'si tutmayanlari gecirir, tutani disarida birakir.
+    // Yeni liste uretilir; ekle/duzenle ile ayni degismez (immutable) kalip.
+
+
     // Listeyi tutan yer burasi oldugu icin degistiren fonksiyonlar da burada.
     // Ileride veri katmani (KayitDeposu) eklenirse ekle/duzenle/sil oraya tasinacak;
     // ekran ViewModel'leri listeyi degil depoyu cagirir ileride yapilabilir.
