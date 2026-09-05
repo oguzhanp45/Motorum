@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.util.formatKm
 import com.oguzhanp.motorum.util.formatLitre
 import com.oguzhanp.motorum.util.formatTarih
 import com.oguzhanp.motorum.util.formatTl
@@ -97,14 +98,33 @@ fun KayitSatiri(
                         Text(formatTarih(kayit.tarihMillis), style = MaterialTheme.typography.bodySmall)
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text(formatTl(kayit.tutar), style = MaterialTheme.typography.titleSmall)
+                        // Masraf girilmemis road trip'te tutar 0 kaliyor.
+                        // Girilmemis bir bilgiyi 0 diye gostermemek icin hic yazilmiyor.
+                        if (kayit.tutar > 0.0) {
+                            Text(formatTl(kayit.tutar), style = MaterialTheme.typography.titleSmall)
+                        }
                         // litre artik Kayit arayuzunde yok, sadece Yakit'te.
                         // Erisebilmek icin tip daraltiyoruz.
                         when (kayit) {
                             is Kayit.Yakit ->
                                 Text(formatLitre(kayit.litre), style = MaterialTheme.typography.bodySmall)
+
+                            // Yolculuk bitmediyse gidilen yol belli degil, km satiri hic cizilmiyor.
+                            is Kayit.RoadTrip ->
+                                if (kayit.bitis != null) {
+                                    Text(formatKm(kayit.mesafe), style = MaterialTheme.typography.bodySmall)
+                                }
                         }
                     }
+                }
+                // Rota tum satir genisligini kullaniyor: uzun sehir isimleri
+                // sol sutuna sigmaz, kirilir ya da kesilirdi.
+                if (kayit is Kayit.RoadTrip) {
+                    Text(
+                        text = "${kayit.baslangic.sehir} → ${kayit.bitis?.sehir ?: "devam ediyor"}",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 6.dp)
+                    )
                 }
                 // Not bos degilse ikinci satir olarak goster
                 if (kayit.not.isNotBlank()) {

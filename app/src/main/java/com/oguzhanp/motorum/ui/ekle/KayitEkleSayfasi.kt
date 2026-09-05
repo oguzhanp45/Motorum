@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -25,12 +27,15 @@ import androidx.navigation.NavController
 import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.Kayit
+import com.oguzhanp.motorum.model.TripNoktasi
 import com.oguzhanp.motorum.ui.ekle.components.KategoriDropdown
 import com.oguzhanp.motorum.ui.form.KayitFormu
+import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
 import com.oguzhanp.motorum.ui.form.YakitAlanlari
 import com.oguzhanp.motorum.ui.form.bosForm
 import com.oguzhanp.motorum.ui.home.KayitViewModel
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.util.tarihSaatBirlestir
 
 @Composable
 fun KayitEkleSayfasi(
@@ -56,6 +61,23 @@ fun KayitEkleSayfasi(
                             litre = kontrol.litre!!,
                             tutar = kontrol.tutar!!,
                             not = kontrol.not.trim()
+                        )
+                    )
+
+                    is KayitFormu.RoadTrip -> kayitViewModel.ekle(
+                        Kayit.RoadTrip(
+                            tutar = kontrol.masraf,
+                            not = kontrol.not.trim(),
+                            baslangic = TripNoktasi(
+                                tarihMillis = tarihSaatBirlestir(
+                                    kontrol.baslangic.tarihMillis!!,
+                                    kontrol.baslangic.saat!!,
+                                    kontrol.baslangic.dakika!!
+                                ),
+                                km = kontrol.baslangic.km!!,
+                                sehir = kontrol.baslangic.sehir.trim()
+                            ),
+                            molalar = kontrol.doluMolalar
                         )
                     )
                 }
@@ -90,6 +112,7 @@ fun KayitEkleIcerik(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(AppSpacing.normal),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -104,6 +127,12 @@ fun KayitEkleIcerik(
             // derleyici bu when'in eksik oldugunu gosterir.
             when (form) {
                 is KayitFormu.Yakit -> YakitAlanlari(
+                    form = form,
+                    onDegis = onFormDegis,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                is KayitFormu.RoadTrip -> RoadTripAlanlari(
                     form = form,
                     onDegis = onFormDegis,
                     modifier = Modifier.fillMaxWidth()

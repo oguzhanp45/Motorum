@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -26,10 +28,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.Kayit
+import com.oguzhanp.motorum.model.TripNoktasi
 import com.oguzhanp.motorum.ui.form.KayitFormu
+import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
+import com.oguzhanp.motorum.ui.form.TripNoktasiFormu
 import com.oguzhanp.motorum.ui.form.YakitAlanlari
 import com.oguzhanp.motorum.ui.home.KayitViewModel
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.util.dakikaAl
+import com.oguzhanp.motorum.util.saatAl
+import com.oguzhanp.motorum.util.tarihSaatBirlestir
 
 @Composable
 fun KayitDetaySayfasi(
@@ -53,6 +61,28 @@ fun KayitDetaySayfasi(
                         tarihMillis = kayit.tarihMillis,
                         litreYazi = kayit.litre.toString(),
                         tutarYazi = kayit.tutar.toString(),
+                        not = kayit.not
+                    )
+
+                    is Kayit.RoadTrip -> KayitFormu.RoadTrip(
+                        baslangic = TripNoktasiFormu(
+                            tarihMillis = kayit.baslangic.tarihMillis,
+                            saat = saatAl(kayit.baslangic.tarihMillis),
+                            dakika = dakikaAl(kayit.baslangic.tarihMillis),
+                            kmYazi = kayit.baslangic.km.toString(),
+                            sehir = kayit.baslangic.sehir
+                        ),
+                        bitis = kayit.bitis?.let {
+                            TripNoktasiFormu(
+                                tarihMillis = it.tarihMillis,
+                                saat = saatAl(it.tarihMillis),
+                                dakika = dakikaAl(it.tarihMillis),
+                                kmYazi = it.km.toString(),
+                                sehir = it.sehir
+                            )
+                        } ?: TripNoktasiFormu(),
+                        molalar = kayit.molalar,
+                        masrafYazi = if (kayit.tutar > 0.0) kayit.tutar.toString() else "",
                         not = kayit.not
                     )
                 }
@@ -83,6 +113,34 @@ fun KayitDetaySayfasi(
                             litre = kontrol.litre!!,
                             tutar = kontrol.tutar!!,
                             not = kontrol.not.trim()
+                        )
+                    )
+
+                    is KayitFormu.RoadTrip -> kayitViewModel.duzenle(
+                        Kayit.RoadTrip(
+                            id = kayitId,
+                            tutar = kontrol.masraf,
+                            not = kontrol.not.trim(),
+                            baslangic = TripNoktasi(
+                                tarihMillis = tarihSaatBirlestir(
+                                    kontrol.baslangic.tarihMillis!!,
+                                    kontrol.baslangic.saat!!,
+                                    kontrol.baslangic.dakika!!
+                                ),
+                                km = kontrol.baslangic.km!!,
+                                sehir = kontrol.baslangic.sehir.trim()
+                            ),
+                            // Bitis bolumu bos birakildiysa yolculuk devam ediyor: null yaziliyor.
+                            bitis = if (kontrol.bitisVar) TripNoktasi(
+                                tarihMillis = tarihSaatBirlestir(
+                                    kontrol.bitis.tarihMillis!!,
+                                    kontrol.bitis.saat!!,
+                                    kontrol.bitis.dakika!!
+                                ),
+                                km = kontrol.bitis.km!!,
+                                sehir = kontrol.bitis.sehir.trim()
+                            ) else null,
+                            molalar = kontrol.doluMolalar
                         )
                     )
                 }
@@ -125,6 +183,7 @@ fun KayitDetayIcerik(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(AppSpacing.normal),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -139,6 +198,14 @@ fun KayitDetayIcerik(
                 is KayitFormu.Yakit -> YakitAlanlari(
                     form = form,
                     onDegis = onFormDegis,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                is KayitFormu.RoadTrip -> RoadTripAlanlari(
+                    form = form,
+                    onDegis = onFormDegis,
+                    molaGoster = true,
+                    bitisGoster = true,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
