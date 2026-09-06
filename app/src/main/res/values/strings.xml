@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Motorum</string>
     <string name="kayit_ekle">Kayıt Ekle</string>
+
+    <!-- Formlarda birden fazla dosyada tekrar eden hata mesajlari.
+         Diger sabit metinler simdilik kodun icinde duruyor;
+         hepsi istenildiginde buraya tasinacak. -->
+    <string name="zorunlu_alan">Bu alan zorunlu</string>
+    <string name="gecerli_sayi">Zorunlu alan — geçerli bir sayı girin</string>
 </resources>

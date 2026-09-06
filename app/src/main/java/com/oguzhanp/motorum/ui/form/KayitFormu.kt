@@ -90,6 +90,58 @@ sealed interface KayitFormu {
             }
         )
     }
+
+    data class Bakim(
+        val tarihMillis: Long = System.currentTimeMillis(),
+        val bakimTuru: String = "",
+        val tutarYazi: String = "",
+        override val not: String = "",
+        val bakimTuruHatali: Boolean = false,
+        val tutarHatali: Boolean = false
+    ) : KayitFormu {
+
+        override val kategori get() = Kategori.BAKIM
+
+        val tutar: Double? get() = tutarYazi.replace(',', '.').toDoubleOrNull()
+
+        private val bakimTuruGecersiz: Boolean get() = bakimTuru.isBlank()
+        private val tutarGecersiz: Boolean get() = (tutar ?: 0.0) <= 0.0
+
+        override val gecerli: Boolean get() = !bakimTuruGecersiz && !tutarGecersiz
+
+        override fun notDegistir(yeni: String): Bakim = copy(not = yeni)
+
+        override fun dogrula(): Bakim = copy(
+            bakimTuruHatali = bakimTuruGecersiz,
+            tutarHatali = tutarGecersiz
+        )
+    }
+
+    data class Aksesuar(
+        val tarihMillis: Long = System.currentTimeMillis(),
+        val aksesuarAdi: String = "",
+        val tutarYazi: String = "",
+        override val not: String = "",
+        val aksesuarAdiHatali: Boolean = false,
+        val tutarHatali: Boolean = false
+    ) : KayitFormu {
+
+        override val kategori get() = Kategori.AKSESUAR
+
+        val tutar: Double? get() = tutarYazi.replace(',', '.').toDoubleOrNull()
+
+        private val aksesuarAdiGecersiz: Boolean get() = aksesuarAdi.isBlank()
+        private val tutarGecersiz: Boolean get() = (tutar ?: 0.0) <= 0.0
+
+        override val gecerli: Boolean get() = !aksesuarAdiGecersiz && !tutarGecersiz
+
+        override fun notDegistir(yeni: String): Aksesuar = copy(not = yeni)
+
+        override fun dogrula(): Aksesuar = copy(
+            aksesuarAdiHatali = aksesuarAdiGecersiz,
+            tutarHatali = tutarGecersiz
+        )
+    }
 }
 
 // Kategori degisince o kategorinin bos formu kurulur (form sifirlanir karari).
@@ -97,4 +149,6 @@ sealed interface KayitFormu {
 fun bosForm(kategori: Kategori): KayitFormu = when (kategori) {
     Kategori.YAKIT -> KayitFormu.Yakit()
     Kategori.ROAD_TRIP -> KayitFormu.RoadTrip()
+    Kategori.BAKIM -> KayitFormu.Bakim()
+    Kategori.AKSESUAR -> KayitFormu.Aksesuar()
 }

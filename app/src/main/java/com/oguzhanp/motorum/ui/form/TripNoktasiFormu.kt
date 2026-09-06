@@ -1,12 +1,17 @@
 package com.oguzhanp.motorum.ui.form
 
+import com.oguzhanp.motorum.util.dakikaAl
+import com.oguzhanp.motorum.util.saatAl
+
 // Yolculugun bir ucunun form hali. Gun, saat ve dakika ayri tutuluyor cunku
-// iki secici iki ayri sey donduruyor ve "secilmedi" durumu null ile ifade ediliyor.
-// Modeldeki tek Long'a ancak kaydederken birlestiriliyor.
+// iki secici iki ayri sey donduruyor ve modeldeki tek Long'a ancak
+// kaydederken birlestiriliyor.
+// Ucu de su ana ayarli geliyor: yolculuk genelde yola cikarken kaydediliyor,
+// isteyen degistirir.
 data class TripNoktasiFormu(
-    val tarihMillis: Long? = null,
-    val saat: Int? = null,
-    val dakika: Int? = null,
+    val tarihMillis: Long? = System.currentTimeMillis(),
+    val saat: Int? = saatAl(System.currentTimeMillis()),
+    val dakika: Int? = dakikaAl(System.currentTimeMillis()),
     val kmYazi: String = "",
     val sehir: String = "",
     val tarihHatali: Boolean = false,
@@ -17,8 +22,10 @@ data class TripNoktasiFormu(
 
     val km: Int? get() = kmYazi.trim().toIntOrNull()
 
+    // Bitis bolumu doldurulmus mu? Sadece km ve sehre bakiliyor: tarih ve saat
+    // varsayilan olarak dolu geldigi icin onlardan doluluk anlasilmaz.
     val bos: Boolean
-        get() = tarihMillis == null && saat == null && kmYazi.isBlank() && sehir.isBlank()
+        get() = kmYazi.isBlank() && sehir.isBlank()
 
     val gecerli: Boolean
         get() = tarihMillis != null && saat != null && dakika != null &&

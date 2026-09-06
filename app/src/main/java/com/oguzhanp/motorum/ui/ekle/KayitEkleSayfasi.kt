@@ -29,6 +29,8 @@ import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.model.TripNoktasi
 import com.oguzhanp.motorum.ui.ekle.components.KategoriDropdown
+import com.oguzhanp.motorum.ui.form.AksesuarAlanlari
+import com.oguzhanp.motorum.ui.form.BakimAlanlari
 import com.oguzhanp.motorum.ui.form.KayitFormu
 import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
 import com.oguzhanp.motorum.ui.form.YakitAlanlari
@@ -78,6 +80,24 @@ fun KayitEkleSayfasi(
                                 sehir = kontrol.baslangic.sehir.trim()
                             ),
                             molalar = kontrol.doluMolalar
+                        )
+                    )
+
+                    is KayitFormu.Bakim -> kayitViewModel.ekle(
+                        Kayit.Bakim(
+                            tarihMillis = kontrol.tarihMillis,
+                            tutar = kontrol.tutar!!,
+                            not = kontrol.not.trim(),
+                            bakimTuru = kontrol.bakimTuru.trim()
+                        )
+                    )
+
+                    is KayitFormu.Aksesuar -> kayitViewModel.ekle(
+                        Kayit.Aksesuar(
+                            tarihMillis = kontrol.tarihMillis,
+                            tutar = kontrol.tutar!!,
+                            not = kontrol.not.trim(),
+                            aksesuarAdi = kontrol.aksesuarAdi.trim()
                         )
                     )
                 }
@@ -133,6 +153,18 @@ fun KayitEkleIcerik(
                 )
 
                 is KayitFormu.RoadTrip -> RoadTripAlanlari(
+                    form = form,
+                    onDegis = onFormDegis,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                is KayitFormu.Bakim -> BakimAlanlari(
+                    form = form,
+                    onDegis = onFormDegis,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                is KayitFormu.Aksesuar -> AksesuarAlanlari(
                     form = form,
                     onDegis = onFormDegis,
                     modifier = Modifier.fillMaxWidth()
