@@ -16,13 +16,11 @@ import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.ui.ekle.components.TarihSecici
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 
-// Yakit kategorisinin form alanlari. Hem ekleme hem detay ekrani ayni blogu cagiriyor;
-// alan eklemek/degistirmek gerektiginde tek dosya degisiyor.
-
+// Bakim kategorisinin form alanlari. Hem ekleme hem detay ekrani ayni blogu cagiriyor.
 @Composable
-fun YakitAlanlari(
-    form: KayitFormu.Yakit,
-    onDegis: (KayitFormu.Yakit) -> Unit,
+fun BakimAlanlari(
+    form: KayitFormu.Bakim,
+    onDegis: (KayitFormu.Bakim) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -36,14 +34,11 @@ fun YakitAlanlari(
         )
 
         OutlinedTextField(
-            value = form.litreYazi,
-            onValueChange = { onDegis(form.copy(litreYazi = it, litreHatali = false)) },
-            label = { Text("Litre") },
-            isError = form.litreHatali,
-            supportingText = {
-                if (form.litreHatali) Text(stringResource(R.string.gecerli_sayi))
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            value = form.bakimTuru,
+            onValueChange = { onDegis(form.copy(bakimTuru = it, bakimTuruHatali = false)) },
+            label = { Text("Bakım türü") },
+            isError = form.bakimTuruHatali,
+            supportingText = { if (form.bakimTuruHatali) Text(stringResource(R.string.zorunlu_alan)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
@@ -53,9 +48,7 @@ fun YakitAlanlari(
             onValueChange = { onDegis(form.copy(tutarYazi = it, tutarHatali = false)) },
             label = { Text("Tutar (₺)") },
             isError = form.tutarHatali,
-            supportingText = {
-                if (form.tutarHatali) Text(stringResource(R.string.gecerli_sayi))
-            },
+            supportingText = { if (form.tutarHatali) Text(stringResource(R.string.gecerli_sayi)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
@@ -65,10 +58,10 @@ fun YakitAlanlari(
 
 @Preview(showBackground = true)
 @Composable
-private fun YakitAlanlariPreview() {
+private fun BakimAlanlariPreview() {
     MotorumTheme {
-        YakitAlanlari(
-            form = KayitFormu.Yakit(),
+        BakimAlanlari(
+            form = KayitFormu.Bakim(),
             onDegis = {}
         )
     }

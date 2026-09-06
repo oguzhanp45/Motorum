@@ -114,14 +114,28 @@ fun KayitSatiri(
                                 if (kayit.bitis != null) {
                                     Text(formatKm(kayit.mesafe), style = MaterialTheme.typography.bodySmall)
                                 }
+
+                            // Bu ikisinin sag sutunda gosterecek ek bilgisi yok, adlari alt satirda.
+                            is Kayit.Bakim -> {}
+                            is Kayit.Aksesuar -> {}
                         }
                     }
                 }
-                // Rota tum satir genisligini kullaniyor: uzun sehir isimleri
+                // Alt satir tum genisligi kullaniyor: uzun sehir/aksesuar isimleri
                 // sol sutuna sigmaz, kirilir ya da kesilirdi.
-                if (kayit is Kayit.RoadTrip) {
+                // Once metin secilip sonra tek Text ciziliyor; yeni kategori
+                // eklenince derleyici bu when'i de gosterir.
+                val altSatir: String? = when (kayit) {
+                    is Kayit.Yakit -> null
+                    is Kayit.RoadTrip ->
+                        "${kayit.baslangic.sehir} → ${kayit.bitis?.sehir ?: "devam ediyor"}"
+
+                    is Kayit.Bakim -> kayit.bakimTuru
+                    is Kayit.Aksesuar -> kayit.aksesuarAdi
+                }
+                if (altSatir != null) {
                     Text(
-                        text = "${kayit.baslangic.sehir} → ${kayit.bitis?.sehir ?: "devam ediyor"}",
+                        text = altSatir,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(top = 6.dp)
                     )

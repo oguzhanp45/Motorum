@@ -9,17 +9,17 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.ui.ekle.components.SaatSecici
 import com.oguzhanp.motorum.ui.ekle.components.TarihSecici
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 
 // Yolculugun bir ucunun alanlari. Ayni blok "Baslangic" ve "Bitis" icin iki kez
 // kullanilacagi icin ayri composable; baslik disaridan veriliyor.
-const val ZORUNLU_MESAJI = "Bu alan zorunlu"
-
 @Composable
 fun TripNoktasiAlanlari(
     baslik: String,
@@ -28,7 +28,7 @@ fun TripNoktasiAlanlari(
     modifier: Modifier = Modifier,
     // Bitis blogunda km hatasi "bos" ya da "baslangictan kucuk" olabilir;
     // tek mesajla ikisi de karsilaniyor.
-    kmMesaji: String = ZORUNLU_MESAJI
+    kmMesaji: String = stringResource(R.string.zorunlu_alan)
 ) {
     Column(
         modifier = modifier,
@@ -40,7 +40,7 @@ fun TripNoktasiAlanlari(
             tarihMillis = form.tarihMillis,
             onTarihSec = { onDegis(form.copy(tarihMillis = it, tarihHatali = false)) },
             hatali = form.tarihHatali,
-            destekMetni = ZORUNLU_MESAJI,
+            destekMetni = stringResource(R.string.zorunlu_alan),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -49,7 +49,7 @@ fun TripNoktasiAlanlari(
             dakika = form.dakika,
             onSaatSec = { s, d -> onDegis(form.copy(saat = s, dakika = d, saatHatali = false)) },
             hatali = form.saatHatali,
-            destekMetni = ZORUNLU_MESAJI,
+            destekMetni = stringResource(R.string.zorunlu_alan),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -69,7 +69,7 @@ fun TripNoktasiAlanlari(
             onValueChange = { onDegis(form.copy(sehir = it, sehirHatali = false)) },
             label = { Text("Şehir") },
             isError = form.sehirHatali,
-            supportingText = { if (form.sehirHatali) Text(ZORUNLU_MESAJI) },
+            supportingText = { if (form.sehirHatali) Text(stringResource(R.string.zorunlu_alan)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )

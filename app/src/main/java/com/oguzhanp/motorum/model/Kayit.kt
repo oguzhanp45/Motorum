@@ -44,4 +44,26 @@ sealed interface Kayit {
         // km duzeltilince mesafe eskimesin. Yolculuk bitmediyse henuz belli degil: 0.
         val mesafe: Int get() = bitis?.let { it.km - baslangic.km } ?: 0
     }
+
+    // Bakim ve Aksesuar bugun ayni sekle sahip, yine de ayri tipler:
+    // farkli kavramlar, ileride farkli alanlar kazanacaklar.
+    data class Bakim(
+        override val id: String = UUID.randomUUID().toString(),
+        override val tarihMillis: Long,
+        override val tutar: Double,
+        override val not: String = "",
+        val bakimTuru: String
+    ) : Kayit {
+        override val kategori get() = Kategori.BAKIM
+    }
+
+    data class Aksesuar(
+        override val id: String = UUID.randomUUID().toString(),
+        override val tarihMillis: Long,
+        override val tutar: Double,
+        override val not: String = "",
+        val aksesuarAdi: String
+    ) : Kayit {
+        override val kategori get() = Kategori.AKSESUAR
+    }
 }

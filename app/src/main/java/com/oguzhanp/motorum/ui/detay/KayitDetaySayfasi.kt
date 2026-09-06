@@ -29,6 +29,8 @@ import androidx.navigation.NavController
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.model.TripNoktasi
+import com.oguzhanp.motorum.ui.form.AksesuarAlanlari
+import com.oguzhanp.motorum.ui.form.BakimAlanlari
 import com.oguzhanp.motorum.ui.form.KayitFormu
 import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
 import com.oguzhanp.motorum.ui.form.TripNoktasiFormu
@@ -83,6 +85,20 @@ fun KayitDetaySayfasi(
                         } ?: TripNoktasiFormu(),
                         molalar = kayit.molalar,
                         masrafYazi = if (kayit.tutar > 0.0) kayit.tutar.toString() else "",
+                        not = kayit.not
+                    )
+
+                    is Kayit.Bakim -> KayitFormu.Bakim(
+                        tarihMillis = kayit.tarihMillis,
+                        bakimTuru = kayit.bakimTuru,
+                        tutarYazi = kayit.tutar.toString(),
+                        not = kayit.not
+                    )
+
+                    is Kayit.Aksesuar -> KayitFormu.Aksesuar(
+                        tarihMillis = kayit.tarihMillis,
+                        aksesuarAdi = kayit.aksesuarAdi,
+                        tutarYazi = kayit.tutar.toString(),
                         not = kayit.not
                     )
                 }
@@ -141,6 +157,26 @@ fun KayitDetaySayfasi(
                                 sehir = kontrol.bitis.sehir.trim()
                             ) else null,
                             molalar = kontrol.doluMolalar
+                        )
+                    )
+
+                    is KayitFormu.Bakim -> kayitViewModel.duzenle(
+                        Kayit.Bakim(
+                            id = kayitId,
+                            tarihMillis = kontrol.tarihMillis,
+                            tutar = kontrol.tutar!!,
+                            not = kontrol.not.trim(),
+                            bakimTuru = kontrol.bakimTuru.trim()
+                        )
+                    )
+
+                    is KayitFormu.Aksesuar -> kayitViewModel.duzenle(
+                        Kayit.Aksesuar(
+                            id = kayitId,
+                            tarihMillis = kontrol.tarihMillis,
+                            tutar = kontrol.tutar!!,
+                            not = kontrol.not.trim(),
+                            aksesuarAdi = kontrol.aksesuarAdi.trim()
                         )
                     )
                 }
@@ -206,6 +242,18 @@ fun KayitDetayIcerik(
                     onDegis = onFormDegis,
                     molaGoster = true,
                     bitisGoster = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                is KayitFormu.Bakim -> BakimAlanlari(
+                    form = form,
+                    onDegis = onFormDegis,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                is KayitFormu.Aksesuar -> AksesuarAlanlari(
+                    form = form,
+                    onDegis = onFormDegis,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
