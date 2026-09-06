@@ -1,6 +1,7 @@
 package com.oguzhanp.motorum.ui.navigation
 
 object Routes {
+    const val ONBOARDING = "onboarding"
     const val ANA_SAYFA = "ana_sayfa"
     const val KAYIT_EKLE = "kayit_ekle"
     const val KAYIT_DETAY = "kayit_detay/{id}"

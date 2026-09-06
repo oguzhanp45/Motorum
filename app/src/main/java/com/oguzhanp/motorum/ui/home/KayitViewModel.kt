@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.update
 
 // liste + ekleme + toplamlar
 
+// Toplamlar uc fonksiyonda da ayni sekilde yeniden hesaplaniyor.
+// Ortak bir yardimciya cikarilmadi: her fonksiyon tek basina okunabilsin diye.
 class KayitViewModel : ViewModel() {
 
 

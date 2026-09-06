@@ -38,18 +38,14 @@ fun TripNoktasiAlanlari(
 
         TarihSecici(
             tarihMillis = form.tarihMillis,
-            onTarihSec = { onDegis(form.copy(tarihMillis = it, tarihHatali = false)) },
-            hatali = form.tarihHatali,
-            destekMetni = stringResource(R.string.zorunlu_alan),
+            onTarihSec = { onDegis(form.copy(tarihMillis = it)) },
             modifier = Modifier.fillMaxWidth()
         )
 
         SaatSecici(
             saat = form.saat,
             dakika = form.dakika,
-            onSaatSec = { s, d -> onDegis(form.copy(saat = s, dakika = d, saatHatali = false)) },
-            hatali = form.saatHatali,
-            destekMetni = stringResource(R.string.zorunlu_alan),
+            onSaatSec = { s, d -> onDegis(form.copy(saat = s, dakika = d)) },
             modifier = Modifier.fillMaxWidth()
         )
 

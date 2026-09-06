@@ -111,12 +111,12 @@ fun KayitDetaySayfasi(
         silmeOnayiGoster = detay.silmeOnayiGoster,
         onFormDegis = { yeniForm -> detay = detay.copy(form = yeniForm) },
         onSilmeOnayiDegis = { goster -> detay = detay.copy(silmeOnayiGoster = goster) },
-        onSil = {
+        onSilOnayla = {
             navController.popBackStack() // Once geri don, sonra sil. Tersi olsaydi liste guncellenince ekran bir kez daha
             kayitViewModel.sil(kayitId) // cizilir, find null doner ve ustteki LaunchedEffect ikinci bir popBackStack cagirirdi.
         },
-        onGeri = { navController.popBackStack() },
-        onGuncelle = {
+        onGeriTikla = { navController.popBackStack() },
+        onGuncelleTikla = {
             val kontrol = detay.form.dogrula()
             if (kontrol.gecerli) {
                 // Form gecerliyse kayit nesnesi uretiliyor. litre/tutar sadece Yakit'te
@@ -139,9 +139,9 @@ fun KayitDetaySayfasi(
                             not = kontrol.not.trim(),
                             baslangic = TripNoktasi(
                                 tarihMillis = tarihSaatBirlestir(
-                                    kontrol.baslangic.tarihMillis!!,
-                                    kontrol.baslangic.saat!!,
-                                    kontrol.baslangic.dakika!!
+                                    kontrol.baslangic.tarihMillis,
+                                    kontrol.baslangic.saat,
+                                    kontrol.baslangic.dakika
                                 ),
                                 km = kontrol.baslangic.km!!,
                                 sehir = kontrol.baslangic.sehir.trim()
@@ -149,9 +149,9 @@ fun KayitDetaySayfasi(
                             // Bitis bolumu bos birakildiysa yolculuk devam ediyor: null yaziliyor.
                             bitis = if (kontrol.bitisVar) TripNoktasi(
                                 tarihMillis = tarihSaatBirlestir(
-                                    kontrol.bitis.tarihMillis!!,
-                                    kontrol.bitis.saat!!,
-                                    kontrol.bitis.dakika!!
+                                    kontrol.bitis.tarihMillis,
+                                    kontrol.bitis.saat,
+                                    kontrol.bitis.dakika
                                 ),
                                 km = kontrol.bitis.km!!,
                                 sehir = kontrol.bitis.sehir.trim()
@@ -195,16 +195,16 @@ fun KayitDetayIcerik(
     silmeOnayiGoster: Boolean,
     onFormDegis: (KayitFormu) -> Unit,
     onSilmeOnayiDegis: (Boolean) -> Unit,// Diyalogu acmak ve iptal etmek ayni islem.true/false yapmak.
-    onSil: () -> Unit,
-    onGuncelle: () -> Unit,
-    onGeri: () -> Unit
+    onSilOnayla: () -> Unit,
+    onGuncelleTikla: () -> Unit,
+    onGeriTikla: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Kayıt Detayı") },
                 navigationIcon = {
-                    IconButton(onClick = onGeri) {
+                    IconButton(onClick = onGeriTikla) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
                     }
                 },
@@ -266,7 +266,7 @@ fun KayitDetayIcerik(
             )
 
             Button(
-                onClick = onGuncelle,
+                onClick = onGuncelleTikla,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Güncelle")
@@ -284,7 +284,7 @@ fun KayitDetayIcerik(
             title = { Text("Kaydı sil") },
             text = { Text("Bu kaydı silmek istediğinize emin misiniz?") },
             confirmButton = {
-                TextButton(onClick = onSil) { Text("Sil") }
+                TextButton(onClick = onSilOnayla) { Text("Sil") }
             },
             dismissButton = {
                 TextButton(onClick = { onSilmeOnayiDegis(false) }) { Text("İptal") }
@@ -302,9 +302,9 @@ private fun KayitDetayIcerikPreview() {
             silmeOnayiGoster = false,
             onFormDegis = {},
             onSilmeOnayiDegis = {},
-            onSil = {},
-            onGuncelle = {},
-            onGeri = {}
+            onSilOnayla = {},
+            onGuncelleTikla = {},
+            onGeriTikla = {}
         )
     }
 }

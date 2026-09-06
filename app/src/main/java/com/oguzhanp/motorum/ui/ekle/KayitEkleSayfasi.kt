@@ -50,8 +50,8 @@ fun KayitEkleSayfasi(
     KayitEkleIcerik(
         form = uiState.form,
         onFormDegis = { yeniForm -> ekleViewModel.guncelle(uiState.copy(form = yeniForm)) },
-        onGeri = { navController.popBackStack() },
-        onKaydet = {
+        onGeriTikla = { navController.popBackStack() },
+        onKaydetTikla = {
             val kontrol = uiState.form.dogrula()
             if (kontrol.gecerli) {
                 // Form gecerliyse kayit nesnesi uretiliyor. litre/tutar sadece Yakit'te
@@ -72,9 +72,9 @@ fun KayitEkleSayfasi(
                             not = kontrol.not.trim(),
                             baslangic = TripNoktasi(
                                 tarihMillis = tarihSaatBirlestir(
-                                    kontrol.baslangic.tarihMillis!!,
-                                    kontrol.baslangic.saat!!,
-                                    kontrol.baslangic.dakika!!
+                                    kontrol.baslangic.tarihMillis,
+                                    kontrol.baslangic.saat,
+                                    kontrol.baslangic.dakika
                                 ),
                                 km = kontrol.baslangic.km!!,
                                 sehir = kontrol.baslangic.sehir.trim()
@@ -114,15 +114,15 @@ fun KayitEkleSayfasi(
 fun KayitEkleIcerik(
     form: KayitFormu,
     onFormDegis: (KayitFormu) -> Unit,
-    onKaydet: () -> Unit,
-    onGeri: () -> Unit
+    onKaydetTikla: () -> Unit,
+    onGeriTikla: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.kayit_ekle)) },
                 navigationIcon = {
-                    IconButton(onClick = onGeri) {
+                    IconButton(onClick = onGeriTikla) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
                     }
                 }
@@ -179,7 +179,7 @@ fun KayitEkleIcerik(
             )
 
             Button(
-                onClick = onKaydet,
+                onClick = onKaydetTikla,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Kaydet")
@@ -195,8 +195,8 @@ private fun KayitEkleIcerikPreview() {
         KayitEkleIcerik(
             form = KayitFormu.Yakit(),
             onFormDegis = {},
-            onKaydet = {},
-            onGeri = {}
+            onKaydetTikla = {},
+            onGeriTikla = {}
         )
     }
 }

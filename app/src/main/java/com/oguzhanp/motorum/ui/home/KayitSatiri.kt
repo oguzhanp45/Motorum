@@ -40,7 +40,7 @@ import com.oguzhanp.motorum.util.formatTl
 fun KayitSatiri(
     kayit: Kayit,
     onTikla: () -> Unit,
-    onSil: () -> Unit,
+    onKaydirarakSil: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // positionalThreshold: satir genisliginin %75'i kadar cekilmeden silinmez.
@@ -53,7 +53,7 @@ fun KayitSatiri(
     // Yon kontrolu zaten enableDismissFromStartToEnd = false ile yapiliyor.
     LaunchedEffect(kaydirmaDurumu.currentValue) {
         if (kaydirmaDurumu.currentValue == SwipeToDismissBoxValue.EndToStart) {
-            onSil()
+            onKaydirarakSil()
         }
     }
 
@@ -165,7 +165,7 @@ private fun KayitSatiriPreview() {
                 not = "Shell, tam depo"
             ),
             onTikla = {},
-            onSil = {},
+            onKaydirarakSil = {},
             modifier = Modifier.padding(16.dp)
         )
     }

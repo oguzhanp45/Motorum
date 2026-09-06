@@ -39,7 +39,7 @@ fun AnaSayfa(
         uiState = uiState,
         onEkleTikla = { navController.navigate(Routes.KAYIT_EKLE) },
         onKayitTikla = { id -> navController.navigate("kayit_detay/$id") },
-        onKayitSil = { id -> viewModel.sil(id) }
+        onKayitKaydirarakSil = { id -> viewModel.sil(id) }
     )
 }
 
@@ -49,7 +49,7 @@ fun AnaSayfaIcerik(
     uiState: KayitUiState,
     onEkleTikla: () -> Unit,
     onKayitTikla: (String) -> Unit,
-    onKayitSil: (String) -> Unit
+    onKayitKaydirarakSil: (String) -> Unit
 ) {
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) },
@@ -78,13 +78,15 @@ fun AnaSayfaIcerik(
             // LazyColumn sadece gorunen satirlari cizer.
             // key = { it.id } -> satirlari kimlikle takip eder.
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Siralama burada, listede: ViewModel ekleme sirasini koruyor,
+                // ekran nasil gostermek istedigine kendisi karar veriyor.
                 items(
                     uiState.kayitlar.sortedByDescending { it.tarihMillis },
                     key = { it.id }) { kayit ->
                     KayitSatiri(
                         kayit = kayit,
                         onTikla = { onKayitTikla(kayit.id) },
-                        onSil = { onKayitSil(kayit.id) },
+                        onKaydirarakSil = { onKayitKaydirarakSil(kayit.id) },
                         //KayitSatiri — Modifier.clickable { onTikla() }.
                         // Satır hangi kaydın olduğunu bilir ama nereye gidileceğini bilmez;
                         //onTikla = { onKayitTikla(kayit.id) } ile id'yi yukarı taşır.
@@ -104,7 +106,7 @@ private fun AnaSayfaIcerikPreview() {
             uiState = KayitUiState(),
             onEkleTikla = {},
             onKayitTikla = {},
-            onKayitSil = {}
+            onKayitKaydirarakSil = {}
         )
     }
 }

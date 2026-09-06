@@ -12,6 +12,10 @@ import com.oguzhanp.motorum.model.Mola
 sealed interface KayitFormu {
     val kategori: Kategori
     val not: String
+    // Iki asamali dogrulama:
+    // gecerli   -> "kaydedilebilir mi?" sorusuna cevap, ekrani degistirmez.
+    // dogrula() -> hatali alanlari isaretlenmis YENI bir form dondurur.
+    // Kaydet'e basilinca once dogrula(), sonra gecerli kontrol ediliyor.
     val gecerli: Boolean
     fun dogrula(): KayitFormu
 
