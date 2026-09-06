@@ -21,27 +21,21 @@ import com.oguzhanp.motorum.util.formatTarih
 
 // Tarih gosterimi + takvim diyalogu.
 // Compose'da diyalog "gosterilmez", VAR ya da YOK olur: if (acik) { ... }
-// tarihMillis null olabilir: road trip'te tarih secilmemis olabiliyor, kutu bos gorunur.
+// tarihMillis her zaman dolu: formlar bugunun tarihiyle basliyor.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TarihSecici(
-    tarihMillis: Long?,
+    tarihMillis: Long,
     onTarihSec: (Long) -> Unit,
-    modifier: Modifier = Modifier,
-    hatali: Boolean = false,
-    destekMetni: String? = null
+    modifier: Modifier = Modifier
 ) {
     var acik by remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        value = if (tarihMillis == null) "" else formatTarih(tarihMillis),
+        value = formatTarih(tarihMillis),
         onValueChange = { },
         readOnly = true,
         label = { Text("Tarih") },
-        isError = hatali,
-        supportingText = {
-            if (hatali && destekMetni != null) Text(destekMetni)
-        },
         trailingIcon = {
             IconButton(onClick = { acik = true }) {
                 Icon(Icons.Default.DateRange, contentDescription = "Tarih sec")
@@ -53,7 +47,7 @@ fun TarihSecici(
     if (acik) {
         // Takvimin kendi ic durumu: hangi ay gorunuyor, hangi gun secili
         val durum = rememberDatePickerState(
-            initialSelectedDateMillis = tarihMillis ?: System.currentTimeMillis()
+            initialSelectedDateMillis = tarihMillis
         )
 
         DatePickerDialog(

@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.Motorum" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- installSplashScreen() calissin diye zorunlu. Gorsel ozellestirme yok;
+         postSplashScreenTheme splash bitince donulecek temayi soyluyor. -->
+    <style name="Theme.Motorum.Splash" parent="Theme.SplashScreen">
+        <item name="postSplashScreenTheme">@style/Theme.Motorum</item>
+    </style>
 </resources>

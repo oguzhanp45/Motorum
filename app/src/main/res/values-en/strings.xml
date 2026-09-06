@@ -2,4 +2,6 @@
 <resources>
     <string name="app_name">Motorum</string>
     <string name="kayit_ekle">Add Entry</string>
+    <string name="zorunlu_alan">This field is required</string>
+    <string name="gecerli_sayi">Required — enter a valid number</string>
 </resources>

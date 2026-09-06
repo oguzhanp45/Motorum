@@ -10,10 +10,12 @@ import com.oguzhanp.motorum.ui.ekle.KayitEkleSayfasi
 import com.oguzhanp.motorum.ui.home.AnaSayfa
 import com.oguzhanp.motorum.ui.home.KayitViewModel
 import com.oguzhanp.motorum.ui.navigation.Routes
+import com.oguzhanp.motorum.ui.onboarding.OnboardingSayfasi
+import com.oguzhanp.motorum.ui.onboarding.OnboardingViewModel
 
 // Uygulamanin kokü: NavHost burada.
 @Composable
-fun MotorumApp() {
+fun MotorumApp(baslangicRotasi: String) {
     // Gecmisi (back stack) tutan nesne
     val navController = rememberNavController()
 
@@ -21,11 +23,26 @@ fun MotorumApp() {
     // Iceride cagirsaydin her ekran ayri bir ViewModel alirdi,
     // ekleme sayfasi kendi listesine yazar, ana sayfa bos kalirdi.
     val viewModel: KayitViewModel = viewModel()
+    // MainActivity'deki ile ayni ornek: viewModel() NavHost disinda cagrildigi
+    // icin sahibi Activity oluyor.
+    val onboardingViewModel: OnboardingViewModel = viewModel()
 
     NavHost(
         navController = navController,
-        startDestination = Routes.ANA_SAYFA
+        startDestination = baslangicRotasi
     ) {
+        composable(Routes.ONBOARDING) {
+            OnboardingSayfasi(
+                onOnboardingBitti = {
+                    onboardingViewModel.tamamla()
+                    // inclusive = true: onboarding gecmisten tamamen silinir.
+                    // Yoksa ana sayfada geri tusuna basinca tanitima geri donulur.
+                    navController.navigate(Routes.ANA_SAYFA) {
+                        popUpTo(Routes.ONBOARDING) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(Routes.ANA_SAYFA) {
             AnaSayfa(
                 viewModel = viewModel,
