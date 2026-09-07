@@ -52,9 +52,16 @@ fun AnaSayfaIcerik(
     onKayitKaydirarakSil: (String) -> Unit
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) },
         floatingActionButton = {
-            FloatingActionButton(onClick = onEkleTikla) {
+            // FAB varsayilan olarak primaryContainer kullaniyor, primary degil.
+            // Tasarimdaki dolu mavi icin renkleri burada aciktan veriyoruz.
+            FloatingActionButton(
+                onClick = onEkleTikla,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
                 Icon(Icons.Default.Add, contentDescription = "Kayıt ekle")
             }
         }
@@ -77,7 +84,7 @@ fun AnaSayfaIcerik(
 
             // LazyColumn sadece gorunen satirlari cizer.
             // key = { it.id } -> satirlari kimlikle takip eder.
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 // Siralama burada, listede: ViewModel ekleme sirasini koruyor,
                 // ekran nasil gostermek istedigine kendisi karar veriyor.
                 items(
