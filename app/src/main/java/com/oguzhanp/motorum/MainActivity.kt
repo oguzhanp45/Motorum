@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.oguzhanp.motorum.data.KimlikDeposu
 import com.oguzhanp.motorum.ui.navigation.Routes
 import com.oguzhanp.motorum.ui.onboarding.OnboardingViewModel
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
@@ -17,6 +18,7 @@ import com.oguzhanp.motorum.ui.theme.MotorumTheme
 class MainActivity : ComponentActivity() {
 
     private val onboardingViewModel: OnboardingViewModel by viewModels()
+    private val kimlikDeposu = KimlikDeposu()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // super.onCreate'ten ONCE cagrilmali, yoksa splash devreye girmez.
@@ -36,8 +38,13 @@ class MainActivity : ComponentActivity() {
                 val bitti by onboardingViewModel.onboardingBitti.collectAsStateWithLifecycle()
 
                 if (bitti != null) {
+                    // Uc kosul, sirayla: tanitim bitti mi, oturum acik mi.
                     MotorumApp(
-                        baslangicRotasi = if (bitti == true) Routes.ANA_SAYFA else Routes.ONBOARDING
+                        baslangicRotasi = when {
+                            bitti != true -> Routes.ONBOARDING
+                            kimlikDeposu.oturumAcik -> Routes.ANA_SAYFA
+                            else -> Routes.GIRIS
+                        }
                     )
                 }
             }
