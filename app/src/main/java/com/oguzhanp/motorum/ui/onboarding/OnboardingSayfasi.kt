@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -60,18 +61,24 @@ fun OnboardingSayfasi(
 ) {
     val durum = rememberPagerState(pageCount = { SAYFALAR.size })
     val kapsam = rememberCoroutineScope()
+    val ilkSayfa = durum.currentPage == 0
     val sonSayfa = durum.currentPage == SAYFALAR.lastIndex
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            // Bu ekran Scaffold icinde degil; enableEdgeToEdge acik oldugu icin icerik
+            // durum cubugunun altina girer. safeDrawingPadding durum cubugu, gezinme
+            // cubugu ve centigi birden karsiliyor.
+            .safeDrawingPadding()
             .padding(AppSpacing.normal)
     ) {
         // Yukseklik sabit: son sayfada buton kalkinca duzen ziplamasin.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
+                .padding(top = 12.dp)
+                .height(56.dp),
             contentAlignment = Alignment.CenterEnd
         ) {
             if (!sonSayfa) {
@@ -86,12 +93,24 @@ fun OnboardingSayfasi(
             OnboardingIcerik(sayfa = SAYFALAR[sira])
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SayfaGostergesi(durum = durum)
+        // Box, Row degil: noktalar yanlardaki butonlardan bagimsiz olarak tam ortada
+        // kalsin diye. Row + SpaceBetween olsaydi Geri tusu gelip gittikce noktalar ziplardi.
+        Box(modifier = Modifier.fillMaxWidth()) {
+            if (!ilkSayfa) {
+                TextButton(
+                    onClick = {
+                        kapsam.launch { durum.animateScrollToPage(durum.currentPage - 1) }
+                    },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Text("Geri")
+                }
+            }
+
+            SayfaGostergesi(
+                durum = durum,
+                modifier = Modifier.align(Alignment.Center)
+            )
 
             Button(
                 onClick = {
@@ -100,7 +119,8 @@ fun OnboardingSayfasi(
                     } else {
                         kapsam.launch { durum.animateScrollToPage(durum.currentPage + 1) }
                     }
-                }
+                },
+                modifier = Modifier.align(Alignment.CenterEnd)
             ) {
                 Text(if (sonSayfa) "Başla" else "İleri")
             }

@@ -22,6 +22,8 @@ sealed interface Kayit {
         override val not: String = "",
         val litre: Double
     ) : Kayit {
+
+        val birimFiyat: Double get() = tutar / litre
         // Kategori tipten turuyor, ayri alan olarak tasinmiyor.
         override val kategori get() = Kategori.YAKIT
     }

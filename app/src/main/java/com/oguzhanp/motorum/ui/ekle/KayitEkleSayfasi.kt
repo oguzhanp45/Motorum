@@ -36,6 +36,7 @@ import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
 import com.oguzhanp.motorum.ui.form.YakitAlanlari
 import com.oguzhanp.motorum.ui.form.bosForm
 import com.oguzhanp.motorum.ui.home.KayitViewModel
+import com.oguzhanp.motorum.ui.home.gorunum
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.util.tarihSaatBirlestir
 
@@ -174,7 +175,7 @@ fun KayitEkleIcerik(
             OutlinedTextField(
                 value = form.not,
                 onValueChange = { onFormDegis(form.notDegistir(it)) },
-                label = { Text("Not (isteğe bağlı)") },
+                label = { Text(gorunum(form.kategori).notEtiketi) },
                 modifier = Modifier.fillMaxWidth()
             )
 

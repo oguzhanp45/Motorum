@@ -24,6 +24,8 @@ fun formatLitre(deger: Double): String = String.format(TR, "%.2f L", deger)
 // %,d binlik ayraci koyar: 1234 -> "1.234 km"
 fun formatKm(deger: Int): String = String.format(TR, "%,d km", deger)
 
+fun formatBirimFiyat(deger: Double): String = String.format(TR, "%.2f ₺/L", deger)
+
 fun formatSaat(saat: Int, dakika: Int): String =
     String.format(TR, "%02d:%02d", saat, dakika)
 
