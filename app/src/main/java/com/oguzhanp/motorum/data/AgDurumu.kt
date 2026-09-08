@@ -9,7 +9,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AgDurumu @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
 
     // Iki ozellik birlikte soruluyor:

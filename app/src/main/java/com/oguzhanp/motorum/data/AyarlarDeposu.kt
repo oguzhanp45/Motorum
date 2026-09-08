@@ -20,7 +20,7 @@ private val ONBOARDING_BITTI = booleanPreferencesKey("onboarding_bitti")
 
 @Singleton
 class AyarlarDeposu @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
 
     // first(): akistan ilk degeri al ve bitir. Bayragi baska kimse degistirmiyor,
