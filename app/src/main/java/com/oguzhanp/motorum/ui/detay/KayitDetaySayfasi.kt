@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.Kayit
@@ -33,157 +36,103 @@ import com.oguzhanp.motorum.ui.form.AksesuarAlanlari
 import com.oguzhanp.motorum.ui.form.BakimAlanlari
 import com.oguzhanp.motorum.ui.form.KayitFormu
 import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
-import com.oguzhanp.motorum.ui.form.TripNoktasiFormu
 import com.oguzhanp.motorum.ui.form.YakitAlanlari
 import com.oguzhanp.motorum.ui.home.KayitViewModel
 import com.oguzhanp.motorum.ui.home.gorunum
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
-import com.oguzhanp.motorum.util.dakikaAl
-import com.oguzhanp.motorum.util.saatAl
 import com.oguzhanp.motorum.util.tarihSaatBirlestir
 
 @Composable
 fun KayitDetaySayfasi(
     kayitViewModel: KayitViewModel,
     navController: NavController,
-    kayitId: String
+    kayitId: String,
+    detayViewModel: KayitDetayViewModel = hiltViewModel()
 ) {
-    val uiState by kayitViewModel.uiState.collectAsStateWithLifecycle()
-    val kayit = uiState.kayitlar.find { it.id == kayitId }
+    val kayitUiState by kayitViewModel.uiState.collectAsStateWithLifecycle()
+    val kayit = kayitUiState.kayitlar.find { it.id == kayitId }
 
     if (kayit == null) {
         LaunchedEffect(Unit) { navController.popBackStack() }
         return
     }
 
-    var detay by remember(kayit.id) {
-        mutableStateOf(
-            KayitDetayUiState(
-                form = when (kayit) {
-                    is Kayit.Yakit -> KayitFormu.Yakit(
-                        tarihMillis = kayit.tarihMillis,
-                        litreYazi = kayit.litre.toString(),
-                        tutarYazi = kayit.tutar.toString(),
-                        not = kayit.not
-                    )
+    LaunchedEffect(kayit.id) { detayViewModel.baslat(kayit) }
 
-                    is Kayit.RoadTrip -> KayitFormu.RoadTrip(
-                        baslangic = TripNoktasiFormu(
-                            tarihMillis = kayit.baslangic.tarihMillis,
-                            saat = saatAl(kayit.baslangic.tarihMillis),
-                            dakika = dakikaAl(kayit.baslangic.tarihMillis),
-                            kmYazi = kayit.baslangic.km.toString(),
-                            sehir = kayit.baslangic.sehir
-                        ),
-                        bitis = kayit.bitis?.let {
-                            TripNoktasiFormu(
-                                tarihMillis = it.tarihMillis,
-                                saat = saatAl(it.tarihMillis),
-                                dakika = dakikaAl(it.tarihMillis),
-                                kmYazi = it.km.toString(),
-                                sehir = it.sehir
-                            )
-                        } ?: TripNoktasiFormu(),
-                        molalar = kayit.molalar,
-                        masrafYazi = if (kayit.tutar > 0.0) kayit.tutar.toString() else "",
-                        not = kayit.not
-                    )
+    val detay by detayViewModel.uiState.collectAsStateWithLifecycle()
 
-                    is Kayit.Bakim -> KayitFormu.Bakim(
-                        tarihMillis = kayit.tarihMillis,
-                        bakimTuru = kayit.bakimTuru,
-                        tutarYazi = kayit.tutar.toString(),
-                        not = kayit.not
-                    )
-
-                    is Kayit.Aksesuar -> KayitFormu.Aksesuar(
-                        tarihMillis = kayit.tarihMillis,
-                        aksesuarAdi = kayit.aksesuarAdi,
-                        tutarYazi = kayit.tutar.toString(),
-                        not = kayit.not
-                    )
-                }
-            )
-        )
+    LaunchedEffect(detay.bitti) {
+        if (detay.bitti) navController.popBackStack()
     }
 
     KayitDetayIcerik(
         form = detay.form,
         silmeOnayiGoster = detay.silmeOnayiGoster,
-        onFormDegis = { yeniForm -> detay = detay.copy(form = yeniForm) },
-        onSilmeOnayiDegis = { goster -> detay = detay.copy(silmeOnayiGoster = goster) },
-        onSilOnayla = {
-            navController.popBackStack() // Once geri don, sonra sil. Tersi olsaydi liste guncellenince ekran bir kez daha
-            kayitViewModel.sil(kayitId) // cizilir, find null doner ve ustteki LaunchedEffect ikinci bir popBackStack cagirirdi.
-        },
+        calisiyor = detay.calisiyor,
+        hata = detay.hata,
+        onFormDegis = detayViewModel::formDegis,
+        onSilmeOnayiDegis = detayViewModel::silmeOnayiDegis,
+        onSilOnayla = { detayViewModel.sil(kayitId) },
         onGeriTikla = { navController.popBackStack() },
         onGuncelleTikla = {
             val kontrol = detay.form.dogrula()
             if (kontrol.gecerli) {
                 // Form gecerliyse kayit nesnesi uretiliyor. litre/tutar sadece Yakit'te
                 // oldugu icin tip daraltmadan erisilemiyor.
-                when (kontrol) {
-                    is KayitFormu.Yakit -> kayitViewModel.duzenle(
-                        Kayit.Yakit(
-                            id = kayitId,
-                            tarihMillis = kontrol.tarihMillis,
-                            litre = kontrol.litre!!,
-                            tutar = kontrol.tutar!!,
-                            not = kontrol.not.trim()
-                        )
+                val guncel: Kayit = when (kontrol) {
+                    is KayitFormu.Yakit -> Kayit.Yakit(
+                        id = kayitId,
+                        tarihMillis = kontrol.tarihMillis,
+                        litre = kontrol.litre!!,
+                        tutar = kontrol.tutar!!,
+                        not = kontrol.not.trim()
                     )
 
-                    is KayitFormu.RoadTrip -> kayitViewModel.duzenle(
-                        Kayit.RoadTrip(
-                            id = kayitId,
-                            tutar = kontrol.masraf,
-                            not = kontrol.not.trim(),
-                            baslangic = TripNoktasi(
-                                tarihMillis = tarihSaatBirlestir(
-                                    kontrol.baslangic.tarihMillis,
-                                    kontrol.baslangic.saat,
-                                    kontrol.baslangic.dakika
-                                ),
-                                km = kontrol.baslangic.km!!,
-                                sehir = kontrol.baslangic.sehir.trim()
+                    is KayitFormu.RoadTrip -> Kayit.RoadTrip(
+                        id = kayitId,
+                        tutar = kontrol.masraf,
+                        not = kontrol.not.trim(),
+                        baslangic = TripNoktasi(
+                            tarihMillis = tarihSaatBirlestir(
+                                kontrol.baslangic.tarihMillis,
+                                kontrol.baslangic.saat,
+                                kontrol.baslangic.dakika
                             ),
-                            // Bitis bolumu bos birakildiysa yolculuk devam ediyor: null yaziliyor.
-                            bitis = if (kontrol.bitisVar) TripNoktasi(
-                                tarihMillis = tarihSaatBirlestir(
-                                    kontrol.bitis.tarihMillis,
-                                    kontrol.bitis.saat,
-                                    kontrol.bitis.dakika
-                                ),
-                                km = kontrol.bitis.km!!,
-                                sehir = kontrol.bitis.sehir.trim()
-                            ) else null,
-                            molalar = kontrol.doluMolalar
-                        )
+                            km = kontrol.baslangic.km!!,
+                            sehir = kontrol.baslangic.sehir.trim()
+                        ),
+                        // Bitis bolumu bos birakildiysa yolculuk devam ediyor: null yaziliyor.
+                        bitis = if (kontrol.bitisVar) TripNoktasi(
+                            tarihMillis = tarihSaatBirlestir(
+                                kontrol.bitis.tarihMillis,
+                                kontrol.bitis.saat,
+                                kontrol.bitis.dakika
+                            ),
+                            km = kontrol.bitis.km!!,
+                            sehir = kontrol.bitis.sehir.trim()
+                        ) else null,
+                        molalar = kontrol.doluMolalar
                     )
 
-                    is KayitFormu.Bakim -> kayitViewModel.duzenle(
-                        Kayit.Bakim(
-                            id = kayitId,
-                            tarihMillis = kontrol.tarihMillis,
-                            tutar = kontrol.tutar!!,
-                            not = kontrol.not.trim(),
-                            bakimTuru = kontrol.bakimTuru.trim()
-                        )
+                    is KayitFormu.Bakim -> Kayit.Bakim(
+                        id = kayitId,
+                        tarihMillis = kontrol.tarihMillis,
+                        tutar = kontrol.tutar!!,
+                        not = kontrol.not.trim(),
+                        bakimTuru = kontrol.bakimTuru.trim()
                     )
 
-                    is KayitFormu.Aksesuar -> kayitViewModel.duzenle(
-                        Kayit.Aksesuar(
-                            id = kayitId,
-                            tarihMillis = kontrol.tarihMillis,
-                            tutar = kontrol.tutar!!,
-                            not = kontrol.not.trim(),
-                            aksesuarAdi = kontrol.aksesuarAdi.trim()
-                        )
+                    is KayitFormu.Aksesuar -> Kayit.Aksesuar(
+                        id = kayitId,
+                        tarihMillis = kontrol.tarihMillis,
+                        tutar = kontrol.tutar!!,
+                        not = kontrol.not.trim(),
+                        aksesuarAdi = kontrol.aksesuarAdi.trim()
                     )
                 }
-                navController.popBackStack()
+                detayViewModel.guncelle(guncel)
             } else {
-                detay = detay.copy(form = kontrol)
+                detayViewModel.formDegis(kontrol)
             }
         }
     )
@@ -194,6 +143,8 @@ fun KayitDetaySayfasi(
 fun KayitDetayIcerik(
     form: KayitFormu,
     silmeOnayiGoster: Boolean,
+    calisiyor: Boolean,
+    hata: String?,
     onFormDegis: (KayitFormu) -> Unit,
     onSilmeOnayiDegis: (Boolean) -> Unit,// Diyalogu acmak ve iptal etmek ayni islem.true/false yapmak.
     onSilOnayla: () -> Unit,
@@ -210,7 +161,10 @@ fun KayitDetayIcerik(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { onSilmeOnayiDegis(true) }) {
+                    IconButton(
+                        onClick = { onSilmeOnayiDegis(true) },
+                        enabled = !calisiyor
+                    ) {
                         Icon(Icons.Default.Delete, contentDescription = "Sil")
                     }
                 }
@@ -266,11 +220,28 @@ fun KayitDetayIcerik(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            if (hata != null) {
+                Text(
+                    text = hata,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
             Button(
                 onClick = onGuncelleTikla,
+                enabled = !calisiyor,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Güncelle")
+                if (calisiyor) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text("Güncelle")
+                }
             }
         }
     }
@@ -301,6 +272,8 @@ private fun KayitDetayIcerikPreview() {
         KayitDetayIcerik(
             form = KayitFormu.Yakit(),
             silmeOnayiGoster = false,
+            calisiyor = false,
+            hata = null,
             onFormDegis = {},
             onSilmeOnayiDegis = {},
             onSilOnayla = {},

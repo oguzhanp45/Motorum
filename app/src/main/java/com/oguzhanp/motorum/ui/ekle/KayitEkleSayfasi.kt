@@ -4,14 +4,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,7 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppSpacing
@@ -35,21 +38,25 @@ import com.oguzhanp.motorum.ui.form.KayitFormu
 import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
 import com.oguzhanp.motorum.ui.form.YakitAlanlari
 import com.oguzhanp.motorum.ui.form.bosForm
-import com.oguzhanp.motorum.ui.home.KayitViewModel
 import com.oguzhanp.motorum.ui.home.gorunum
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.util.tarihSaatBirlestir
 
 @Composable
 fun KayitEkleSayfasi(
-    kayitViewModel: KayitViewModel,
     navController: NavController,
-    ekleViewModel: KayitEkleViewModel = viewModel()
+    ekleViewModel: KayitEkleViewModel = hiltViewModel()
 ) {
     val uiState by ekleViewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(uiState.basarili) {
+        if (uiState.basarili) navController.popBackStack()
+    }
+
     KayitEkleIcerik(
         form = uiState.form,
+        kaydediliyor = uiState.kaydediliyor,
+        hata = uiState.hata,
         onFormDegis = { yeniForm -> ekleViewModel.guncelle(uiState.copy(form = yeniForm)) },
         onGeriTikla = { navController.popBackStack() },
         onKaydetTikla = {
@@ -57,52 +64,44 @@ fun KayitEkleSayfasi(
             if (kontrol.gecerli) {
                 // Form gecerliyse kayit nesnesi uretiliyor. litre/tutar sadece Yakit'te
                 // oldugu icin tip daraltmadan erisilemiyor.
-                when (kontrol) {
-                    is KayitFormu.Yakit -> kayitViewModel.ekle(
-                        Kayit.Yakit(
-                            tarihMillis = kontrol.tarihMillis,
-                            litre = kontrol.litre!!,
-                            tutar = kontrol.tutar!!,
-                            not = kontrol.not.trim()
-                        )
+                val kayit: Kayit = when (kontrol) {
+                    is KayitFormu.Yakit -> Kayit.Yakit(
+                        tarihMillis = kontrol.tarihMillis,
+                        litre = kontrol.litre!!,
+                        tutar = kontrol.tutar!!,
+                        not = kontrol.not.trim()
                     )
 
-                    is KayitFormu.RoadTrip -> kayitViewModel.ekle(
-                        Kayit.RoadTrip(
-                            tutar = kontrol.masraf,
-                            not = kontrol.not.trim(),
-                            baslangic = TripNoktasi(
-                                tarihMillis = tarihSaatBirlestir(
-                                    kontrol.baslangic.tarihMillis,
-                                    kontrol.baslangic.saat,
-                                    kontrol.baslangic.dakika
-                                ),
-                                km = kontrol.baslangic.km!!,
-                                sehir = kontrol.baslangic.sehir.trim()
+                    is KayitFormu.RoadTrip -> Kayit.RoadTrip(
+                        tutar = kontrol.masraf,
+                        not = kontrol.not.trim(),
+                        baslangic = TripNoktasi(
+                            tarihMillis = tarihSaatBirlestir(
+                                kontrol.baslangic.tarihMillis,
+                                kontrol.baslangic.saat,
+                                kontrol.baslangic.dakika
                             ),
-                            molalar = kontrol.doluMolalar
-                        )
+                            km = kontrol.baslangic.km!!,
+                            sehir = kontrol.baslangic.sehir.trim()
+                        ),
+                        molalar = kontrol.doluMolalar
                     )
 
-                    is KayitFormu.Bakim -> kayitViewModel.ekle(
-                        Kayit.Bakim(
-                            tarihMillis = kontrol.tarihMillis,
-                            tutar = kontrol.tutar!!,
-                            not = kontrol.not.trim(),
-                            bakimTuru = kontrol.bakimTuru.trim()
-                        )
+                    is KayitFormu.Bakim -> Kayit.Bakim(
+                        tarihMillis = kontrol.tarihMillis,
+                        tutar = kontrol.tutar!!,
+                        not = kontrol.not.trim(),
+                        bakimTuru = kontrol.bakimTuru.trim()
                     )
 
-                    is KayitFormu.Aksesuar -> kayitViewModel.ekle(
-                        Kayit.Aksesuar(
-                            tarihMillis = kontrol.tarihMillis,
-                            tutar = kontrol.tutar!!,
-                            not = kontrol.not.trim(),
-                            aksesuarAdi = kontrol.aksesuarAdi.trim()
-                        )
+                    is KayitFormu.Aksesuar -> Kayit.Aksesuar(
+                        tarihMillis = kontrol.tarihMillis,
+                        tutar = kontrol.tutar!!,
+                        not = kontrol.not.trim(),
+                        aksesuarAdi = kontrol.aksesuarAdi.trim()
                     )
                 }
-                navController.popBackStack()
+                ekleViewModel.kaydet(kayit)
             } else {
                 ekleViewModel.guncelle(uiState.copy(form = kontrol))
             }
@@ -114,6 +113,8 @@ fun KayitEkleSayfasi(
 @Composable
 fun KayitEkleIcerik(
     form: KayitFormu,
+    kaydediliyor: Boolean,
+    hata: String?,
     onFormDegis: (KayitFormu) -> Unit,
     onKaydetTikla: () -> Unit,
     onGeriTikla: () -> Unit
@@ -179,11 +180,28 @@ fun KayitEkleIcerik(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            if (hata != null) {
+                Text(
+                    text = hata,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
             Button(
                 onClick = onKaydetTikla,
+                enabled = !kaydediliyor,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Kaydet")
+                if (kaydediliyor) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text("Kaydet")
+                }
             }
         }
     }
@@ -195,6 +213,8 @@ private fun KayitEkleIcerikPreview() {
     MotorumTheme {
         KayitEkleIcerik(
             form = KayitFormu.Yakit(),
+            kaydediliyor = false,
+            hata = null,
             onFormDegis = {},
             onKaydetTikla = {},
             onGeriTikla = {}
