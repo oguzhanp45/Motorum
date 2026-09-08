@@ -7,9 +7,12 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class KimlikDeposu(
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+@Singleton
+class KimlikDeposu @Inject constructor(
+    private val auth: FirebaseAuth
 ) {
 
     val oturumAcik: Boolean get() = auth.currentUser != null

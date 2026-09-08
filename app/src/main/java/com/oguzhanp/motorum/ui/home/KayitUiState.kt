@@ -4,10 +4,12 @@ import com.oguzhanp.motorum.model.Kayit
 
 // Ana sayfanin ihtiyac duydugu her sey tek nesnede.
 // Toplamlar burada ayri alan olarak duruyor: ekran her cizildiginde
-// yeniden hesaplanmasin, degistiren fonksiyon bir kez hesaplayip yazsin.
+// yeniden hesaplanmasin, liste her cekildiginde bir kez hesaplanip yazilsin.
 data class KayitUiState(
     val kayitlar: List<Kayit> = emptyList(),
     val toplamTutar: Double = 0.0,
     val toplamLitre: Double = 0.0,
-    val toplamKm: Int = 0
+    val toplamKm: Int = 0,
+    val yukleniyor: Boolean = false,
+    val hata: String? = null
 )

@@ -1,11 +1,10 @@
 package com.oguzhanp.motorum
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.compose.runtime.remember
 import com.oguzhanp.motorum.data.KimlikDeposu
 import com.oguzhanp.motorum.ui.detay.KayitDetaySayfasi
 import com.oguzhanp.motorum.ui.ekle.KayitEkleSayfasi
@@ -21,20 +20,23 @@ import com.oguzhanp.motorum.ui.onboarding.OnboardingViewModel
 
 // Uygulamanin kokü: NavHost burada.
 @Composable
-fun MotorumApp(baslangicRotasi: String) {
+fun MotorumApp(
+    baslangicRotasi: String,
+    // Compose'a dogrudan enjeksiyon yok: depoyu MainActivity aliyor, buraya veriyor.
+    kimlikDeposu: KimlikDeposu
+) {
     // Gecmisi (back stack) tutan nesne
     val navController = rememberNavController()
 
-    // DIKKAT: viewModel() NavHost'un DISINDA cagriliyor.
+    // DIKKAT: hiltViewModel() NavHost'un DISINDA cagriliyor.
     // Iceride cagirsaydin her ekran ayri bir ViewModel alirdi,
     // ekleme sayfasi kendi listesine yazar, ana sayfa bos kalirdi.
-    val viewModel: KayitViewModel = viewModel()
-    // MainActivity'deki ile ayni ornek: viewModel() NavHost disinda cagrildigi
+    val viewModel: KayitViewModel = hiltViewModel()
+    // MainActivity'deki ile ayni ornek: hiltViewModel() NavHost disinda cagrildigi
     // icin sahibi Activity oluyor.
-    val onboardingViewModel: OnboardingViewModel = viewModel()
-    val kimlikDeposu = remember { KimlikDeposu() }
-    val girisViewModel: GirisViewModel = viewModel()
-    val uyeOlViewModel: UyeOlViewModel = viewModel()
+    val onboardingViewModel: OnboardingViewModel = hiltViewModel()
+    val girisViewModel: GirisViewModel = hiltViewModel()
+    val uyeOlViewModel: UyeOlViewModel = hiltViewModel()
 
     // Sekme ve alt baglanti gecisleri: gidilecek rotayi yigindan cikarip yeniden koyuyor.
     // Boylece yigin ikiyi gecmiyor ve giris ekraninda geri tusu uygulamadan cikiyor.
@@ -95,9 +97,8 @@ fun MotorumApp(baslangicRotasi: String) {
             )
         }
         composable(Routes.KAYIT_EKLE) {
-            // ekleViewModel verilmiyor: ekran onu kendisi uretiyor (viewModel() varsayilani)
+            // ekleViewModel verilmiyor: ekran onu kendisi uretiyor (hiltViewModel() varsayilani)
             KayitEkleSayfasi(
-                kayitViewModel = viewModel,
                 navController = navController
             )
         }

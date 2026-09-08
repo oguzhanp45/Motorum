@@ -14,11 +14,18 @@ import com.oguzhanp.motorum.data.KimlikDeposu
 import com.oguzhanp.motorum.ui.navigation.Routes
 import com.oguzhanp.motorum.ui.onboarding.OnboardingViewModel
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val onboardingViewModel: OnboardingViewModel by viewModels()
-    private val kimlikDeposu = KimlikDeposu()
+
+    // Yapiciya veremiyoruz: Activity'yi sistem uretiyor. Hilt bu alani
+    // onCreate'ten once dolduruyor, o yuzden lateinit.
+    @Inject
+    lateinit var kimlikDeposu: KimlikDeposu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // super.onCreate'ten ONCE cagrilmali, yoksa splash devreye girmez.
@@ -44,7 +51,8 @@ class MainActivity : ComponentActivity() {
                             bitti != true -> Routes.ONBOARDING
                             kimlikDeposu.oturumAcik -> Routes.ANA_SAYFA
                             else -> Routes.GIRIS
-                        }
+                        },
+                        kimlikDeposu = kimlikDeposu
                     )
                 }
             }
