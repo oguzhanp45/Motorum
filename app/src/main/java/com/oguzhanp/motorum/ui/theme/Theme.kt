@@ -18,7 +18,11 @@ private val LightColorScheme = lightColorScheme(
     onBackground = MetinAna,
     onSurface = MetinAna,
     onSurfaceVariant = MetinIkincil,
-    outlineVariant = CizgiSolgun
+    outlineVariant = CizgiSolgun,
+    // M3'un varsayilan hata kirmizisi bizim paletimize ait degil. Form hatalari da
+    // cikis butonu da colorScheme.error kullandigi icin tek yerden veriyoruz.
+    error = HataKirmizi,
+    onError = KartZemin
 )
 
 @Composable

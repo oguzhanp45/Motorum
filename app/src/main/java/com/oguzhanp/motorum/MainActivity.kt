@@ -49,10 +49,11 @@ class MainActivity : ComponentActivity() {
                     MotorumApp(
                         baslangicRotasi = when {
                             bitti != true -> Routes.ONBOARDING
-                            kimlikDeposu.oturumAcik -> Routes.ANA_SAYFA
+                            // Ic grafa gidiliyor; NavHost onun baslangic
+                            // noktasini (ana sayfa) kendisi seciyor.
+                            kimlikDeposu.oturumAcik -> Routes.ANA_BOLGE
                             else -> Routes.GIRIS
-                        },
-                        kimlikDeposu = kimlikDeposu
+                        }
                     )
                 }
             }

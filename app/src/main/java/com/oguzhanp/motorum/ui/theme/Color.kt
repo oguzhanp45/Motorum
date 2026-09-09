@@ -29,10 +29,27 @@ val BakimMetin = Color(0xFFB45309)
 // Kategori renkleri kimligi, bu ikisi durumu anlatiyor:
 // mavi = tiklanabilir, yesil = tamamlandi.
 val AksiyonMavi = Color(0xFF3B82F6)
+val AksiyonMaviZemin = Color(0xFFEFF6FF)
 val BaglantiMavi = Color(0xFF2563EB)
+// Yikici islemler: cikis, silme.
+val HataKirmizi = Color(0xFFEF4444)
 val DurumYesilZemin = Color(0xFFECFDF5)
 val DurumYesilMetin = Color(0xFF047857)
 
 val YakitRenk = Color(0xFFF43F5E)
 val YakitZemin = Color(0xFFFFF1F2)
 val YakitMetin = Color(0xFFBE123C)
+
+// Motor renkleri kategori paletinden bilerek uzak: kategoriler gul, turkuaz,
+// kehribar ve mor. Motorlar mavi-gri ailesinde kaliyor ki bir kart ikonuna
+// bakinca "bu bakim mi, motor mu" karismasin.
+val MotorIndigo = Color(0xFF4F46E5)
+val MotorIndigoZemin = Color(0xFFEEF2FF)
+val MotorGok = Color(0xFF0EA5E9)
+val MotorGokZemin = Color(0xFFF0F9FF)
+val MotorLacivert = Color(0xFF1D4ED8)
+val MotorLacivertZemin = Color(0xFFEFF6FF)
+val MotorArduvaz = Color(0xFF475569)
+val MotorArduvazZemin = Color(0xFFF1F5F9)
+val MotorCamgobegi = Color(0xFF0891B2)
+val MotorCamgobegiZemin = Color(0xFFECFEFF)
