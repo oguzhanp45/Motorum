@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
@@ -18,6 +19,11 @@ private val Context.ayarlarDataStore: DataStore<Preferences> by preferencesDataS
 
 private val ONBOARDING_BITTI = booleanPreferencesKey("onboarding_bitti")
 
+// Anahtar kullaniciya bagli. DataStore cihazda duruyor, hesapta degil: duz bir
+// "secili_motor" anahtari olsaydi A hesabindan cikip B ile girildiginde B'ye
+// A'nin motor kimligi secili gelir ve kayitlar bos gorunurdu.
+private fun seciliMotorAnahtari(uid: String) = stringPreferencesKey("secili_motor_$uid")
+
 @Singleton
 class AyarlarDeposu @Inject constructor(
     @param:ApplicationContext private val context: Context
@@ -30,5 +36,20 @@ class AyarlarDeposu @Inject constructor(
 
     suspend fun onboardingiTamamla() {
         context.ayarlarDataStore.edit { tercihler -> tercihler[ONBOARDING_BITTI] = true }
+    }
+
+    suspend fun seciliMotorId(uid: String): String? =
+        context.ayarlarDataStore.data.first()[seciliMotorAnahtari(uid)]
+
+    suspend fun seciliMotoruYaz(uid: String, motorId: String) {
+        context.ayarlarDataStore.edit { tercihler ->
+            tercihler[seciliMotorAnahtari(uid)] = motorId
+        }
+    }
+
+    suspend fun seciliMotoruTemizle(uid: String) {
+        context.ayarlarDataStore.edit { tercihler ->
+            tercihler.remove(seciliMotorAnahtari(uid))
+        }
     }
 }

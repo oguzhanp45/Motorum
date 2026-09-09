@@ -31,13 +31,52 @@ class KayitViewModel @Inject constructor(
         }
     }
 
+    // Asagi cekince cagriliyor. yukle() ile ayni isi yapiyor, tek farki hangi
+    // bayragi kaldirdigi: liste ekranda kalsin diye.
+    fun yenile() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(yenileniyor = true, hata = null) }
+            yaz(depo.kayitlariGetir())
+        }
+    }
+
+    // Kaydirinca kayit gercekten siliniyor, ertelenmiyor. Geri Al ayni kaydi
+    // ayni kimlikle tekrar yaziyor. yukleniyor bilerek kaldirilmadi: satir
+    // zaten gitti, ustune tum listeyi daireyle degistirmek gereksiz.
     fun sil(id: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(yukleniyor = true, hata = null) }
+            val silinen = _uiState.value.kayitlar.firstOrNull { it.id == id }
+
+            // Satiri once ekrandan kaldiriyoruz. Bu bir basari iddiasi degil,
+            // kaydirma hareketinin karsiligi. "Silindi" sozunu snackbar veriyor
+            // ve o asagida hala sunucu onayini bekliyor.
+            yaz(KayitSonucu(kayitlar = _uiState.value.kayitlar.filterNot { it.id == id }))
+
             val silmeHatasi = depo.sil(id)
             val sonuc = depo.kayitlariGetir()
             yaz(sonuc.copy(hata = silmeHatasi ?: sonuc.hata))
+
+            if (silmeHatasi == null && silinen != null) {
+                _uiState.update { it.copy(geriAlinabilir = silinen) }
+            }
         }
+    }
+
+    fun geriAl() {
+        val kayit = _uiState.value.geriAlinabilir ?: return
+        viewModelScope.launch {
+            // Once teklifi kaldiriyoruz: ayni snackbar'a iki kez basilamasin.
+            _uiState.update { it.copy(geriAlinabilir = null) }
+            // Ayni kimlik ve ayni tarih geri geldigi icin kayit listede
+            // eski yerine oturuyor, en uste ziplamiyor.
+            val yazmaHatasi = depo.kaydet(kayit)
+            val sonuc = depo.kayitlariGetir()
+            yaz(sonuc.copy(hata = yazmaHatasi ?: sonuc.hata))
+        }
+    }
+
+    fun geriAlmaTuketildi() {
+        _uiState.update { it.copy(geriAlinabilir = null) }
     }
 
     private fun yaz(sonuc: KayitSonucu) {
@@ -50,7 +89,8 @@ class KayitViewModel @Inject constructor(
             // mesafe devam eden yolculukta 0 donduruyor, toplama etkisi yok.
             toplamKm = sonuc.kayitlar.filterIsInstance<Kayit.RoadTrip>().sumOf { it.mesafe },
             yukleniyor = false,
-            hata = sonuc.hata
+            hata = sonuc.hata,
+            motorYok = sonuc.motorYok
         )
     }
 }

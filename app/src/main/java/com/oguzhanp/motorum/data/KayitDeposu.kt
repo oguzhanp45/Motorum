@@ -3,67 +3,38 @@ package com.oguzhanp.motorum.data
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Source
 import com.oguzhanp.motorum.model.Kayit
 import kotlinx.coroutines.tasks.await
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val OTURUM_YOK = "Oturum açık değil"
-private const val INTERNET_YOK = "İnternet bağlantısı yok"
-
 data class KayitSonucu(
     val kayitlar: List<Kayit> = emptyList(),
-    val hata: String? = null
+    val hata: String? = null,
+    // "Motoru yok" bir hata degil, anlatilacak bir durum: ekran bunu gorunce
+    // hata mesaji yerine "once bir motor ekle" diyor.
+    val motorYok: Boolean = false
 )
 
 // @Singleton: uygulamada tek ornek. Onceden her ViewModel kendi deposunu
-// uretiyordu, yani motorOnbellegi de uc kez ayri tutuluyordu.
+// uretiyordu, yani onbellek de uc kez ayri tutuluyordu.
 @Singleton
 class KayitDeposu @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val agDurumu: AgDurumu
+    private val agDurumu: AgDurumu,
+    private val motorDeposu: MotorDeposu
 ) {
 
-    private var motorOnbellegi: Pair<String, String>? = null
-
-    // Kullanicinin ilk motoru okunuyor, yoksa uretiliyor. Kimlik olarak UUID
-    // kullaniliyor: motor ekleme geldigi gun yeni motorlar ayni sekilde acilacak
-    // ve mevcut kayitlar zaten dogru yolda oldugu icin tasinmayacak.
-    private suspend fun motorId(uid: String): String {
-        motorOnbellegi?.let { (onbellektekiUid, id) ->
-            if (onbellektekiUid == uid) return id
-        }
-
-        val motorlar = firestore
-            .collection("users").document(uid)
-            .collection("motorlar")
-
-        val mevcut = motorlar.limit(1).get().await().documents.firstOrNull()?.id
-
-        val id = mevcut ?: UUID.randomUUID().toString().also { yeniId ->
-            motorlar.document(yeniId)
-                .set(mapOf("olusturmaMillis" to System.currentTimeMillis()))
-                .await()
-        }
-
-        // Onbellekte uid ile birlikte tutuluyor: hesap degisirse eski id kullanilmasin.
-        motorOnbellegi = uid to id
-        return id
-    }
-
     // users/{uid}/motorlar/{motorId}/kayitlar
-    // uid her cagrida auth'tan taze okunuyor, sinifta saklanmiyor.
-    private suspend fun kayitlarKoleksiyonu(): CollectionReference? {
-        val uid = auth.currentUser?.uid ?: return null
-        return firestore
-            .collection("users").document(uid)
-            .collection("motorlar").document(motorId(uid))
-            .collection("kayitlar")
-    }
+    // Motor kimligini artik bu depo cozmuyor, MotorDeposu'na soruyor: her deponun
+    // tek bir konusu olsun diye. uid her cagrida auth'tan taze okunuyor.
+    private fun kayitlarKoleksiyonu(uid: String, motorId: String): CollectionReference =
+        firestore
+            .collection(KOLEKSIYON_KULLANICILAR).document(uid)
+            .collection(KOLEKSIYON_MOTORLAR).document(motorId)
+            .collection(KOLEKSIYON_KAYITLAR)
 
     // Source.SERVER sart: varsayilan get() sunucuya ulasamayinca onbellege dusuyor
     // ve bunu HATA olarak degil, gecerli bir sonuc olarak donduruyor. Onbellek bos
@@ -71,8 +42,9 @@ class KayitDeposu @Inject constructor(
     // "onbellegi istemiyorum" demis oluyoruz: ulasilamazsa hata firlatiyor.
     suspend fun kayitlariGetir(): KayitSonucu {
         return try {
-            val koleksiyon = kayitlarKoleksiyonu() ?: return KayitSonucu(hata = OTURUM_YOK)
-            val anlik = koleksiyon.get(Source.SERVER).await()
+            val uid = auth.currentUser?.uid ?: return KayitSonucu(hata = OTURUM_YOK)
+            val motorId = motorDeposu.seciliMotorId() ?: return KayitSonucu(motorYok = true)
+            val anlik = kayitlarKoleksiyonu(uid, motorId).get(Source.SERVER).await()
             KayitSonucu(
                 // Cevrilemeyen belge eleniyor: tek bozuk kayit yuzunden liste comesin.
                 kayitlar = anlik.documents.mapNotNull { belge ->
@@ -90,9 +62,10 @@ class KayitDeposu @Inject constructor(
     suspend fun kaydet(kayit: Kayit): String? {
         if (!agDurumu.internetVar()) return INTERNET_YOK
         return try {
-            val koleksiyon = kayitlarKoleksiyonu() ?: return OTURUM_YOK
+            val uid = auth.currentUser?.uid ?: return OTURUM_YOK
+            val motorId = motorDeposu.seciliMotorId() ?: return "Önce bir motor eklemelisin"
             // set ayni id'ye yazinca belgeyi bastan yaziyor: ekleme ve duzenleme ayni fonksiyon.
-            koleksiyon.document(kayit.id).set(kayit.belgeyeCevir()).await()
+            kayitlarKoleksiyonu(uid, motorId).document(kayit.id).set(kayit.belgeyeCevir()).await()
             null
         } catch (hata: Exception) {
             hataMesaji(hata)
@@ -102,22 +75,12 @@ class KayitDeposu @Inject constructor(
     suspend fun sil(id: String): String? {
         if (!agDurumu.internetVar()) return INTERNET_YOK
         return try {
-            val koleksiyon = kayitlarKoleksiyonu() ?: return OTURUM_YOK
-            koleksiyon.document(id).delete().await()
+            val uid = auth.currentUser?.uid ?: return OTURUM_YOK
+            val motorId = motorDeposu.seciliMotorId() ?: return OTURUM_YOK
+            kayitlarKoleksiyonu(uid, motorId).document(id).delete().await()
             null
         } catch (hata: Exception) {
             hataMesaji(hata)
         }
-    }
-
-    private fun hataMesaji(hata: Exception): String = when {
-        hata is FirebaseFirestoreException &&
-                hata.code == FirebaseFirestoreException.Code.UNAVAILABLE -> INTERNET_YOK
-
-        hata is FirebaseFirestoreException &&
-                hata.code == FirebaseFirestoreException.Code.PERMISSION_DENIED ->
-            "Bu veriye erişim izniniz yok"
-
-        else -> "Bir sorun oluştu, tekrar deneyin"
     }
 }

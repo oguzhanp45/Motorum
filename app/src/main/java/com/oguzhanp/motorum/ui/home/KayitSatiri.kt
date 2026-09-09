@@ -25,7 +25,6 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,19 +54,20 @@ fun KayitSatiri(
     onKaydirarakSil: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // positionalThreshold: satir genisliginin %85'i kadar cekilmeden silinmez.
-    // Kaza sonucu tetiklenmeyi engelleyen tek ayar bu.
+    // Esik asilinca confirmValueChange cagriliyor: silme istegini gonderiyor ama
+    // false donerek durumu Settled'da birakiyor. Durum EndToStart'a girseydi
+    // LazyColumn onu satir anahtariyla birlikte sakliyordu; geri alinan kayit
+    // ayni anahtarla dondugunde o durum canlanip kaydi tekrar siliyordu.
     val kaydirmaDurumu = rememberSwipeToDismissBoxState(
-        positionalThreshold = { toplamGenislik -> toplamGenislik * 0.85f }
-    )
-
-    // Kaydirma oturdugunda currentValue degisir, bu blok bir kez calisir.
-    // Yon kontrolu zaten enableDismissFromStartToEnd = false ile yapiliyor.
-    LaunchedEffect(kaydirmaDurumu.currentValue) {
-        if (kaydirmaDurumu.currentValue == SwipeToDismissBoxValue.EndToStart) {
-            onKaydirarakSil()
+        // positionalThreshold: satir genisliginin %85'i kadar cekilmeden silinmez.
+        // Kaza sonucu tetiklenmeyi engelleyen tek ayar bu.
+        positionalThreshold = { toplamGenislik -> toplamGenislik * 0.85f },
+        confirmValueChange = { hedef ->
+            // Yon kontrolu zaten enableDismissFromStartToEnd = false ile yapiliyor.
+            if (hedef == SwipeToDismissBoxValue.EndToStart) onKaydirarakSil()
+            false
         }
-    }
+    )
 
     SwipeToDismissBox(
         state = kaydirmaDurumu,

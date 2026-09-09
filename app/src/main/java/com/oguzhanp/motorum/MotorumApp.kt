@@ -4,8 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
-import com.oguzhanp.motorum.data.KimlikDeposu
+import androidx.navigation.navArgument
+import androidx.navigation.navigation
+import com.oguzhanp.motorum.ui.ayarlar.AyarlarSayfasi
 import com.oguzhanp.motorum.ui.detay.KayitDetaySayfasi
 import com.oguzhanp.motorum.ui.ekle.KayitEkleSayfasi
 import com.oguzhanp.motorum.ui.home.AnaSayfa
@@ -14,17 +17,15 @@ import com.oguzhanp.motorum.ui.kimlik.GirisSayfasi
 import com.oguzhanp.motorum.ui.kimlik.GirisViewModel
 import com.oguzhanp.motorum.ui.kimlik.UyeOlSayfasi
 import com.oguzhanp.motorum.ui.kimlik.UyeOlViewModel
+import com.oguzhanp.motorum.ui.motorlarim.MotorDetaySayfasi
+import com.oguzhanp.motorum.ui.motorlarim.MotorlarimSayfasi
 import com.oguzhanp.motorum.ui.navigation.Routes
 import com.oguzhanp.motorum.ui.onboarding.OnboardingSayfasi
 import com.oguzhanp.motorum.ui.onboarding.OnboardingViewModel
 
 // Uygulamanin kokü: NavHost burada.
 @Composable
-fun MotorumApp(
-    baslangicRotasi: String,
-    // Compose'a dogrudan enjeksiyon yok: depoyu MainActivity aliyor, buraya veriyor.
-    kimlikDeposu: KimlikDeposu
-) {
+fun MotorumApp(baslangicRotasi: String) {
     // Gecmisi (back stack) tutan nesne
     val navController = rememberNavController()
 
@@ -47,9 +48,26 @@ fun MotorumApp(
         }
     }
 
-    fun anaSayfayaGec(silinecek: String) {
-        navController.navigate(Routes.ANA_SAYFA) {
+    // Google'in bottom bar icin onerdigi kalip. saveState/restoreState ikilisi
+    // her sekmenin kendi gecmisini ve kaydirma konumunu sakliyor; popUpTo ise
+    // yigini sisirmiyor, geri tusu her sekmeden ana sayfaya donuyor.
+    fun sekmeyeGec(hedef: String) {
+        navController.navigate(hedef) {
+            popUpTo(Routes.ANA_SAYFA) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
+    fun anaBolgeyeGec(silinecek: String) {
+        navController.navigate(Routes.ANA_BOLGE) {
             popUpTo(silinecek) { inclusive = true }
+        }
+    }
+
+    fun girisEDon() {
+        navController.navigate(Routes.GIRIS) {
+            popUpTo(Routes.ANA_BOLGE) { inclusive = true }
         }
     }
 
@@ -74,27 +92,59 @@ fun MotorumApp(
             GirisSayfasi(
                 viewModel = girisViewModel,
                 onUyeOlaGit = { kimlikGecisi(Routes.UYE_OL) },
-                onGirisBasarili = { anaSayfayaGec(Routes.GIRIS) }
+                onGirisBasarili = { anaBolgeyeGec(Routes.GIRIS) }
             )
         }
         composable(Routes.UYE_OL) {
             UyeOlSayfasi(
                 viewModel = uyeOlViewModel,
                 onGirisEGit = { kimlikGecisi(Routes.GIRIS) },
-                onUyeOlBasarili = { anaSayfayaGec(Routes.UYE_OL) }
+                onUyeOlBasarili = { anaBolgeyeGec(Routes.UYE_OL) }
             )
         }
-        composable(Routes.ANA_SAYFA) {
-            AnaSayfa(
-                viewModel = viewModel,
-                navController = navController,
-                onCikisTikla = {
-                    kimlikDeposu.cikisYap()
-                    navController.navigate(Routes.GIRIS) {
-                        popUpTo(Routes.ANA_SAYFA) { inclusive = true }
-                    }
-                }
+
+        // Uc sekme kendi grafinda. Alt bar sadece bu grafin icinde ciziliyor.
+        navigation(route = Routes.ANA_BOLGE, startDestination = Routes.ANA_SAYFA) {
+            composable(Routes.ANA_SAYFA) {
+                AnaSayfa(
+                    viewModel = viewModel,
+                    navController = navController,
+                    onSekmeTikla = ::sekmeyeGec
+                )
+            }
+            composable(Routes.MOTORLARIM) {
+                MotorlarimSayfasi(
+                    onSekmeTikla = ::sekmeyeGec,
+                    onMotorEkleTikla = { navController.navigate(Routes.motorEkleRotasi()) },
+                    onMotorDuzenleTikla = { id -> navController.navigate("motor_detay/$id") }
+                )
+            }
+            composable(Routes.AYARLAR) {
+                AyarlarSayfasi(
+                    onSekmeTikla = ::sekmeyeGec,
+                    onCikisYapildi = ::girisEDon
+                )
+            }
+        }
+
+        composable(
+            route = Routes.MOTOR_EKLE,
+            // Istege bagli parametre icin varsayilan sart: rota "?sec=" olmadan
+            // cagrildiginda Navigation bu degeri kullaniyor.
+            arguments = listOf(
+                navArgument("sec") { type = NavType.BoolType; defaultValue = false }
             )
+        ) { backStackEntry ->
+            // motorId null: sayfa "yeni motor" kipinde aciliyor.
+            MotorDetaySayfasi(
+                navController = navController,
+                motorId = null,
+                secilsin = backStackEntry.arguments?.getBoolean("sec") == true
+            )
+        }
+        composable(Routes.MOTOR_DETAY) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: return@composable
+            MotorDetaySayfasi(navController = navController, motorId = id)
         }
         composable(Routes.KAYIT_EKLE) {
             // ekleViewModel verilmiyor: ekran onu kendisi uretiyor (hiltViewModel() varsayilani)
