@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,11 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.model.Motor
 import com.oguzhanp.motorum.ui.theme.AksiyonMaviZemin
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MetinSolgun
+import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.ui.theme.SekmeZemin
 
 // Ust bardaki cip. Motor yoksa da gorunuyor ama tiklanmiyor: acilacak bir liste yok.
@@ -148,8 +149,6 @@ private fun MotorSecimSatiri(
     secili: Boolean,
     onTikla: () -> Unit
 ) {
-    val gorunum = motorGorunumu(motor.id)
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -160,20 +159,7 @@ private fun MotorSecimSatiri(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(gorunum.zemin),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                Icons.Default.TwoWheeler,
-                contentDescription = null,
-                tint = gorunum.renk,
-                modifier = Modifier.size(22.dp)
-            )
-        }
+        MotorGorseli(motor = motor, boyut = 40.dp)
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -195,5 +181,49 @@ private fun MotorSecimSatiri(
             contentDescription = null,
             tint = if (secili) MaterialTheme.colorScheme.primary else MetinSolgun
         )
+    }
+}
+
+// Cipin uc hali. Uzun isimde metnin kesilmesi ve motor yokken okun
+// kaybolmasi ancak yan yana bakinca fark ediliyor.
+// MotorSecimPaneli bir ModalBottomSheet oldugu icin onizlemede cizilmiyor;
+// icindeki satiri temsil eden MotorSecimSatiri ayrica onizleniyor.
+@Preview(showBackground = true)
+@Composable
+private fun MotorCipiPreview() {
+    MotorumTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            MotorCipi(
+                motor = Motor(id = "a", marka = "Yamaha", model = "MT-07", plaka = "34 BKR 102"),
+                onTikla = {}
+            )
+            MotorCipi(
+                motor = Motor(id = "b", marka = "Honda", model = "Africa Twin Adventure Sports"),
+                onTikla = {}
+            )
+            MotorCipi(motor = null, onTikla = {})
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MotorSecimSatiriPreview() {
+    MotorumTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            MotorSecimSatiri(
+                motor = Motor(id = "a", marka = "Yamaha", model = "MT-07", plaka = "34 BKR 102"),
+                secili = true,
+                onTikla = {}
+            )
+            MotorSecimSatiri(
+                motor = Motor(id = "b", marka = "Honda", model = "CRF 250"),
+                secili = false,
+                onTikla = {}
+            )
+        }
     }
 }

@@ -24,7 +24,7 @@ class MotorlarimViewModel @Inject constructor(
             _uiState.update { it.copy(yukleniyor = true, hata = null) }
             val sonuc = depo.motorlariGetir()
             _uiState.value = MotorlarimUiState(
-                motorlar = sonuc.motorlar.sortedBy { it.olusturmaMillis },
+                motorlar = sonuc.motorlar,
                 // Secili motoru listeyi cektikten sonra soruyoruz: depo, kayitli
                 // secim gecersizse en eskisine dusuyor ve dogru cevabi ancak
                 // liste elindeyken verebiliyor.

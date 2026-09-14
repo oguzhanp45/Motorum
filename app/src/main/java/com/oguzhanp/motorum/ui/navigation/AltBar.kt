@@ -14,9 +14,11 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.ui.theme.AksiyonMaviZemin
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
+import com.oguzhanp.motorum.ui.theme.MotorumTheme
 
 enum class Sekme(val rota: String, val etiket: String, val ikon: ImageVector) {
     MOTORLARIM(Routes.MOTORLARIM, "Motorlarım", Icons.Default.TwoWheeler),
@@ -53,5 +55,14 @@ fun AltBar(
                 )
             }
         }
+    }
+}
+
+// Ortadaki sekme secili: secili ve secili olmayan renkler birlikte gorunuyor.
+@Preview(showBackground = true)
+@Composable
+private fun AltBarPreview() {
+    MotorumTheme {
+        AltBar(seciliRota = Routes.ANA_SAYFA, onSekmeTikla = {})
     }
 }

@@ -12,6 +12,9 @@ data class MotorBelgesi(
     val marka: String = "",
     val model: String = "",
     val plaka: String = "",
+    // Eski motor belgelerinde bu alan yok. Varsayilan deger sayesinde Firestore
+    // onlari da cevirebiliyor, bos onizleme "fotograf yok" demek oluyor.
+    val onizleme: String = "",
     val olusturmaMillis: Long = 0L
 )
 
@@ -19,6 +22,7 @@ fun Motor.belgeyeCevir(): MotorBelgesi = MotorBelgesi(
     marka = marka,
     model = model,
     plaka = plaka,
+    onizleme = onizleme,
     olusturmaMillis = olusturmaMillis
 )
 
@@ -27,5 +31,6 @@ fun MotorBelgesi.motoraCevir(): Motor = Motor(
     marka = marka,
     model = model,
     plaka = plaka,
+    onizleme = onizleme,
     olusturmaMillis = olusturmaMillis
 )

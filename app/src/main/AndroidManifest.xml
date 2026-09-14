@@ -25,6 +25,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Kamera uygulamasi ayri bir uygulama. Ona file:// yolu uzatmak
+             Android 7'den beri yasak; FileProvider kendi dosyamiz icin
+             content:// adresi uretip sadece o dosya icin gecici izin veriyor.
+             exported="false": saglayici disariya kapali. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/dosya_yollari" />
+        </provider>
     </application>
 
 </manifest>

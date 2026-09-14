@@ -1,6 +1,33 @@
 package com.oguzhanp.motorum.ui.motorlarim
 
+import android.graphics.BitmapFactory
+import android.util.Base64
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.TwoWheeler
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import com.oguzhanp.motorum.model.Motor
+import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.ui.theme.MotorArduvaz
 import com.oguzhanp.motorum.ui.theme.MotorArduvazZemin
 import com.oguzhanp.motorum.ui.theme.MotorCamgobegi
@@ -29,3 +56,71 @@ private val MOTOR_PALETI = listOf(
 // mod (rem degil) negatif hash'te de pozitif sonuc donuyor.
 fun motorGorunumu(motorId: String): MotorGorunumu =
     MOTOR_PALETI[motorId.hashCode().mod(MOTOR_PALETI.size)]
+
+// base64 metni goruntuye cevirir. Bozuk ya da bos metinde null donuyor:
+// ekranda fotograf yerine ikon cikiyor, uygulama cokmuyor.
+internal fun base64Coz(base64: String): ImageBitmap? {
+    if (base64.isBlank()) return null
+    return try {
+        val baytlar = Base64.decode(base64, Base64.NO_WRAP)
+        BitmapFactory.decodeByteArray(baytlar, 0, baytlar.size)?.asImageBitmap()
+    } catch (hata: Exception) {
+        null
+    }
+}
+
+// Motorun kucuk gorseli: fotografi varsa fotograf, yoksa renkli ikon karesi.
+// Ayni sey hem motor kartinda hem secim panelinde lazim oldugu icin tek yerde.
+@Composable
+fun MotorGorseli(
+    motor: Motor,
+    boyut: Dp,
+    modifier: Modifier = Modifier
+) {
+    val gorunum = motorGorunumu(motor.id)
+
+    // Anahtar onizleme metninin kendisi: metin degismedikce cozme bir kez
+    // yapiliyor. Anahtarsiz yazsaydik listeyi her kaydirista tekrar cozulurdu.
+    val gorsel = remember(motor.onizleme) { base64Coz(motor.onizleme) }
+
+    Box(
+        modifier = modifier
+            .size(boyut)
+            .clip(RoundedCornerShape(boyut / 4))
+            .background(if (gorsel == null) gorunum.zemin else Color.Transparent),
+        contentAlignment = Alignment.Center
+    ) {
+        if (gorsel == null) {
+            Icon(
+                Icons.Default.TwoWheeler,
+                contentDescription = null,
+                tint = gorunum.renk,
+                modifier = Modifier.size(boyut * 0.55f)
+            )
+        } else {
+            Image(
+                bitmap = gorsel,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+// Fotografsiz motorlar: her biri kendi kimliginden turetilen renkte.
+// Paletin bes rengini yan yana gormek icin bes farkli kimlik veriliyor.
+@Preview(showBackground = true)
+@Composable
+private fun MotorGorseliPreview() {
+    MotorumTheme {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            listOf("a", "b", "c", "d", "e").forEach { kimlik ->
+                MotorGorseli(motor = Motor(id = kimlik), boyut = 48.dp)
+            }
+        }
+    }
+}

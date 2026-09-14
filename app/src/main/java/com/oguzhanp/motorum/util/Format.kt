@@ -26,6 +26,14 @@ fun formatKm(deger: Int): String = String.format(TR, "%,d km", deger)
 
 fun formatBirimFiyat(deger: Double): String = String.format(TR, "%.2f ₺/L", deger)
 
+// Duzenleme alanina yazilacak sayi. Digerlerinden farki birim ve binlik ayraci
+// koymamasi: kullanici bu metni duzenleyip geri gonderecek, sonra tekrar sayiya
+// cevrilecek. Tam sayida ondalik hic yazilmiyor (1200.0 -> "1200"), ondalikli
+// sayida virgul kullaniliyor; form zaten virgulu noktaya cevirerek okuyor.
+fun sayiyiYaziya(deger: Double): String =
+    if (deger % 1.0 == 0.0) deger.toLong().toString()
+    else deger.toString().replace('.', ',')
+
 fun formatSaat(saat: Int, dakika: Int): String =
     String.format(TR, "%02d:%02d", saat, dakika)
 

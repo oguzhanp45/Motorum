@@ -1,17 +1,33 @@
 package com.oguzhanp.motorum.ui.motorlarim
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import android.net.Uri
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material3.Button
@@ -20,14 +36,26 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,7 +65,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.ui.components.EtiketliAlan
+import com.oguzhanp.motorum.ui.theme.MetinIkincil
+import com.oguzhanp.motorum.ui.theme.MetinSolgun
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.ui.theme.SekmeZemin
 
 @Composable
 fun MotorDetaySayfasi(
@@ -47,6 +78,23 @@ fun MotorDetaySayfasi(
     viewModel: MotorDetayViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // PickVisualMedia calisma zamani izni istemiyor: kullanici sistem
+    // seciciden hangi gorseli verdiyse uygulama sadece ona erisiyor.
+    val galeriSecici = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri -> uri?.let(viewModel::fotografSec) }
+
+    // Kameraya once bos bir dosya veriyoruz, o dosyaya yaziyor. Hangi dosyayi
+    // verdigimizi sonucta ogrenemedigimiz icin burada sakliyoruz.
+    var kameraHedefi by remember { mutableStateOf<Uri?>(null) }
+    val kameraSecici = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { basarili ->
+        val hedef = kameraHedefi
+        if (basarili && hedef != null) viewModel.fotografCekildi(hedef)
+        kameraHedefi = null
+    }
 
     LaunchedEffect(Unit) { viewModel.baslat(motorId, secilsin) }
 
@@ -58,7 +106,28 @@ fun MotorDetaySayfasi(
         uiState = uiState,
         onFormDegis = viewModel::formDegis,
         onKaydetTikla = viewModel::kaydet,
-        onGeriTikla = { navController.popBackStack() }
+        onGeriTikla = { navController.popBackStack() },
+        onGaleriAc = {
+            galeriSecici.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        },
+        onKameraAc = {
+            val hedef = viewModel.kameraHedefi()
+            if (hedef == null) {
+                viewModel.kameraAcilamadi()
+            } else {
+                kameraHedefi = hedef
+                // Kamera uygulamasi olmayan cihazda launch hata firlatiyor.
+                try {
+                    kameraSecici.launch(hedef)
+                } catch (hata: Exception) {
+                    kameraHedefi = null
+                    viewModel.kameraAcilamadi()
+                }
+            }
+        },
+        onFotografKaldir = viewModel::fotografKaldir
     )
 }
 
@@ -68,7 +137,10 @@ fun MotorDetayIcerik(
     uiState: MotorDetayUiState,
     onFormDegis: (MotorFormu) -> Unit,
     onKaydetTikla: () -> Unit,
-    onGeriTikla: () -> Unit
+    onGeriTikla: () -> Unit,
+    onGaleriAc: () -> Unit,
+    onKameraAc: () -> Unit,
+    onFotografKaldir: () -> Unit
 ) {
     val form = uiState.form
 
@@ -95,6 +167,14 @@ fun MotorDetayIcerik(
                 .padding(AppSpacing.normal),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            FotografAlani(
+                fotograf = uiState.fotograf,
+                calisiyor = uiState.fotografCalisiyor,
+                onGaleriAc = onGaleriAc,
+                onKameraAc = onKameraAc,
+                onKaldir = onFotografKaldir
+            )
+
             EtiketliAlan(
                 etiket = "Marka",
                 zorunlu = true,
@@ -160,6 +240,129 @@ fun MotorDetayIcerik(
     }
 }
 
+// Motosiklet fotograflari yatay oluyor, o yuzden alan 3:2. Kare olsaydi
+// fotografin saginda solunda kalanlari kirpardik.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FotografAlani(
+    fotograf: ImageBitmap?,
+    calisiyor: Boolean,
+    onGaleriAc: () -> Unit,
+    onKameraAc: () -> Unit,
+    onKaldir: () -> Unit
+) {
+    // Panelin acik olup olmadigi ekranin kendi isi, disari tasimiyoruz.
+    var panelAcik by rememberSaveable { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(3f / 2f)
+            .clip(RoundedCornerShape(12.dp))
+            .background(SekmeZemin)
+            .clickable(enabled = !calisiyor) { panelAcik = true },
+        contentAlignment = Alignment.Center
+    ) {
+        if (fotograf != null) {
+            Image(
+                bitmap = fotograf,
+                contentDescription = "Motor fotoğrafı",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.AddAPhoto,
+                    contentDescription = null,
+                    tint = MetinSolgun,
+                    modifier = Modifier.size(32.dp)
+                )
+                Text(
+                    text = "Fotoğraf ekle",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MetinIkincil
+                )
+            }
+        }
+
+        if (calisiyor) CircularProgressIndicator()
+    }
+
+    if (panelAcik) {
+        ModalBottomSheet(
+            onDismissRequest = { panelAcik = false },
+            sheetState = rememberModalBottomSheetState(),
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 24.dp)
+            ) {
+                Text(
+                    text = "Motor Fotoğrafı",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                PanelSatiri(
+                    ikon = Icons.Default.PhotoLibrary,
+                    metin = "Galeriden Seç",
+                    onTikla = {
+                        panelAcik = false
+                        onGaleriAc()
+                    }
+                )
+                PanelSatiri(
+                    ikon = Icons.Default.PhotoCamera,
+                    metin = "Fotoğraf Çek",
+                    onTikla = {
+                        panelAcik = false
+                        onKameraAc()
+                    }
+                )
+                if (fotograf != null) {
+                    PanelSatiri(
+                        ikon = Icons.Default.Delete,
+                        metin = "Kaldır",
+                        renk = MaterialTheme.colorScheme.error,
+                        onTikla = {
+                            panelAcik = false
+                            onKaldir()
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PanelSatiri(
+    ikon: ImageVector,
+    metin: String,
+    onTikla: () -> Unit,
+    renk: Color = MaterialTheme.colorScheme.onSurface
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onTikla)
+            .padding(horizontal = 12.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        Icon(ikon, contentDescription = null, tint = renk, modifier = Modifier.size(22.dp))
+        Text(text = metin, style = MaterialTheme.typography.bodyLarge, color = renk)
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun MotorDetayIcerikPreview() {
@@ -168,7 +371,10 @@ private fun MotorDetayIcerikPreview() {
             uiState = MotorDetayUiState(),
             onFormDegis = {},
             onKaydetTikla = {},
-            onGeriTikla = {}
+            onGeriTikla = {},
+            onGaleriAc = {},
+            onKameraAc = {},
+            onFotografKaldir = {}
         )
     }
 }

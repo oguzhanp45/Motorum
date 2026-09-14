@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FileProvider'in paylasmasina izin verdigimiz tek yer: onbellek altindaki
+     fotograf klasoru. Kamera cektigi ham dosyayi buraya yaziyor, biz kucultup
+     sildikten sonra orada bir sey kalmiyor. -->
+<paths>
+    <cache-path
+        name="fotograf"
+        path="fotograf/" />
+</paths>

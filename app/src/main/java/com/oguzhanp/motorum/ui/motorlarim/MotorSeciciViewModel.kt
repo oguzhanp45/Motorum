@@ -26,7 +26,7 @@ class MotorSeciciViewModel @Inject constructor(
             val seciliId = depo.seciliMotorId()
             _uiState.update {
                 it.copy(
-                    motorlar = sonuc.motorlar.sortedBy { motor -> motor.olusturmaMillis },
+                    motorlar = sonuc.motorlar,
                     seciliMotor = sonuc.motorlar.firstOrNull { motor -> motor.id == seciliId }
                 )
             }

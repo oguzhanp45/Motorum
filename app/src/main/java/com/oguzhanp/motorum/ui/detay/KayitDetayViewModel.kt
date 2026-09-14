@@ -8,6 +8,7 @@ import com.oguzhanp.motorum.ui.form.KayitFormu
 import com.oguzhanp.motorum.ui.form.TripNoktasiFormu
 import com.oguzhanp.motorum.util.dakikaAl
 import com.oguzhanp.motorum.util.saatAl
+import com.oguzhanp.motorum.util.sayiyiYaziya
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,8 +66,8 @@ class KayitDetayViewModel @Inject constructor(
 private fun formaCevir(kayit: Kayit): KayitFormu = when (kayit) {
     is Kayit.Yakit -> KayitFormu.Yakit(
         tarihMillis = kayit.tarihMillis,
-        litreYazi = kayit.litre.toString(),
-        tutarYazi = kayit.tutar.toString(),
+        litreYazi = sayiyiYaziya(kayit.litre),
+        tutarYazi = sayiyiYaziya(kayit.tutar),
         not = kayit.not
     )
 
@@ -88,21 +89,21 @@ private fun formaCevir(kayit: Kayit): KayitFormu = when (kayit) {
             )
         } ?: TripNoktasiFormu(),
         molalar = kayit.molalar,
-        masrafYazi = if (kayit.tutar > 0.0) kayit.tutar.toString() else "",
+        masrafYazi = if (kayit.tutar > 0.0) sayiyiYaziya(kayit.tutar) else "",
         not = kayit.not
     )
 
     is Kayit.Bakim -> KayitFormu.Bakim(
         tarihMillis = kayit.tarihMillis,
         bakimTuru = kayit.bakimTuru,
-        tutarYazi = kayit.tutar.toString(),
+        tutarYazi = sayiyiYaziya(kayit.tutar),
         not = kayit.not
     )
 
     is Kayit.Aksesuar -> KayitFormu.Aksesuar(
         tarihMillis = kayit.tarihMillis,
         aksesuarAdi = kayit.aksesuarAdi,
-        tutarYazi = kayit.tutar.toString(),
+        tutarYazi = sayiyiYaziya(kayit.tutar),
         not = kayit.not
     )
 }
