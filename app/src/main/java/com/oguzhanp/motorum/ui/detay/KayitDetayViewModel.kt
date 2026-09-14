@@ -2,6 +2,7 @@ package com.oguzhanp.motorum.ui.detay
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oguzhanp.motorum.data.HatirlatmaZamanlayici
 import com.oguzhanp.motorum.data.KayitDeposu
 import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.ui.form.KayitFormu
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class KayitDetayViewModel @Inject constructor(
-    private val depo: KayitDeposu
+    private val depo: KayitDeposu,
+    private val zamanlayici: HatirlatmaZamanlayici
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(KayitDetayUiState())
@@ -44,6 +46,9 @@ class KayitDetayViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(calisiyor = true, hata = null) }
             val hata = depo.kaydet(kayit)
+            // esitle once iptal edip sonra kuruyor: hatirlatma degismis,
+            // eklenmis ya da kaldirilmis olabilir.
+            if (hata == null) zamanlayici.esitle(kayit)
             _uiState.update {
                 it.copy(calisiyor = false, hata = hata, bitti = hata == null)
             }
@@ -56,6 +61,9 @@ class KayitDetayViewModel @Inject constructor(
                 it.copy(calisiyor = true, hata = null, silmeOnayiGoster = false)
             }
             val hata = depo.sil(id)
+            // Kayit gittiyse alarmi da iptal ediyoruz; yoksa olmayan bir
+            // bakim icin bildirim calardi.
+            if (hata == null) zamanlayici.iptal(id)
             _uiState.update {
                 it.copy(calisiyor = false, hata = hata, bitti = hata == null)
             }
@@ -97,7 +105,13 @@ private fun formaCevir(kayit: Kayit): KayitFormu = when (kayit) {
         tarihMillis = kayit.tarihMillis,
         bakimTuru = kayit.bakimTuru,
         tutarYazi = sayiyiYaziya(kayit.tutar),
-        not = kayit.not
+        not = kayit.not,
+        // Kayitli hatirlatma tek bir Long; form onu gun, saat ve dakika diye
+        // uc parcada tuttugu icin burada geri ayriliyor.
+        hatirlatmaAcik = kayit.hatirlatmaVar,
+        hatirlatmaTarihMillis = kayit.hatirlatmaMillis ?: System.currentTimeMillis(),
+        hatirlatmaSaat = kayit.hatirlatmaMillis?.let { saatAl(it) },
+        hatirlatmaDakika = kayit.hatirlatmaMillis?.let { dakikaAl(it) }
     )
 
     is Kayit.Aksesuar -> KayitFormu.Aksesuar(

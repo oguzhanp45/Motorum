@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -120,20 +122,36 @@ fun KayitSatiri(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (solMetin != null) {
-                            // Renk = kategori kurali bozulmasin diye devam eden yolculuga yeni renk
-                            // verilmedi; normal gri hali zaten "bitmedi" demek. Sadece tamamlanan yesile doner.
-                            val tamamlandi = kayit is Kayit.RoadTrip && kayit.bitis != null
-                            Cip(
-                                metin = solMetin,
-                                zemin = if (tamamlandi) DurumYesilZemin
-                                else MaterialTheme.colorScheme.outlineVariant,
-                                renk = if (tamamlandi) DurumYesilMetin else MetinIkincil,
-                                nokta = if (kayit is Kayit.RoadTrip) null else gorunum.renk,
-                                modifier = Modifier.weight(1f, fill = false)
-                            )
-                        } else {
-                            Box(Modifier)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f, fill = false)
+                        ) {
+                            if (solMetin != null) {
+                                // Renk = kategori kurali bozulmasin diye devam eden yolculuga yeni renk
+                                // verilmedi; normal gri hali zaten "bitmedi" demek. Sadece tamamlanan yesile doner.
+                                val tamamlandi = kayit is Kayit.RoadTrip && kayit.bitis != null
+                                Cip(
+                                    metin = solMetin,
+                                    zemin = if (tamamlandi) DurumYesilZemin
+                                    else MaterialTheme.colorScheme.outlineVariant,
+                                    renk = if (tamamlandi) DurumYesilMetin else MetinIkincil,
+                                    nokta = if (kayit is Kayit.RoadTrip) null else gorunum.renk,
+                                    modifier = Modifier.weight(1f, fill = false)
+                                )
+                            }
+
+                            // Hatirlatma cipi noktasiz ve gri: mavi "tiklanabilir",
+                            // yesil "tamamlandi" demek, ikisi de burada yanlis olurdu.
+                            // Saat degil sadece tarih yaziyor, yoksa cip satira sigmiyor.
+                            if (kayit is Kayit.Bakim && kayit.hatirlatmaMillis != null) {
+                                Cip(
+                                    metin = formatTarih(kayit.hatirlatmaMillis),
+                                    zemin = MaterialTheme.colorScheme.outlineVariant,
+                                    renk = MetinIkincil,
+                                    ikon = Icons.Default.Notifications
+                                )
+                            }
                         }
 
                         Text(
@@ -255,7 +273,8 @@ private fun sagAlanMetni(kayit: Kayit): String = when (kayit) {
 }
 
 // Tek cip bileseni her yerde kullaniliyor: rozet (kucuk), litre/km, alt satir.
-// nokta verilirse metnin onune kategori renginde daire cizilir.
+// nokta verilirse metnin onune kategori renginde daire, ikon verilirse kucuk
+// bir simge cizilir. Ikisi birden kullanilmiyor.
 @Composable
 private fun Cip(
     metin: String,
@@ -263,7 +282,8 @@ private fun Cip(
     renk: Color,
     modifier: Modifier = Modifier,
     kucuk: Boolean = false,
-    nokta: Color? = null
+    nokta: Color? = null,
+    ikon: ImageVector? = null
 ) {
     Row(
         modifier = modifier
@@ -279,6 +299,14 @@ private fun Cip(
                     .size(6.dp)
                     .clip(CircleShape)
                     .background(nokta)
+            )
+        }
+        if (ikon != null) {
+            Icon(
+                imageVector = ikon,
+                contentDescription = null,
+                tint = renk,
+                modifier = Modifier.size(13.dp)
             )
         }
         Text(
@@ -302,6 +330,27 @@ private fun KayitSatiriPreview() {
                 litre = 12.0,
                 tutar = 1200.0,
                 not = "SHELL"
+            ),
+            onTikla = {},
+            onKaydirarakSil = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+// Hatirlatmasi olan bakim kaydi: alt satirda bakim turu cipinin yaninda
+// alarm cipi duruyor.
+@Preview(showBackground = true)
+@Composable
+private fun KayitSatiriHatirlatmaliPreview() {
+    MotorumTheme {
+        KayitSatiri(
+            kayit = Kayit.Bakim(
+                tarihMillis = System.currentTimeMillis(),
+                tutar = 1250.0,
+                not = "Servis",
+                bakimTuru = "Yağ değişimi",
+                hatirlatmaMillis = System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000
             ),
             onTikla = {},
             onKaydirarakSil = {},

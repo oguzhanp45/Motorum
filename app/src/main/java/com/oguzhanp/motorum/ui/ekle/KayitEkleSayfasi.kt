@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +34,8 @@ import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.model.TripNoktasi
 import com.oguzhanp.motorum.ui.ekle.components.KategoriDropdown
 import com.oguzhanp.motorum.ui.form.AksesuarAlanlari
+import com.oguzhanp.motorum.ui.components.bildirimIzniVerildiMi
+import com.oguzhanp.motorum.ui.components.rememberBildirimIzni
 import com.oguzhanp.motorum.ui.form.BakimAlanlari
 import com.oguzhanp.motorum.ui.form.KayitFormu
 import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
@@ -48,6 +51,18 @@ fun KayitEkleSayfasi(
     ekleViewModel: KayitEkleViewModel = hiltViewModel()
 ) {
     val uiState by ekleViewModel.uiState.collectAsStateWithLifecycle()
+    val baglam = LocalContext.current
+
+    var bildirimIzniVar by remember { mutableStateOf(bildirimIzniVerildiMi(baglam)) }
+
+    // Izin verilsin verilmesin hatirlatma alanini aciyoruz: tarih yine
+    // kaydedilecek, izin yoksa formda uyari cikiyor.
+    val bildirimIzniIste = rememberBildirimIzni { verildi ->
+        bildirimIzniVar = verildi
+        (uiState.form as? KayitFormu.Bakim)?.let { bakim ->
+            ekleViewModel.guncelle(uiState.copy(form = bakim.copy(hatirlatmaAcik = true)))
+        }
+    }
 
     LaunchedEffect(uiState.basarili) {
         if (uiState.basarili) navController.popBackStack()
@@ -57,6 +72,8 @@ fun KayitEkleSayfasi(
         form = uiState.form,
         kaydediliyor = uiState.kaydediliyor,
         hata = uiState.hata,
+        bildirimIzniVar = bildirimIzniVar,
+        onHatirlatmaAcilsin = bildirimIzniIste,
         onFormDegis = { yeniForm -> ekleViewModel.guncelle(uiState.copy(form = yeniForm)) },
         onGeriTikla = { navController.popBackStack() },
         onKaydetTikla = {
@@ -91,7 +108,8 @@ fun KayitEkleSayfasi(
                         tarihMillis = kontrol.tarihMillis,
                         tutar = kontrol.tutar!!,
                         not = kontrol.not.trim(),
-                        bakimTuru = kontrol.bakimTuru.trim()
+                        bakimTuru = kontrol.bakimTuru.trim(),
+                        hatirlatmaMillis = kontrol.hatirlatmaMillis
                     )
 
                     is KayitFormu.Aksesuar -> Kayit.Aksesuar(
@@ -113,6 +131,8 @@ fun KayitEkleSayfasi(
 @Composable
 fun KayitEkleIcerik(
     form: KayitFormu,
+    bildirimIzniVar: Boolean,
+    onHatirlatmaAcilsin: () -> Unit,
     kaydediliyor: Boolean,
     hata: String?,
     onFormDegis: (KayitFormu) -> Unit,
@@ -163,6 +183,8 @@ fun KayitEkleIcerik(
                 is KayitFormu.Bakim -> BakimAlanlari(
                     form = form,
                     onDegis = onFormDegis,
+                    bildirimIzniVar = bildirimIzniVar,
+                    onHatirlatmaAcilsin = onHatirlatmaAcilsin,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -213,6 +235,8 @@ private fun KayitEkleIcerikPreview() {
     MotorumTheme {
         KayitEkleIcerik(
             form = KayitFormu.Yakit(),
+            bildirimIzniVar = true,
+            onHatirlatmaAcilsin = {},
             kaydediliyor = false,
             hata = null,
             onFormDegis = {},

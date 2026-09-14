@@ -27,7 +27,8 @@ fun SaatSecici(
     saat: Int?,
     dakika: Int?,
     onSaatSec: (Int, Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    etiket: String = "Saat"
 ) {
     var acik by remember { mutableStateOf(false) }
 
@@ -35,7 +36,7 @@ fun SaatSecici(
         value = if (saat == null || dakika == null) "" else formatSaat(saat, dakika),
         onValueChange = { },
         readOnly = true,
-        label = { Text("Saat") },
+        label = { Text(etiket) },
         trailingIcon = {
             IconButton(onClick = { acik = true }) {
                 Icon(Icons.Default.Schedule, contentDescription = "Saat sec")

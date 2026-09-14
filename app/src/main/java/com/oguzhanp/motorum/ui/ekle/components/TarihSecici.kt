@@ -27,7 +27,10 @@ import com.oguzhanp.motorum.util.formatTarih
 fun TarihSecici(
     tarihMillis: Long,
     onTarihSec: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    // Ayni ekranda iki tarih alani olabiliyor (kayit tarihi ve hatirlatma),
+    // ikisinin de "Tarih" yazmasi kafa karistiriyordu.
+    etiket: String = "Tarih"
 ) {
     var acik by remember { mutableStateOf(false) }
 
@@ -35,7 +38,7 @@ fun TarihSecici(
         value = formatTarih(tarihMillis),
         onValueChange = { },
         readOnly = true,
-        label = { Text("Tarih") },
+        label = { Text(etiket) },
         trailingIcon = {
             IconButton(onClick = { acik = true }) {
                 Icon(Icons.Default.DateRange, contentDescription = "Tarih sec")

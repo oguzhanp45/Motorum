@@ -24,6 +24,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,6 +34,8 @@ import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.model.TripNoktasi
 import com.oguzhanp.motorum.ui.form.AksesuarAlanlari
+import com.oguzhanp.motorum.ui.components.bildirimIzniVerildiMi
+import com.oguzhanp.motorum.ui.components.rememberBildirimIzni
 import com.oguzhanp.motorum.ui.form.BakimAlanlari
 import com.oguzhanp.motorum.ui.form.KayitFormu
 import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
@@ -60,6 +63,18 @@ fun KayitDetaySayfasi(
     LaunchedEffect(kayit.id) { detayViewModel.baslat(kayit) }
 
     val detay by detayViewModel.uiState.collectAsStateWithLifecycle()
+    val baglam = LocalContext.current
+
+    var bildirimIzniVar by remember { mutableStateOf(bildirimIzniVerildiMi(baglam)) }
+
+    // Izin verilsin verilmesin hatirlatma alanini aciyoruz: tarih yine
+    // kaydedilecek, izin yoksa formda uyari cikiyor.
+    val bildirimIzniIste = rememberBildirimIzni { verildi ->
+        bildirimIzniVar = verildi
+        (detay.form as? KayitFormu.Bakim)?.let { bakim ->
+            detayViewModel.formDegis(bakim.copy(hatirlatmaAcik = true))
+        }
+    }
 
     LaunchedEffect(detay.bitti) {
         if (detay.bitti) navController.popBackStack()
@@ -70,6 +85,8 @@ fun KayitDetaySayfasi(
         silmeOnayiGoster = detay.silmeOnayiGoster,
         calisiyor = detay.calisiyor,
         hata = detay.hata,
+        bildirimIzniVar = bildirimIzniVar,
+        onHatirlatmaAcilsin = bildirimIzniIste,
         onFormDegis = detayViewModel::formDegis,
         onSilmeOnayiDegis = detayViewModel::silmeOnayiDegis,
         onSilOnayla = { detayViewModel.sil(kayitId) },
@@ -119,7 +136,8 @@ fun KayitDetaySayfasi(
                         tarihMillis = kontrol.tarihMillis,
                         tutar = kontrol.tutar!!,
                         not = kontrol.not.trim(),
-                        bakimTuru = kontrol.bakimTuru.trim()
+                        bakimTuru = kontrol.bakimTuru.trim(),
+                        hatirlatmaMillis = kontrol.hatirlatmaMillis
                     )
 
                     is KayitFormu.Aksesuar -> Kayit.Aksesuar(
@@ -145,6 +163,8 @@ fun KayitDetayIcerik(
     silmeOnayiGoster: Boolean,
     calisiyor: Boolean,
     hata: String?,
+    bildirimIzniVar: Boolean,
+    onHatirlatmaAcilsin: () -> Unit,
     onFormDegis: (KayitFormu) -> Unit,
     onSilmeOnayiDegis: (Boolean) -> Unit,// Diyalogu acmak ve iptal etmek ayni islem.true/false yapmak.
     onSilOnayla: () -> Unit,
@@ -203,6 +223,8 @@ fun KayitDetayIcerik(
                 is KayitFormu.Bakim -> BakimAlanlari(
                     form = form,
                     onDegis = onFormDegis,
+                    bildirimIzniVar = bildirimIzniVar,
+                    onHatirlatmaAcilsin = onHatirlatmaAcilsin,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -274,6 +296,8 @@ private fun KayitDetayIcerikPreview() {
             silmeOnayiGoster = false,
             calisiyor = false,
             hata = null,
+            bildirimIzniVar = true,
+            onHatirlatmaAcilsin = {},
             onFormDegis = {},
             onSilmeOnayiDegis = {},
             onSilOnayla = {},

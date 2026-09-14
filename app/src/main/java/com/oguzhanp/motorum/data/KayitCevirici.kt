@@ -32,7 +32,8 @@ fun Kayit.belgeyeCevir(): KayitBelgesi = when (this) {
         tarihMillis = tarihMillis,
         tutar = tutar,
         not = not,
-        bakimTuru = bakimTuru
+        bakimTuru = bakimTuru,
+        hatirlatmaMillis = hatirlatmaMillis
     )
 
     is Kayit.Aksesuar -> KayitBelgesi(
@@ -76,7 +77,9 @@ fun KayitBelgesi.kayidaCevir(): Kayit? {
             tarihMillis = tarihMillis,
             tutar = tutar,
             not = not,
-            bakimTuru = bakimTuru ?: return null
+            bakimTuru = bakimTuru ?: return null,
+            // Hatirlatma istege bagli: yoksa null kaliyor, belge bozuk sayilmiyor.
+            hatirlatmaMillis = hatirlatmaMillis
         )
 
         Kategori.AKSESUAR.name -> Kayit.Aksesuar(
