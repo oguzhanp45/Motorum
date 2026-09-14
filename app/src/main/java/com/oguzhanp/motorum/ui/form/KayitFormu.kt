@@ -2,6 +2,7 @@ package com.oguzhanp.motorum.ui.form
 
 import com.oguzhanp.motorum.model.Kategori
 import com.oguzhanp.motorum.model.Mola
+import com.oguzhanp.motorum.util.tarihSaatBirlestir
 
 
  //Kayit formunun ortak verisi ve dogrulama kurallari.
@@ -100,24 +101,46 @@ sealed interface KayitFormu {
         val bakimTuru: String = "",
         val tutarYazi: String = "",
         override val not: String = "",
+        // Hatirlatma istege bagli. Gun, saat ve dakika ayri tutuluyor cunku iki
+        // ayri secici iki ayri sey donduruyor; TripNoktasiFormu ile ayni kalip.
+        val hatirlatmaAcik: Boolean = false,
+        val hatirlatmaTarihMillis: Long = System.currentTimeMillis(),
+        val hatirlatmaSaat: Int? = null,
+        val hatirlatmaDakika: Int? = null,
         val bakimTuruHatali: Boolean = false,
-        val tutarHatali: Boolean = false
+        val tutarHatali: Boolean = false,
+        val hatirlatmaHatali: Boolean = false
     ) : KayitFormu {
 
         override val kategori get() = Kategori.BAKIM
 
         val tutar: Double? get() = tutarYazi.replace(',', '.').toDoubleOrNull()
 
+        // Anahtar kapaliysa ya da saat secilmediyse hatirlatma yok sayiliyor.
+        val hatirlatmaMillis: Long?
+            get() = if (!hatirlatmaAcik || hatirlatmaSaat == null || hatirlatmaDakika == null) {
+                null
+            } else {
+                tarihSaatBirlestir(hatirlatmaTarihMillis, hatirlatmaSaat, hatirlatmaDakika)
+            }
+
         private val bakimTuruGecersiz: Boolean get() = bakimTuru.isBlank()
         private val tutarGecersiz: Boolean get() = (tutar ?: 0.0) <= 0.0
 
-        override val gecerli: Boolean get() = !bakimTuruGecersiz && !tutarGecersiz
+        // Anahtar acik ama saat secilmemis ya da secilen an gecmiste kalmis.
+        // Gecmise alarm kurulamaz, o yuzden kaydetmeye de izin vermiyoruz.
+        private val hatirlatmaGecersiz: Boolean
+            get() = hatirlatmaAcik && (hatirlatmaMillis ?: 0L) <= System.currentTimeMillis()
+
+        override val gecerli: Boolean
+            get() = !bakimTuruGecersiz && !tutarGecersiz && !hatirlatmaGecersiz
 
         override fun notDegistir(yeni: String): Bakim = copy(not = yeni)
 
         override fun dogrula(): Bakim = copy(
             bakimTuruHatali = bakimTuruGecersiz,
-            tutarHatali = tutarGecersiz
+            tutarHatali = tutarGecersiz,
+            hatirlatmaHatali = hatirlatmaGecersiz
         )
     }
 

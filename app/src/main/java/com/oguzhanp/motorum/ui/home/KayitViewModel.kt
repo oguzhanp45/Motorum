@@ -2,6 +2,7 @@ package com.oguzhanp.motorum.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oguzhanp.motorum.data.HatirlatmaZamanlayici
 import com.oguzhanp.motorum.data.KayitDeposu
 import com.oguzhanp.motorum.data.KayitSonucu
 import com.oguzhanp.motorum.model.Kayit
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class KayitViewModel @Inject constructor(
-    private val depo: KayitDeposu
+    private val depo: KayitDeposu,
+    private val zamanlayici: HatirlatmaZamanlayici
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(KayitUiState())
@@ -53,6 +55,9 @@ class KayitViewModel @Inject constructor(
             yaz(KayitSonucu(kayitlar = _uiState.value.kayitlar.filterNot { it.id == id }))
 
             val silmeHatasi = depo.sil(id)
+            // Kayit gittiyse alarmi da iptal ediyoruz.
+            if (silmeHatasi == null) zamanlayici.iptal(id)
+
             val sonuc = depo.kayitlariGetir()
             yaz(sonuc.copy(hata = silmeHatasi ?: sonuc.hata))
 
@@ -70,6 +75,9 @@ class KayitViewModel @Inject constructor(
             // Ayni kimlik ve ayni tarih geri geldigi icin kayit listede
             // eski yerine oturuyor, en uste ziplamiyor.
             val yazmaHatasi = depo.kaydet(kayit)
+            // Kayit geri geldiyse hatirlatmasi da geri gelmeli.
+            if (yazmaHatasi == null) zamanlayici.esitle(kayit)
+
             val sonuc = depo.kayitlariGetir()
             yaz(sonuc.copy(hata = yazmaHatasi ?: sonuc.hata))
         }

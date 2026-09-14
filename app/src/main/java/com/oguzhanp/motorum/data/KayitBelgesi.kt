@@ -41,6 +41,9 @@ data class KayitBelgesi(
     val litre: Double? = null,
     val bakimTuru: String? = null,
     val aksesuarAdi: String? = null,
+    // Sadece bakim kayitlarinda dolu. Eski belgelerde bu alan yok, varsayilan
+    // null oldugu icin onlar da sorunsuz okunuyor.
+    val hatirlatmaMillis: Long? = null,
     val baslangic: TripNoktasiBelgesi? = null,
     val bitis: TripNoktasiBelgesi? = null,
     val molalar: List<MolaBelgesi> = emptyList()

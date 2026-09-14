@@ -54,8 +54,14 @@ sealed interface Kayit {
         override val tarihMillis: Long,
         override val tutar: Double,
         override val not: String = "",
-        val bakimTuru: String
+        val bakimTuru: String,
+        // Istege bagli hatirlatma zamani. null = hatirlatma kurulmamis.
+        // Sadece bakimda var: yakit alimi ya da aksesuar icin hatirlatmanin
+        // anlami yok, o yuzden ortak arayuze konmadi.
+        val hatirlatmaMillis: Long? = null
     ) : Kayit {
+
+        val hatirlatmaVar: Boolean get() = hatirlatmaMillis != null
         override val kategori get() = Kategori.BAKIM
     }
 

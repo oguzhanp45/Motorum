@@ -4,6 +4,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- Android 13'ten beri bildirim gostermek calisma zamani izni istiyor.
+         Alarm icin ayrica izin yok: kesin olmayan alarm kullaniyoruz, yani
+         sistemden pil yonetimini devralmiyoruz. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name=".MotorumUygulamasi"
         android:allowBackup="true"
@@ -25,6 +30,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Alarm caldiginda sistem bunu uyandiriyor. exported="false":
+             disaridan tetiklenemiyor. Niyeti dogrudan bu sinifa yonlendirdigimiz
+             icin intent-filter'a da gerek yok. -->
+        <receiver
+            android:name=".data.HatirlatmaAlicisi"
+            android:exported="false" />
 
         <!-- Kamera uygulamasi ayri bir uygulama. Ona file:// yolu uzatmak
              Android 7'den beri yasak; FileProvider kendi dosyamiz icin
