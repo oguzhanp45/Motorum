@@ -1,11 +1,11 @@
 package com.oguzhanp.motorum.ui.motorlarim
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -30,13 +29,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.model.Motor
 import com.oguzhanp.motorum.ui.theme.AksiyonMaviZemin
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MetinSolgun
+import com.oguzhanp.motorum.ui.theme.MotorumTheme
 
 @Composable
 fun MotorKarti(
@@ -47,7 +47,6 @@ fun MotorKarti(
     onSilTikla: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val gorunum = motorGorunumu(motor.id)
     var menuAcik by remember { mutableStateOf(false) }
 
     Card(
@@ -65,20 +64,7 @@ fun MotorKarti(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(gorunum.zemin),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    Icons.Default.TwoWheeler,
-                    contentDescription = null,
-                    tint = gorunum.renk,
-                    modifier = Modifier.size(26.dp)
-                )
-            }
+            MotorGorseli(motor = motor, boyut = 48.dp)
 
             Column(
                 modifier = Modifier
@@ -142,6 +128,44 @@ fun MotorKarti(
                     )
                 }
             }
+        }
+    }
+}
+
+// Kartin uc hali: secili, secili degil ve bilgisiz motor (marka/model bos).
+// Ucu de listede gercekten karsimiza cikiyor.
+@Preview(showBackground = true)
+@Composable
+private fun MotorKartiPreview() {
+    MotorumTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            MotorKarti(
+                motor = Motor(id = "a", marka = "Yamaha", model = "MT-07", plaka = "34 BKR 102"),
+                secili = true,
+                onTikla = {},
+                onDuzenleTikla = {},
+                onSilTikla = {},
+                modifier = Modifier.fillMaxWidth()
+            )
+            MotorKarti(
+                motor = Motor(id = "b", marka = "Honda", model = "CRF 250"),
+                secili = false,
+                onTikla = {},
+                onDuzenleTikla = {},
+                onSilTikla = {},
+                modifier = Modifier.fillMaxWidth()
+            )
+            MotorKarti(
+                motor = Motor(id = "c"),
+                secili = false,
+                onTikla = {},
+                onDuzenleTikla = {},
+                onSilTikla = {},
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

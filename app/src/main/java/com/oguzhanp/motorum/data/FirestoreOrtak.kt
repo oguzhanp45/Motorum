@@ -9,6 +9,12 @@ internal const val KOLEKSIYON_KULLANICILAR = "users"
 internal const val KOLEKSIYON_MOTORLAR = "motorlar"
 internal const val KOLEKSIYON_KAYITLAR = "kayitlar"
 
+// Motorun tam boy fotografi. Motor basina tek fotograf oldugu icin belge
+// kimligi de sabit: rastgele kimlik uretip saklamaya gerek yok, yolu biliyoruz.
+internal const val KOLEKSIYON_MEDYA = "medya"
+internal const val BELGE_FOTOGRAF = "fotograf"
+internal const val ALAN_VERI = "veri"
+
 internal const val OTURUM_YOK = "Oturum açık değil"
 internal const val INTERNET_YOK = "İnternet bağlantısı yok"
 

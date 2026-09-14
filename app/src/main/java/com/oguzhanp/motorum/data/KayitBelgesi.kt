@@ -28,7 +28,10 @@ data class TripNoktasiBelgesi(
 data class KayitBelgesi(
     // Belge adini okurken buraya yazar, yazarken bu alani atlar.
     @DocumentId val id: String = "",
-    // Enum degil String: enum sabitinin adi degisirse eski belgeler okunamaz olurdu.
+    // Enum degil String: Firestore'dan taninmayan bir deger gelirse cevirici
+    // null donup o belgeyi eliyor, uygulama cokmuyor. Ama koruma bu kadar:
+    // yazarken kategori.name kullaniliyor, yani sabitin adini degistirmek eski
+    // belgeleri yine okunamaz yapar. Cokmeye karsi koruyor, veri kaybina karsi degil.
     val kategori: String = "",
     // Road Trip'te baslangic.tarihMillis buraya da kopyalaniyor: siralamayi ileride
     // sunucuya tasimak istersek bu alan olmadan yapilamaz.

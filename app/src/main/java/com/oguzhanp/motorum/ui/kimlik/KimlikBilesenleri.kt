@@ -36,12 +36,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.ui.theme.BaglantiMavi
 import com.oguzhanp.motorum.ui.theme.KartZemin
 import com.oguzhanp.motorum.ui.theme.MetinEtiket
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MetinSolgun
+import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.ui.theme.SekmeZemin
 
 private val ALAN_SEKLI = RoundedCornerShape(12.dp)
@@ -271,6 +273,59 @@ fun KimlikAltBaglantisi(
             modifier = Modifier
                 .clickable(onClick = onTikla)
                 .padding(start = 6.dp, top = 4.dp, bottom = 4.dp)
+        )
+    }
+}
+
+// Dosyadaki parcalar tek tek degil, giris ekranindaki gercek dizilisleriyle
+// gosteriliyor: aralarindaki bosluklar ve hizalama da boyle kontrol ediliyor.
+@Preview(showBackground = true)
+@Composable
+private fun KimlikBilesenleriPreview() {
+    MotorumTheme {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            KimlikBasligi()
+            KimlikSekmesi(
+                girisSecili = true,
+                onGirisTikla = {},
+                onUyeOlTikla = {}
+            )
+            KimlikKarti(
+                baslik = "Giriş Yap",
+                butonMetni = "Giriş Yap",
+                form = KimlikFormu(eposta = "ornek@eposta.com", sifre = "123456"),
+                yukleniyor = false,
+                hata = null,
+                onFormDegis = {},
+                onGonderTikla = {}
+            )
+            KimlikAltBaglantisi(
+                soru = "Hesabın yok mu?",
+                baglanti = "Üye ol",
+                onTikla = {}
+            )
+        }
+    }
+}
+
+// Hata ve yukleniyor hallerini ayri gormek gerekiyor: ikisi de gunluk
+// kullanimda cikan ama elle test etmesi zahmetli durumlar.
+@Preview(showBackground = true)
+@Composable
+private fun KimlikKartiHataliPreview() {
+    MotorumTheme {
+        KimlikKarti(
+            baslik = "Giriş Yap",
+            butonMetni = "Giriş Yap",
+            form = KimlikFormu(eposta = "bozuk", epostaHatali = true, sifreHatali = true),
+            yukleniyor = false,
+            hata = "E-posta veya şifre hatalı",
+            onFormDegis = {},
+            onGonderTikla = {},
+            modifier = Modifier.padding(20.dp)
         )
     }
 }
