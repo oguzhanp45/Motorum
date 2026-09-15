@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +40,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.oguzhanp.motorum.R
+import com.oguzhanp.motorum.model.HavaDurumu
+import com.oguzhanp.motorum.ui.components.konumIzniVerildiMi
+import com.oguzhanp.motorum.ui.components.rememberKonumIzni
 import com.oguzhanp.motorum.ui.motorlarim.MotorCipi
 import com.oguzhanp.motorum.ui.motorlarim.MotorSecimPaneli
 import com.oguzhanp.motorum.ui.motorlarim.MotorSeciciUiState
@@ -55,15 +59,27 @@ fun AnaSayfa(
     viewModel: KayitViewModel,
     navController: NavController,
     onSekmeTikla: (String) -> Unit,
-    seciciViewModel: MotorSeciciViewModel = hiltViewModel()
+    seciciViewModel: MotorSeciciViewModel = hiltViewModel(),
+    havaViewModel: HavaDurumuViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val secici by seciciViewModel.uiState.collectAsStateWithLifecycle()
+    val havaHali by havaViewModel.hal.collectAsStateWithLifecycle()
     val snackbarDurumu = remember { SnackbarHostState() }
+    val baglam = LocalContext.current
+
+    // Izni karttaki buton istiyor, acilista kendiliginden sormuyoruz.
+    val konumIzniIste = rememberKonumIzni { verildi ->
+        if (verildi) havaViewModel.yukle() else havaViewModel.izinYok(istendiMi = true)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.yukle()
         seciciViewModel.yukle()
+        // Izin her acilista yeniden kontrol ediliyor: "Yalnizca bu sefer"
+        // izni iki acilis arasinda sona ermis olabilir.
+        if (konumIzniVerildiMi(baglam)) havaViewModel.yukle()
+        else havaViewModel.izinYok(istendiMi = false)
     }
 
     // Panelden motor secilince kayitlari yeniden cekiyoruz. Secim tamamlanmadan
@@ -91,13 +107,20 @@ fun AnaSayfa(
     AnaSayfaIcerik(
         uiState = uiState,
         secici = secici,
+        havaHali = havaHali,
         snackbarDurumu = snackbarDurumu,
         onSekmeTikla = onSekmeTikla,
         onEkleTikla = { navController.navigate(Routes.KAYIT_EKLE) },
         onKayitTikla = { id -> navController.navigate("kayit_detay/$id") },
         onKayitKaydirarakSil = { id -> viewModel.sil(id) },
-        onAsagiCek = { viewModel.yenile() },
+        onAsagiCek = {
+            viewModel.yenile()
+            // Kullanici bilerek yeniledi: onbellegi atlayip taze hava aliyoruz.
+            havaViewModel.yukle(zorla = true)
+        },
         onTekrarDeneTikla = { viewModel.yukle() },
+        onIzinIste = konumIzniIste,
+        onHavaTekrarDene = { havaViewModel.yukle(zorla = true) },
         onCipTikla = seciciViewModel::panelAc,
         onMotorSec = seciciViewModel::motoruSec,
         onMotorEkleTikla = {
@@ -114,6 +137,7 @@ fun AnaSayfa(
 fun AnaSayfaIcerik(
     uiState: KayitUiState,
     secici: MotorSeciciUiState,
+    havaHali: HavaDurumuHali,
     snackbarDurumu: SnackbarHostState,
     onSekmeTikla: (String) -> Unit,
     onEkleTikla: () -> Unit,
@@ -121,6 +145,8 @@ fun AnaSayfaIcerik(
     onKayitKaydirarakSil: (String) -> Unit,
     onAsagiCek: () -> Unit,
     onTekrarDeneTikla: () -> Unit,
+    onIzinIste: () -> Unit,
+    onHavaTekrarDene: () -> Unit,
     onCipTikla: () -> Unit,
     onMotorSec: (String) -> Unit,
     onMotorEkleTikla: () -> Unit,
@@ -131,7 +157,7 @@ fun AnaSayfaIcerik(
         seciliRota = Routes.ANA_SAYFA,
         onSekmeTikla = onSekmeTikla,
         ustBarAksiyonlari = {
-            MotorCipi(motor = secici.seciliMotor, onTikla = onCipTikla)
+            MotorCipi(durum = secici.cipDurumu, onTikla = onCipTikla)
         },
         snackbarAlani = { SnackbarHost(snackbarDurumu) },
         kayanButon = {
@@ -182,8 +208,11 @@ fun AnaSayfaIcerik(
                 ) {
                     Liste(
                         uiState = uiState,
+                        havaHali = havaHali,
                         onKayitTikla = onKayitTikla,
-                        onKayitKaydirarakSil = onKayitKaydirarakSil
+                        onKayitKaydirarakSil = onKayitKaydirarakSil,
+                        onIzinIste = onIzinIste,
+                        onHavaTekrarDene = onHavaTekrarDene
                     )
                 }
             }
@@ -204,8 +233,11 @@ fun AnaSayfaIcerik(
 @Composable
 private fun Liste(
     uiState: KayitUiState,
+    havaHali: HavaDurumuHali,
     onKayitTikla: (String) -> Unit,
-    onKayitKaydirarakSil: (String) -> Unit
+    onKayitKaydirarakSil: (String) -> Unit,
+    onIzinIste: () -> Unit,
+    onHavaTekrarDene: () -> Unit
 ) {
     // Sayfanin tamami tek LazyColumn: ozet kart ve baslik da birer satir.
     // Boylece sayfa bastan sona tek parca kayiyor ve asagi cekme her yerden
@@ -216,6 +248,17 @@ private fun Liste(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // Hava karti listenin ilk satiri: acinca ilk gorunen o olsun,
+        // asagi kayinca yerini kayitlara biraksin.
+        item {
+            HavaDurumuKarti(
+                hal = havaHali,
+                onIzinIste = onIzinIste,
+                onTekrarDene = onHavaTekrarDene,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
         item {
             ToplamCard(
                 toplamTutar = uiState.toplamTutar,
@@ -302,13 +345,25 @@ private fun AnaSayfaIcerikPreview() {
     MotorumTheme {
         AnaSayfaIcerik(
             uiState = KayitUiState(),
-            secici = MotorSeciciUiState(),
+            secici = MotorSeciciUiState(yukleniyor = false),
+            havaHali = HavaDurumuHali.Hazir(
+                HavaDurumu(
+                    sehir = "Akhisar",
+                    sicaklik = 23.9,
+                    aciklama = "parçalı bulutlu",
+                    kod = 803,
+                    ruzgarHizi = 2.0,
+                    gorusMesafesi = 10000
+                )
+            ),
             snackbarDurumu = remember { SnackbarHostState() },
             onSekmeTikla = {},
             onEkleTikla = {},
             onKayitTikla = {},
             onKayitKaydirarakSil = {},
             onAsagiCek = {},
+            onIzinIste = {},
+            onHavaTekrarDene = {},
             onTekrarDeneTikla = {},
             onCipTikla = {},
             onMotorSec = {},

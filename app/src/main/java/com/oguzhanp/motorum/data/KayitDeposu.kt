@@ -41,6 +41,11 @@ class KayitDeposu @Inject constructor(
     // oldugu icin de "basarili ama bos liste" gibi gorunuyordu. SERVER derken
     // "onbellegi istemiyorum" demis oluyoruz: ulasilamazsa hata firlatiyor.
     suspend fun kayitlariGetir(): KayitSonucu {
+        // Okumadan once de ag kontrolu. Source.SERVER cevrimdisiyken hatayi
+        // ana is parcaciginda doguruyor; asagidaki try/catch onu goremiyor ve
+        // uygulama cokuyor. Tek korunma yolu oraya hic gitmemek.
+        if (!agDurumu.internetVar()) return KayitSonucu(hata = INTERNET_YOK)
+
         return try {
             val uid = auth.currentUser?.uid ?: return KayitSonucu(hata = OTURUM_YOK)
             val motorId = motorDeposu.seciliMotorId() ?: return KayitSonucu(motorYok = true)

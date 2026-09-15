@@ -1,11 +1,23 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.services)
 }
+
+// OpenWeather anahtari local.properties'ten okunuyor; o dosya .gitignore'da,
+// yani depoya girmiyor. Dosya yoksa bos anahtarla derleniyor ki proje baska
+// bir makinede de acilabilsin.
+val yerelOzellikler = Properties().apply {
+    val dosya = rootProject.file("local.properties")
+    if (dosya.exists()) dosya.inputStream().use { load(it) }
+}
+val openWeatherAnahtari: String = yerelOzellikler.getProperty("OPENWEATHER_KEY") ?: ""
 
 android {
     namespace = "com.oguzhanp.motorum"
@@ -21,6 +33,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Anahtar BuildConfig.OPENWEATHER_KEY olarak koda gomuluyor. Bu onu
+        // gizlemiyor (APK'yi acan bulabilir), sadece depoya girmesini onluyor.
+        buildConfigField("String", "OPENWEATHER_KEY", "\"$openWeatherAnahtari\"")
     }
 
     buildTypes {
@@ -36,6 +52,8 @@ android {
     }
     buildFeatures {
         compose = true
+        // buildConfigField kullanabilmek icin acik olmasi gerekiyor.
+        buildConfig = true
     }
 }
 
@@ -72,6 +90,10 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.play.services.location)
     ksp(libs.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
