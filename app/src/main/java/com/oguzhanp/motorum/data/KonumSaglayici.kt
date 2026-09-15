@@ -42,7 +42,7 @@ class KonumSaglayici @Inject constructor(
                 .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
                 .build()
             istemci.getCurrentLocation(istek, CancellationTokenSource().token).await()
-        } catch (hata: Exception) {
+        } catch (_: Exception) {
             null
         }
 
@@ -52,7 +52,7 @@ class KonumSaglayici @Inject constructor(
         // son bilinen konum: biraz eski olabilir ama sehir genelde ayni kalir.
         val son = try {
             istemci.lastLocation.await()
-        } catch (hata: Exception) {
+        } catch (_: Exception) {
             null
         }
 

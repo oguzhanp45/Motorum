@@ -206,7 +206,7 @@ class MotorDeposu @Inject constructor(
                 .collection(KOLEKSIYON_KAYITLAR)
                 .count().get(AggregateSource.SERVER).await()
                 .count.toInt()
-        } catch (hata: Exception) {
+        } catch (_: Exception) {
             0
         }
     }
