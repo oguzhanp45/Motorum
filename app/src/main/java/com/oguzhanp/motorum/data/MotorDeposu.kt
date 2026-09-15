@@ -50,6 +50,10 @@ class MotorDeposu @Inject constructor(
         .collection(KOLEKSIYON_MOTORLAR)
 
     suspend fun motorlariGetir(): MotorSonucu {
+        // Okumalarda da ag bekcisi var: Source.SERVER cevrimdisiyken
+        // yakalanamayan bir hata firlatiyor. Ayrintisi KayitDeposu icinde.
+        if (!agDurumu.internetVar()) return MotorSonucu(hata = INTERNET_YOK)
+
         return try {
             val uid = auth.currentUser?.uid ?: return MotorSonucu(hata = OTURUM_YOK)
             MotorSonucu(motorlar = motorlariOku(uid))
@@ -63,6 +67,10 @@ class MotorDeposu @Inject constructor(
         onbellek?.let { (onbellektekiUid, id) ->
             if (onbellektekiUid == uid) return id
         }
+
+        // Bellekteki cevap yukarida dondu, buradan sonrasi sunucuya gidiyor.
+        // Cevrimdisiyken null: yanlis motor uydurmaktansa "bilmiyoruz" demek.
+        if (!agDurumu.internetVar()) return null
 
         val kayitliId = ayarlarDeposu.seciliMotorId(uid)
         val motorlar = motorlariOku(uid)
@@ -127,6 +135,8 @@ class MotorDeposu @Inject constructor(
     // Motorun fotografi tek alanli bir belgede duruyor, o yuzden DTO yazmadik:
     // alani dogrudan okuyoruz. Firestore yine data/ katmanindan disari cikmiyor.
     suspend fun fotografGetir(motorId: String): FotografSonucu {
+        if (!agDurumu.internetVar()) return FotografSonucu(hata = INTERNET_YOK)
+
         return try {
             val uid = auth.currentUser?.uid ?: return FotografSonucu(hata = OTURUM_YOK)
             val belge = fotografBelgesi(motorlarKoleksiyonu(uid).document(motorId))
@@ -186,6 +196,10 @@ class MotorDeposu @Inject constructor(
     // Silme uyarisinda gercek sayiyi soyleyebilmek icin. count() bir toplama
     // sorgusu: belgeleri indirmiyor, sunucuda sayip tek bir sayi donduruyor.
     suspend fun kayitSayisi(motorId: String): Int {
+        // Cevrimdisiyken 0. Asagidaki catch de zaten 0 donduruyordu; bu
+        // kontrol sadece cokmeyi engelliyor.
+        if (!agDurumu.internetVar()) return 0
+
         return try {
             val uid = auth.currentUser?.uid ?: return 0
             motorlarKoleksiyonu(uid).document(motorId)

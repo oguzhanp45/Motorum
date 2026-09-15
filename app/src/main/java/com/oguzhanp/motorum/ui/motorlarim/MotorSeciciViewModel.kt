@@ -22,12 +22,17 @@ class MotorSeciciViewModel @Inject constructor(
 
     fun yukle() {
         viewModelScope.launch {
+            _uiState.update { it.copy(yukleniyor = true, hata = null) }
             val sonuc = depo.motorlariGetir()
             val seciliId = depo.seciliMotorId()
             _uiState.update {
                 it.copy(
-                    motorlar = sonuc.motorlar,
-                    seciliMotor = sonuc.motorlar.firstOrNull { motor -> motor.id == seciliId }
+                    motorlar = sonuc.motorlar.sortedBy { motor -> motor.olusturmaMillis },
+                    seciliMotor = sonuc.motorlar.firstOrNull { motor -> motor.id == seciliId },
+                    yukleniyor = false,
+                    // Deponun hatasi artik buraya kadar geliyor; eskiden
+                    // yolda kayboluyordu.
+                    hata = sonuc.hata
                 )
             }
         }

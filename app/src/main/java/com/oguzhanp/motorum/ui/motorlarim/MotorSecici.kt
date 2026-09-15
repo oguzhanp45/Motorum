@@ -41,19 +41,28 @@ import com.oguzhanp.motorum.ui.theme.MetinSolgun
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.ui.theme.SekmeZemin
 
-// Ust bardaki cip. Motor yoksa da gorunuyor ama tiklanmiyor: acilacak bir liste yok.
+// Ust bardaki cip. Hangi hal oldugunu MotorSeciciUiState.cipDurumu
+// soyluyor. Sadece motor seciliyken tiklaniyor, digerlerinde acilacak liste yok.
 @Composable
 fun MotorCipi(
-    motor: Motor?,
+    durum: CipDurumu,
     onTikla: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val metin = when (durum) {
+        CipDurumu.Yukleniyor -> "Yükleniyor…"
+        CipDurumu.MotorYok -> "Motor yok"
+        CipDurumu.BaglantiYok -> "Bağlantı yok"
+        is CipDurumu.Secili -> cipMetni(durum.motor)
+    }
+    val secili = durum is CipDurumu.Secili
+
     Row(
         modifier = modifier
             .padding(end = 8.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(SekmeZemin)
-            .clickable(enabled = motor != null, onClick = onTikla)
+            .clickable(enabled = secili, onClick = onTikla)
             .padding(horizontal = 10.dp, vertical = 6.dp)
             .widthIn(max = 200.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -66,14 +75,14 @@ fun MotorCipi(
             modifier = Modifier.size(16.dp)
         )
         Text(
-            text = motor?.let { cipMetni(it) } ?: "Motor yok",
+            text = metin,
             style = MaterialTheme.typography.labelMedium,
             color = MetinIkincil,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f, fill = false)
         )
-        if (motor != null) {
+        if (secili) {
             Icon(
                 Icons.Default.ExpandMore,
                 contentDescription = "Motor seç",
@@ -197,14 +206,20 @@ private fun MotorCipiPreview() {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             MotorCipi(
-                motor = Motor(id = "a", marka = "Yamaha", model = "MT-07", plaka = "34 BKR 102"),
+                durum = CipDurumu.Secili(
+                    Motor(id = "a", marka = "Yamaha", model = "MT-07", plaka = "34 BKR 102")
+                ),
                 onTikla = {}
             )
             MotorCipi(
-                motor = Motor(id = "b", marka = "Honda", model = "Africa Twin Adventure Sports"),
+                durum = CipDurumu.Secili(
+                    Motor(id = "b", marka = "Honda", model = "Africa Twin Adventure Sports")
+                ),
                 onTikla = {}
             )
-            MotorCipi(motor = null, onTikla = {})
+            MotorCipi(durum = CipDurumu.MotorYok, onTikla = {})
+            MotorCipi(durum = CipDurumu.BaglantiYok, onTikla = {})
+            MotorCipi(durum = CipDurumu.Yukleniyor, onTikla = {})
         }
     }
 }

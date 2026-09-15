@@ -9,6 +9,12 @@
          sistemden pil yonetimini devralmiyoruz. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Hava durumu icin konum. Ikisi birlikte tanimlanmak zorunda: FINE tek
+         basina istenirse Android 12'den beri sistem istegi yok sayiyor.
+         Kullanici "Yaklasik" secerse sadece COARSE geliyor, o da bize yetiyor. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:name=".MotorumUygulamasi"
         android:allowBackup="true"

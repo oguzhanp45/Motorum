@@ -36,6 +36,14 @@ val HataKirmizi = Color(0xFFEF4444)
 val DurumYesilZemin = Color(0xFFECFDF5)
 val DurumYesilMetin = Color(0xFF047857)
 
+// Hava kartinin surus renkleri. IYI icin yukaridaki yesil kullaniliyor.
+// Kehribar, Bakim kategorisiyle ayni deger ama ayri isimde: biri degisince
+// digeri sessizce degismesin.
+val SurusDikkatZemin = Color(0xFFFFFBEB)
+val SurusDikkatMetin = Color(0xFFB45309)
+val SurusKotuZemin = Color(0xFFFEF2F2)
+val SurusKotuMetin = Color(0xFFB91C1C)
+
 val YakitRenk = Color(0xFFF43F5E)
 val YakitZemin = Color(0xFFFFF1F2)
 val YakitMetin = Color(0xFFBE123C)
