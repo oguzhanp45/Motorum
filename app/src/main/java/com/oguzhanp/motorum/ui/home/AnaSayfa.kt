@@ -86,7 +86,8 @@ fun AnaSayfa(
     // cekmemek icin yine bayrak kullaniliyor.
     LaunchedEffect(secici.secimTamam) {
         if (secici.secimTamam) {
-            viewModel.yukle()
+            // temizle = true: eldeki liste onceki motorun, ekranda kalmasin.
+            viewModel.yukle(temizle = true)
             seciciViewModel.secimTuketildi()
         }
     }
@@ -113,12 +114,19 @@ fun AnaSayfa(
         onEkleTikla = { navController.navigate(Routes.KAYIT_EKLE) },
         onKayitTikla = { id -> navController.navigate("kayit_detay/$id") },
         onKayitKaydirarakSil = { id -> viewModel.sil(id) },
+        // Yenileme yollarinin ikisi de ekrandaki her seyi tazeliyor. Cip
+        // atlandiginda, internet geri gelse bile "Baglanti yok" yazmaya
+        // devam ediyordu.
         onAsagiCek = {
             viewModel.yenile()
+            seciciViewModel.yukle()
             // Kullanici bilerek yeniledi: onbellegi atlayip taze hava aliyoruz.
             havaViewModel.yukle(zorla = true)
         },
-        onTekrarDeneTikla = { viewModel.yukle() },
+        onTekrarDeneTikla = {
+            viewModel.yukle()
+            seciciViewModel.yukle()
+        },
         onIzinIste = konumIzniIste,
         onHavaTekrarDene = { havaViewModel.yukle(zorla = true) },
         onCipTikla = seciciViewModel::panelAc,
@@ -181,7 +189,10 @@ fun AnaSayfaIcerik(
                 .padding(horizontal = 16.dp)
         ) {
             when {
-                uiState.yukleniyor -> CircularProgressIndicator(
+                // Daire sadece gosterecek bir sey yokken cikiyor. Elde veri
+                // varken listeyi daireyle degistirmek, sekmeden her donuste
+                // listeyi sifirdan kurup kaydirma konumunu sifirliyordu.
+                uiState.yukleniyor && uiState.kayitlar.isEmpty() -> CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )
 

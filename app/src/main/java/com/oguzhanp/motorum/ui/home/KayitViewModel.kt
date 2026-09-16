@@ -26,9 +26,15 @@ class KayitViewModel @Inject constructor(
     // Onu private yapıp dışarıya sadece okunabilir StateFlow versiyonunu açıyoruz.
     // Böylece bir UI dosyası kazara viewModel.kayitlar.value = yazamaz
 
-    fun yukle() {
+    // temizle: motor degistiginde true geliyor. Eldeki liste artik baska bir
+    // motora ait, ekranda birakmak yanlis bilgi gostermek olurdu; bosaltiyoruz
+    // ki yerine dairesi ciksin. Normal acilislarda liste yerinde kaliyor.
+    fun yukle(temizle: Boolean = false) {
         viewModelScope.launch {
-            _uiState.update { it.copy(yukleniyor = true, hata = null) }
+            _uiState.update {
+                if (temizle) it.copy(kayitlar = emptyList(), yukleniyor = true, hata = null)
+                else it.copy(yukleniyor = true, hata = null)
+            }
             yaz(depo.kayitlariGetir())
         }
     }
