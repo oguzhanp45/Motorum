@@ -2,6 +2,9 @@ package com.oguzhanp.motorum.ui.form
 
 import com.oguzhanp.motorum.model.Kategori
 import com.oguzhanp.motorum.model.Mola
+import com.oguzhanp.motorum.util.ayEkle
+import com.oguzhanp.motorum.util.ayniGun
+import com.oguzhanp.motorum.util.saatAl
 import com.oguzhanp.motorum.util.tarihSaatBirlestir
 
 
@@ -28,9 +31,11 @@ sealed interface KayitFormu {
         val tarihMillis: Long = System.currentTimeMillis(),
         val litreYazi: String = "",
         val tutarYazi: String = "",
+        val kmYazi: String = "",
         override val not: String = "",
         val litreHatali: Boolean = false,
-        val tutarHatali: Boolean = false
+        val tutarHatali: Boolean = false,
+        val kmHatali: Boolean = false
     ) : KayitFormu {
 
         override val kategori get() = Kategori.YAKIT
@@ -39,18 +44,28 @@ sealed interface KayitFormu {
         val litre: Double? get() = litreYazi.replace(',', '.').toDoubleOrNull()
         val tutar: Double? get() = tutarYazi.replace(',', '.').toDoubleOrNull()
 
+        // Km tam sayi: sayac ondalik gostermiyor. Bos birakilirsa null, yani
+        // "girilmedi" demek; hata degil.
+        val km: Int? get() = kmYazi.trim().toIntOrNull()
+
         // null -> 0.0 sayilir, yani bos da gecersiz, harf de gecersiz, 0 da gecersiz.
         private val litreGecersiz: Boolean get() = (litre ?: 0.0) <= 0.0
         private val tutarGecersiz: Boolean get() = (tutar ?: 0.0) <= 0.0
 
+        // Km istege bagli oldugu icin bos olmasi sorun degil; ama bir sey
+        // yazildiysa okunabilir ve sifirdan buyuk olmali.
+        private val kmGecersiz: Boolean
+            get() = kmYazi.isNotBlank() && (km ?: 0) <= 0
+
         // Form kaydedilebilir mi? girdiye bakar
-        override val gecerli: Boolean get() = !litreGecersiz && !tutarGecersiz
+        override val gecerli: Boolean get() = !litreGecersiz && !tutarGecersiz && !kmGecersiz
 
         override fun notDegistir(yeni: String): Yakit = copy(not = yeni)
 
         override fun dogrula(): Yakit = copy(
             litreHatali = litreGecersiz,
-            tutarHatali = tutarGecersiz
+            tutarHatali = tutarGecersiz,
+            kmHatali = kmGecersiz
         )
     }
 
@@ -107,6 +122,14 @@ sealed interface KayitFormu {
         val hatirlatmaTarihMillis: Long = System.currentTimeMillis(),
         val hatirlatmaSaat: Int? = null,
         val hatirlatmaDakika: Int? = null,
+        // Secili hazir aralik (1, 3, 6 ay). null = "Ozel": tarih elle secildi.
+        val hatirlatmaAyi: Int? = null,
+        // Duzenlemeye acilan kaydin mevcut hatirlatmasi. Zamani gecmis olsa da
+        // kullanici ona dokunmadiysa kayit kaydedilebilmeli; bu yuzden ayri tutuluyor.
+        val kayitliHatirlatma: Long? = null,
+        // Kaydin "yapildi" isareti. Form onu gostermiyor ama kaydederken
+        // kaybetmemeli: kullanici sadece notu duzelttiyse isaret kalsin.
+        val kayitliYapildi: Long? = null,
         val bakimTuruHatali: Boolean = false,
         val tutarHatali: Boolean = false,
         val hatirlatmaHatali: Boolean = false
@@ -127,10 +150,68 @@ sealed interface KayitFormu {
         private val bakimTuruGecersiz: Boolean get() = bakimTuru.isBlank()
         private val tutarGecersiz: Boolean get() = (tutar ?: 0.0) <= 0.0
 
-        // Anahtar acik ama saat secilmemis ya da secilen an gecmiste kalmis.
-        // Gecmise alarm kurulamaz, o yuzden kaydetmeye de izin vermiyoruz.
-        private val hatirlatmaGecersiz: Boolean
+        // Secilen an gecmiste mi. Kayitli (dokunulmamis) hatirlatma gecmiste
+        // olabilir: zaten calmis bir hatirlatma, hata degil.
+        val hatirlatmaGecmiste: Boolean
             get() = hatirlatmaAcik && (hatirlatmaMillis ?: 0L) <= System.currentTimeMillis()
+
+        // Gecmise alarm kurulamaz, o yuzden yeni secilen gecmis ani kabul etmiyoruz.
+        private val hatirlatmaGecersiz: Boolean
+            get() = hatirlatmaGecmiste && hatirlatmaMillis != kayitliHatirlatma
+
+        // Hatirlatma degismediyse "yapildi" isareti korunuyor. Yeni bir tarih
+        // secildiyse ya da hatirlatma kapatildiysa isaret de kalkiyor: yeni
+        // hatirlatma henuz yapilmadi.
+        val korunanYapildi: Long?
+            get() = kayitliYapildi.takeIf { hatirlatmaMillis == kayitliHatirlatma }
+
+        // Anahtar acildiginda. Ilk kez aciliyorsa tasarimdaki varsayilanlar:
+        // bakim tarihinden 3 ay sonra, saat 10:00. Daha once secilmis bir deger
+        // varsa (kapatip tekrar acmak) ona dokunmuyoruz.
+        fun hatirlatmayiAc(): Bakim =
+            if (hatirlatmaSaat == null || hatirlatmaDakika == null) {
+                copy(
+                    hatirlatmaAcik = true,
+                    hatirlatmaAyi = VARSAYILAN_ARALIK,
+                    hatirlatmaTarihMillis = ayEkle(tarihMillis, VARSAYILAN_ARALIK),
+                    hatirlatmaSaat = VARSAYILAN_SAAT,
+                    hatirlatmaDakika = 0
+                )
+            } else {
+                copy(hatirlatmaAcik = true)
+            }
+
+        // Hazir aralik cipine basildi: tarih bakim tarihinden sayiliyor.
+        fun araligiSec(ay: Int): Bakim = copy(
+            hatirlatmaAyi = ay,
+            hatirlatmaTarihMillis = ayEkle(tarihMillis, ay),
+            hatirlatmaHatali = false
+        )
+
+        // Bakim tarihi degisince secili aralik da onunla kayiyor: "3 ay sonra"
+        // secilmisse hala 3 ay sonrasi olsun. Ozel tarihe dokunulmuyor.
+        fun tarihDegistir(yeni: Long): Bakim = copy(
+            tarihMillis = yeni,
+            hatirlatmaTarihMillis = hatirlatmaAyi?.let { ayEkle(yeni, it) } ?: hatirlatmaTarihMillis
+        )
+
+        // Tarih elle secildi: artik hazir aralik degil, "Ozel".
+        // Bugun secildi ve saat (orn. 10:00) coktan gectiyse saati bir sonraki
+        // tam saate aliyoruz; yoksa kullanici neden kaydedemedigini anlamiyordu.
+        fun hatirlatmaTarihiSec(yeni: Long): Bakim {
+            val simdi = System.currentTimeMillis()
+            val saatGecmis = ayniGun(yeni, simdi) &&
+                    tarihSaatBirlestir(yeni, hatirlatmaSaat ?: 0, hatirlatmaDakika ?: 0) <= simdi
+            val sonrakiSaat = saatAl(simdi) + 1
+            return copy(
+                hatirlatmaTarihMillis = yeni,
+                hatirlatmaAyi = null,
+                hatirlatmaHatali = false,
+                // 23'ten sonra ayni gunde tam saat kalmiyor; o zaman dokunmuyoruz.
+                hatirlatmaSaat = if (saatGecmis && sonrakiSaat <= 23) sonrakiSaat else hatirlatmaSaat,
+                hatirlatmaDakika = if (saatGecmis && sonrakiSaat <= 23) 0 else hatirlatmaDakika
+            )
+        }
 
         override val gecerli: Boolean
             get() = !bakimTuruGecersiz && !tutarGecersiz && !hatirlatmaGecersiz
@@ -169,6 +250,19 @@ sealed interface KayitFormu {
             tutarHatali = tutarGecersiz
         )
     }
+}
+
+// Formdaki hazir araliklar ve varsayilanlar. Belgeler geldiginde ayni
+// liste orada da kullanilabilir.
+val HATIRLATMA_ARALIKLARI = listOf(1, 3, 6)
+private const val VARSAYILAN_ARALIK = 3
+private const val VARSAYILAN_SAAT = 10
+
+// Kayitli bir hatirlatma bakim tarihinden tam 1, 3 ya da 6 ay sonraya
+// dusuyorsa o cip secili gelsin; degilse "Ozel".
+fun hatirlatmaAraligiBul(tarihMillis: Long, hatirlatmaMillis: Long?): Int? {
+    hatirlatmaMillis ?: return null
+    return HATIRLATMA_ARALIKLARI.firstOrNull { ayniGun(ayEkle(tarihMillis, it), hatirlatmaMillis) }
 }
 
 // Kategori degisince o kategorinin bos formu kurulur (form sifirlanir karari).

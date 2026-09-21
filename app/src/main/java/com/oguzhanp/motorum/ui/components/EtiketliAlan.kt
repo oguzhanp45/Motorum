@@ -7,9 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -96,7 +93,7 @@ private fun EtiketliAlanPreview() {
                 etiket = "Plaka (isteğe bağlı)",
                 deger = "34 BKR 102",
                 onDegis = {},
-                ikon = Icons.Default.Badge
+                ikon = MotorumIkonlari.Plaka
             )
             EtiketliAlan(
                 etiket = "Marka",
@@ -104,7 +101,7 @@ private fun EtiketliAlanPreview() {
                 deger = "",
                 onDegis = {},
                 ipucu = "Örn: Yamaha, Honda",
-                ikon = Icons.Default.TwoWheeler
+                ikon = MotorumIkonlari.Motor
             )
             EtiketliAlan(
                 etiket = "Model",

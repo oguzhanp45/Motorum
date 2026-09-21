@@ -7,12 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -36,6 +30,7 @@ import com.oguzhanp.motorum.ui.theme.AksiyonMaviZemin
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MetinSolgun
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 @Composable
 fun MotorKarti(
@@ -85,8 +80,8 @@ fun MotorKarti(
             }
 
             Icon(
-                imageVector = if (secili) Icons.Default.CheckCircle
-                else Icons.Default.RadioButtonUnchecked,
+                imageVector = if (secili) MotorumIkonlari.Onay
+                else MotorumIkonlari.BosDaire,
                 contentDescription = if (secili) "Seçili motor" else "Bu motora geç",
                 tint = if (secili) MaterialTheme.colorScheme.primary else MetinSolgun
             )
@@ -97,7 +92,7 @@ fun MotorKarti(
             Box {
                 IconButton(onClick = { menuAcik = true }) {
                     Icon(
-                        Icons.Default.MoreVert,
+                        MotorumIkonlari.DahaFazla,
                         contentDescription = "Motor menüsü",
                         tint = MetinIkincil
                     )
@@ -105,7 +100,7 @@ fun MotorKarti(
                 DropdownMenu(expanded = menuAcik, onDismissRequest = { menuAcik = false }) {
                     DropdownMenuItem(
                         text = { Text("Düzenle") },
-                        leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                        leadingIcon = { Icon(MotorumIkonlari.Duzenle, contentDescription = null) },
                         onClick = {
                             menuAcik = false
                             onDuzenleTikla()
@@ -115,7 +110,7 @@ fun MotorKarti(
                         text = { Text("Sil", color = MaterialTheme.colorScheme.error) },
                         leadingIcon = {
                             Icon(
-                                Icons.Default.Delete,
+                                MotorumIkonlari.Sil,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.error
                             )

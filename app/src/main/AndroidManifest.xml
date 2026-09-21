@@ -9,6 +9,10 @@
          sistemden pil yonetimini devralmiyoruz. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Telefon acildiginda haber almak icin. Android yeniden baslatmada
+         alarmlari siliyor; hatirlatmalari bu yayinla geri kuruyoruz. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <!-- Hava durumu icin konum. Ikisi birlikte tanimlanmak zorunda: FINE tek
          basina istenirse Android 12'den beri sistem istegi yok sayiyor.
          Kullanici "Yaklasik" secerse sadece COARSE geliyor, o da bize yetiyor. -->
@@ -28,6 +32,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Motorum.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -37,12 +42,24 @@
             </intent-filter>
         </activity>
 
-        <!-- Alarm caldiginda sistem bunu uyandiriyor. exported="false":
+        <!-- Alarm caldiginda ve bildirim dugmelerine basilinca sistem bunu uyandiriyor. exported="false":
              disaridan tetiklenemiyor. Niyeti dogrudan bu sinifa yonlendirdigimiz
              icin intent-filter'a da gerek yok. -->
         <receiver
             android:name=".data.HatirlatmaAlicisi"
             android:exported="false" />
+
+        <!-- Telefon acilinca ve uygulama guncellenince alarmlari yeniden kuruyor.
+             exported="false" olsa da sistem yayinlari ulasiyor; baska uygulamalar
+             bu aliciyi tetikleyemiyor. -->
+        <receiver
+            android:name=".data.HatirlatmaYenileyici"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
         <!-- Kamera uygulamasi ayri bir uygulama. Ona file:// yolu uzatmak
              Android 7'den beri yasak; FileProvider kendi dosyamiz icin

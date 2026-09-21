@@ -19,6 +19,11 @@ data class KayitSonucu(
 
 // @Singleton: uygulamada tek ornek. Onceden her ViewModel kendi deposunu
 // uretiyordu, yani onbellek de uc kez ayri tutuluyordu.
+// KayitBelgesi'ndeki alanlarin adi. update() alani adiyla istiyor; ad degisirse
+// burasi da degismeli.
+private const val ALAN_HATIRLATMA = "hatirlatmaMillis"
+private const val ALAN_YAPILDI = "hatirlatmaYapildiMillis"
+
 @Singleton
 class KayitDeposu @Inject constructor(
     private val auth: FirebaseAuth,
@@ -71,6 +76,29 @@ class KayitDeposu @Inject constructor(
             val motorId = motorDeposu.seciliMotorId() ?: return "Önce bir motor eklemelisin"
             // set ayni id'ye yazinca belgeyi bastan yaziyor: ekleme ve duzenleme ayni fonksiyon.
             kayitlarKoleksiyonu(uid, motorId).document(kayit.id).set(kayit.belgeyeCevir()).await()
+            null
+        } catch (hata: Exception) {
+            hataMesaji(hata)
+        }
+    }
+
+    // Bildirimdeki iki dugme kaydin tamamini degil tek alanini degistiriyor.
+    // Motor kimligi disaridan geliyor: bildirim, o an secili olmayan bir
+    // motorun kaydina ait olabilir. null = kaydedildi.
+
+    // "1 hafta ertele"
+    suspend fun hatirlatmayiGuncelle(motorId: String, kayitId: String, zamanMillis: Long?): String? =
+        alanGuncelle(motorId, kayitId, ALAN_HATIRLATMA, zamanMillis)
+
+    // "Yaptirdim"
+    suspend fun hatirlatmaYapildiYaz(motorId: String, kayitId: String, zamanMillis: Long): String? =
+        alanGuncelle(motorId, kayitId, ALAN_YAPILDI, zamanMillis)
+
+    private suspend fun alanGuncelle(motorId: String, kayitId: String, alan: String, deger: Any?): String? {
+        if (!agDurumu.internetVar()) return INTERNET_YOK
+        return try {
+            val uid = auth.currentUser?.uid ?: return OTURUM_YOK
+            kayitlarKoleksiyonu(uid, motorId).document(kayitId).update(alan, deger).await()
             null
         } catch (hata: Exception) {
             hataMesaji(hata)

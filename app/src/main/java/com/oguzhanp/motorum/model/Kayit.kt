@@ -20,7 +20,11 @@ sealed interface Kayit {
         override val tarihMillis: Long,
         override val tutar: Double,   //o dolumda ödenen toplam TL
         override val not: String = "",
-        val litre: Double
+        val litre: Double,
+        // Dolum anindaki kilometre sayaci. Istege bagli: eski kayitlarda yok,
+        // kullanici da her dolumda girmek zorunda degil. Sayac okumasi sayiliyor:
+        // gidilen yolu ve km basi maliyeti besliyor.
+        val km: Int? = null
     ) : Kayit {
 
         val birimFiyat: Double get() = tutar / litre
@@ -58,11 +62,25 @@ sealed interface Kayit {
         // Istege bagli hatirlatma zamani. null = hatirlatma kurulmamis.
         // Sadece bakimda var: yakit alimi ya da aksesuar icin hatirlatmanin
         // anlami yok, o yuzden ortak arayuze konmadi.
-        val hatirlatmaMillis: Long? = null
+        val hatirlatmaMillis: Long? = null,
+        // Kullanici "Yaptirdim" dediginde o an. null = henuz yapilmadi.
+        // Hatirlatmanin kendisi silinmiyor: ne zaman kuruldugu da gecmisin parcasi.
+        val hatirlatmaYapildiMillis: Long? = null
     ) : Kayit {
 
         val hatirlatmaVar: Boolean get() = hatirlatmaMillis != null
         override val kategori get() = Kategori.BAKIM
+
+        // Cipin ve panelin baktigi tek yer. null = hatirlatma kurulmamis.
+        // simdi disaridan: fonksiyon saf kalsin, test edilebilsin.
+        fun hatirlatmaDurumu(simdi: Long = System.currentTimeMillis()): HatirlatmaDurumu? {
+            val zaman = hatirlatmaMillis ?: return null
+            return when {
+                hatirlatmaYapildiMillis != null -> HatirlatmaDurumu.YAPILDI
+                zaman <= simdi -> HatirlatmaDurumu.ZAMANI_GELDI
+                else -> HatirlatmaDurumu.ILERIDE
+            }
+        }
     }
 
     data class Aksesuar(
@@ -75,3 +93,8 @@ sealed interface Kayit {
         override val kategori get() = Kategori.AKSESUAR
     }
 }
+
+// Bir bakim hatirlatmasinin uc hali: gri (bekliyor), kehribar (zamani geldi,
+// yapilmadi), yesil (yapildi). "Zamani geldi" kullanici bir sey yapana kadar
+// kaliyor: unutulan bakim gozden kacmasin.
+enum class HatirlatmaDurumu { ILERIDE, ZAMANI_GELDI, YAPILDI }

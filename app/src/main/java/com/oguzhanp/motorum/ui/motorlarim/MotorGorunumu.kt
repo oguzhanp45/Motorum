@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,10 +37,16 @@ import com.oguzhanp.motorum.ui.theme.MotorIndigo
 import com.oguzhanp.motorum.ui.theme.MotorIndigoZemin
 import com.oguzhanp.motorum.ui.theme.MotorLacivert
 import com.oguzhanp.motorum.ui.theme.MotorLacivertZemin
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 data class MotorGorunumu(val renk: Color, val zemin: Color)
 
-private val MOTOR_PALETI = listOf(
+// Palet temaya gore degisiyor, o yuzden sabit bir liste degil: her okumada o
+// an gecerli temanin renkleriyle kuruluyor. Sira ayni kaldigi icin bir motorun
+// "rengi" iki temada da ayni aileden: acikta indigo, karanlikta acik indigo.
+@Composable
+@ReadOnlyComposable
+private fun motorPaleti(): List<MotorGorunumu> = listOf(
     MotorGorunumu(MotorIndigo, MotorIndigoZemin),
     MotorGorunumu(MotorGok, MotorGokZemin),
     MotorGorunumu(MotorLacivert, MotorLacivertZemin),
@@ -54,8 +59,12 @@ private val MOTOR_PALETI = listOf(
 // String.hashCode() Java'da tanimli ve sabit bir algoritma, yani ayni kimlik
 // her cihazda ve her calistirmada ayni rengi veriyor.
 // mod (rem degil) negatif hash'te de pozitif sonuc donuyor.
-fun motorGorunumu(motorId: String): MotorGorunumu =
-    MOTOR_PALETI[motorId.hashCode().mod(MOTOR_PALETI.size)]
+@Composable
+@ReadOnlyComposable
+fun motorGorunumu(motorId: String): MotorGorunumu {
+    val palet = motorPaleti()
+    return palet[motorId.hashCode().mod(palet.size)]
+}
 
 // base64 metni goruntuye cevirir. Bozuk ya da bos metinde null donuyor:
 // ekranda fotograf yerine ikon cikiyor, uygulama cokmuyor.
@@ -92,7 +101,7 @@ fun MotorGorseli(
     ) {
         if (gorsel == null) {
             Icon(
-                Icons.Default.TwoWheeler,
+                MotorumIkonlari.Motor,
                 contentDescription = null,
                 tint = gorunum.renk,
                 modifier = Modifier.size(boyut * 0.55f)

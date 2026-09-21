@@ -1,8 +1,6 @@
 package com.oguzhanp.motorum.ui.ekle.components
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.util.formatSaat
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 // Saat gosterimi + saat secici diyalogu. TarihSecici ile ayni kalip.
 // Material3'te hazir bir TimePickerDialog yok, TimePicker bir AlertDialog icine konuyor.
@@ -39,35 +38,52 @@ fun SaatSecici(
         label = { Text(etiket) },
         trailingIcon = {
             IconButton(onClick = { acik = true }) {
-                Icon(Icons.Default.Schedule, contentDescription = "Saat sec")
+                Icon(MotorumIkonlari.Saat, contentDescription = "Saat sec")
             }
         },
         modifier = modifier
     )
 
     if (acik) {
-        val durum = rememberTimePickerState(
-            initialHour = saat ?: 0,
-            initialMinute = dakika ?: 0,
-            is24Hour = true
-        )
-
-        AlertDialog(
-            onDismissRequest = { acik = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onSaatSec(durum.hour, durum.minute)
-                        acik = false
-                    }
-                ) { Text("Tamam") }
-            },
-            dismissButton = {
-                TextButton(onClick = { acik = false }) { Text("Iptal") }
-            },
-            text = { TimePicker(state = durum) }
+        SaatDiyalogu(
+            saat = saat,
+            dakika = dakika,
+            onSaatSec = onSaatSec,
+            onKapat = { acik = false }
         )
     }
+}
+
+// Saat diyalogunun kendisi; TarihDiyalogu ile ayni sebeple ayri.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SaatDiyalogu(
+    saat: Int?,
+    dakika: Int?,
+    onSaatSec: (Int, Int) -> Unit,
+    onKapat: () -> Unit
+) {
+    val durum = rememberTimePickerState(
+        initialHour = saat ?: 0,
+        initialMinute = dakika ?: 0,
+        is24Hour = true
+    )
+
+    AlertDialog(
+        onDismissRequest = onKapat,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onSaatSec(durum.hour, durum.minute)
+                    onKapat()
+                }
+            ) { Text("Tamam") }
+        },
+        dismissButton = {
+            TextButton(onClick = onKapat) { Text("Iptal") }
+        },
+        text = { TimePicker(state = durum) }
+    )
 }
 
 @Preview(showBackground = true)

@@ -14,7 +14,8 @@ fun Kayit.belgeyeCevir(): KayitBelgesi = when (this) {
         tarihMillis = tarihMillis,
         tutar = tutar,
         not = not,
-        litre = litre
+        litre = litre,
+        km = km
     )
 
     is Kayit.RoadTrip -> KayitBelgesi(
@@ -33,7 +34,8 @@ fun Kayit.belgeyeCevir(): KayitBelgesi = when (this) {
         tutar = tutar,
         not = not,
         bakimTuru = bakimTuru,
-        hatirlatmaMillis = hatirlatmaMillis
+        hatirlatmaMillis = hatirlatmaMillis,
+        hatirlatmaYapildiMillis = hatirlatmaYapildiMillis
     )
 
     is Kayit.Aksesuar -> KayitBelgesi(
@@ -58,7 +60,9 @@ fun KayitBelgesi.kayidaCevir(): Kayit? {
             tutar = tutar,
             not = not,
             // return bir ifade olarak kullanilabiliyor: alan eksikse belgeyi hic uretme.
-            litre = litre ?: return null
+            litre = litre ?: return null,
+            // Km istege bagli: yoksa null kaliyor, belge bozuk sayilmiyor.
+            km = km
         )
 
         // tarihMillis verilmiyor: modelde baslangic'tan turuyor. DTO'daki kopya
@@ -79,7 +83,8 @@ fun KayitBelgesi.kayidaCevir(): Kayit? {
             not = not,
             bakimTuru = bakimTuru ?: return null,
             // Hatirlatma istege bagli: yoksa null kaliyor, belge bozuk sayilmiyor.
-            hatirlatmaMillis = hatirlatmaMillis
+            hatirlatmaMillis = hatirlatmaMillis,
+            hatirlatmaYapildiMillis = hatirlatmaYapildiMillis
         )
 
         Kategori.AKSESUAR.name -> Kayit.Aksesuar(
