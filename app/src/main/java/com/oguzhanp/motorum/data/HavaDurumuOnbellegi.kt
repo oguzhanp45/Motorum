@@ -52,6 +52,15 @@ class HavaDurumuOnbellegi @Inject constructor(
         )
     }
 
+    // Ayarlar sayfasinda "Son guncelleme: 14:30" yazisi icin. Bayat olsa da
+    // donuyor: burada sorulan "ne zaman yazildi", "hala gecerli mi" degil.
+    suspend fun sonGuncelleme(): Long? = context.havaDataStore.data.first()[ZAMAN]
+
+    // Dosyanin tamami gidiyor; bir sonraki acilista hava sunucudan taze geliyor.
+    suspend fun temizle() {
+        context.havaDataStore.edit { it.clear() }
+    }
+
     // Tek edit blogu: DataStore yedi anahtari butun olarak yaziyor,
     // yarim kalmis bir onbellek olusmuyor.
     suspend fun yaz(hava: HavaDurumu) {

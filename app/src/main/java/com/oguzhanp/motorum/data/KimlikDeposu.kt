@@ -17,6 +17,9 @@ class KimlikDeposu @Inject constructor(
 
     val oturumAcik: Boolean get() = auth.currentUser != null
 
+    // Ayarlar sayfasindaki hesap satiri icin. Oturum yoksa bos.
+    val eposta: String get() = auth.currentUser?.email.orEmpty()
+
     suspend fun girisYap(eposta: String, sifre: String): String? = try {
         auth.signInWithEmailAndPassword(eposta, sifre).await()
         null

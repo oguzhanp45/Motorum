@@ -1,6 +1,7 @@
 package com.oguzhanp.motorum
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -8,11 +9,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.oguzhanp.motorum.data.HatirlatmaIstegi
 import com.oguzhanp.motorum.ui.ayarlar.AyarlarSayfasi
 import com.oguzhanp.motorum.ui.detay.KayitDetaySayfasi
 import com.oguzhanp.motorum.ui.ekle.KayitEkleSayfasi
 import com.oguzhanp.motorum.ui.home.AnaSayfa
 import com.oguzhanp.motorum.ui.home.KayitViewModel
+import com.oguzhanp.motorum.ui.istatistik.IstatistikSayfasi
 import com.oguzhanp.motorum.ui.kimlik.GirisSayfasi
 import com.oguzhanp.motorum.ui.kimlik.GirisViewModel
 import com.oguzhanp.motorum.ui.kimlik.UyeOlSayfasi
@@ -25,7 +28,12 @@ import com.oguzhanp.motorum.ui.onboarding.OnboardingViewModel
 
 // Uygulamanin kokü: NavHost burada.
 @Composable
-fun MotorumApp(baslangicRotasi: String) {
+fun MotorumApp(
+    baslangicRotasi: String,
+    // Bildirimin govdesine dokunulduysa dolu gelir. Islenince tuketiliyor.
+    hatirlatmaIstegi: HatirlatmaIstegi? = null,
+    onHatirlatmaIstegiIslendi: () -> Unit = {}
+) {
     // Gecmisi (back stack) tutan nesne
     val navController = rememberNavController()
 
@@ -149,7 +157,8 @@ fun MotorumApp(baslangicRotasi: String) {
         composable(Routes.KAYIT_EKLE) {
             // ekleViewModel verilmiyor: ekran onu kendisi uretiyor (hiltViewModel() varsayilani)
             KayitEkleSayfasi(
-                navController = navController
+                navController = navController,
+                kayitViewModel = viewModel
             )
         }
         composable(Routes.KAYIT_DETAY) { backStackEntry ->
@@ -160,5 +169,27 @@ fun MotorumApp(baslangicRotasi: String) {
                 kayitId = id
             )
         }
+        composable(Routes.ISTATISTIK) {
+            // Ayni viewModel veriliyor: istatistik sayfasinin kendi deposu yok,
+            // ana sayfanin cektigi listeden hesapliyor.
+            IstatistikSayfasi(
+                kayitViewModel = viewModel,
+                navController = navController
+            )
+        }
+    }
+
+    // Bildirimden gelindi: ana sayfaya don ve o kaydin panelini ac. NavHost
+    // kurulduktan sonra calisiyor, grafik hazir. Oturum kontrolunu MainActivity
+    // yapti; oturum yoksa buraya hic gelmiyor.
+    LaunchedEffect(hatirlatmaIstegi) {
+        val istek = hatirlatmaIstegi ?: return@LaunchedEffect
+        navController.navigate(Routes.ANA_SAYFA) {
+            // Ustte acik bir sayfa varsa (detay, istatistik) kapaniyor.
+            popUpTo(Routes.ANA_SAYFA)
+            launchSingleTop = true
+        }
+        viewModel.hatirlatmaPaneliniAc(istek.kayitId, istek.motorId)
+        onHatirlatmaIstegiIslendi()
     }
 }

@@ -6,6 +6,7 @@ import com.oguzhanp.motorum.data.HatirlatmaZamanlayici
 import com.oguzhanp.motorum.data.KayitDeposu
 import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.ui.form.KayitFormu
+import com.oguzhanp.motorum.ui.form.hatirlatmaAraligiBul
 import com.oguzhanp.motorum.ui.form.TripNoktasiFormu
 import com.oguzhanp.motorum.util.dakikaAl
 import com.oguzhanp.motorum.util.saatAl
@@ -76,6 +77,8 @@ private fun formaCevir(kayit: Kayit): KayitFormu = when (kayit) {
         tarihMillis = kayit.tarihMillis,
         litreYazi = sayiyiYaziya(kayit.litre),
         tutarYazi = sayiyiYaziya(kayit.tutar),
+        // Km girilmemisse alan bos aciliyor, "null" yazisi gorunmesin.
+        kmYazi = kayit.km?.toString() ?: "",
         not = kayit.not
     )
 
@@ -111,7 +114,10 @@ private fun formaCevir(kayit: Kayit): KayitFormu = when (kayit) {
         hatirlatmaAcik = kayit.hatirlatmaVar,
         hatirlatmaTarihMillis = kayit.hatirlatmaMillis ?: System.currentTimeMillis(),
         hatirlatmaSaat = kayit.hatirlatmaMillis?.let { saatAl(it) },
-        hatirlatmaDakika = kayit.hatirlatmaMillis?.let { dakikaAl(it) }
+        hatirlatmaDakika = kayit.hatirlatmaMillis?.let { dakikaAl(it) },
+        hatirlatmaAyi = hatirlatmaAraligiBul(kayit.tarihMillis, kayit.hatirlatmaMillis),
+        kayitliHatirlatma = kayit.hatirlatmaMillis,
+        kayitliYapildi = kayit.hatirlatmaYapildiMillis
     )
 
     is Kayit.Aksesuar -> KayitFormu.Aksesuar(

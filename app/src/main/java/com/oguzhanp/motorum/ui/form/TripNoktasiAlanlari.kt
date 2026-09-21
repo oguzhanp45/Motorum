@@ -17,6 +17,8 @@ import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.ui.ekle.components.SaatSecici
 import com.oguzhanp.motorum.ui.ekle.components.TarihSecici
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.ui.theme.UyariMetin
+import com.oguzhanp.motorum.util.formatKm
 
 // Yolculugun bir ucunun alanlari. Ayni blok "Baslangic" ve "Bitis" icin iki kez
 // kullanilacagi icin ayri composable; baslik disaridan veriliyor.
@@ -28,8 +30,14 @@ fun TripNoktasiAlanlari(
     modifier: Modifier = Modifier,
     // Bitis blogunda km hatasi "bos" ya da "baslangictan kucuk" olabilir;
     // tek mesajla ikisi de karsilaniyor.
-    kmMesaji: String = stringResource(R.string.zorunlu_alan)
+    kmMesaji: String = stringResource(R.string.zorunlu_alan),
+    // Yakit formundaki ile ayni is: girilen sayac onceki okumalarin altindaysa
+    // uyari cikiyor, kayit yine de kaydedilebiliyor.
+    sonOkuma: Int? = null
 ) {
+    val girilenKm = form.km
+    val sayacGeride = sonOkuma != null && girilenKm != null && girilenKm < sonOkuma
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -52,9 +60,17 @@ fun TripNoktasiAlanlari(
         OutlinedTextField(
             value = form.kmYazi,
             onValueChange = { onDegis(form.copy(kmYazi = it, kmHatali = false)) },
-            label = { Text("Km") },
+            label = { Text("Aktif km") },
             isError = form.kmHatali,
-            supportingText = { if (form.kmHatali) Text(kmMesaji) },
+            supportingText = {
+                when {
+                    form.kmHatali -> Text(kmMesaji)
+                    sayacGeride -> Text(
+                        text = "Son kayıttaki sayaç ${formatKm(sonOkuma)}.",
+                        color = UyariMetin
+                    )
+                }
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()

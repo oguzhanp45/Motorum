@@ -26,6 +26,8 @@ fun formatKm(deger: Int): String = String.format(TR, "%,d km", deger)
 
 fun formatBirimFiyat(deger: Double): String = String.format(TR, "%.2f ₺/L", deger)
 
+fun formatKmMaliyet(deger: Double): String = String.format(TR, "%.2f ₺/km", deger)
+
 // Duzenleme alanina yazilacak sayi. Digerlerinden farki birim ve binlik ayraci
 // koymamasi: kullanici bu metni duzenleyip geri gonderecek, sonra tekrar sayiya
 // cevrilecek. Tam sayida ondalik hic yazilmiyor (1200.0 -> "1200"), ondalikli
@@ -60,4 +62,24 @@ fun dakikaAl(millis: Long): Int {
     val takvim = Calendar.getInstance()
     takvim.timeInMillis = millis
     return takvim.get(Calendar.MINUTE)
+}
+
+// Hazir araliklar icin: "3 ay sonra". Calendar ay sonunu kendisi duzeltiyor;
+// 31 Ocak + 1 ay = 28 (ya da 29) Subat, 3 Mart'a tasmiyor.
+fun ayEkle(millis: Long, ay: Int): Long {
+    val takvim = Calendar.getInstance()
+    takvim.timeInMillis = millis
+    takvim.add(Calendar.MONTH, ay)
+    return takvim.timeInMillis
+}
+
+// Saat onemsiz, sadece takvim gunu karsilastiriliyor.
+fun ayniGun(a: Long, b: Long): Boolean = formatTarih(a) == formatTarih(b)
+
+// "12 Haziran". Bu yil degilse yil da ekleniyor: "12 Haziran 2027".
+fun formatGunAy(millis: Long): String {
+    val buYil = Calendar.getInstance().get(Calendar.YEAR)
+    val yil = Calendar.getInstance().apply { timeInMillis = millis }.get(Calendar.YEAR)
+    val kalip = if (yil == buYil) "d MMMM" else "d MMMM yyyy"
+    return SimpleDateFormat(kalip, TR).format(Date(millis))
 }
