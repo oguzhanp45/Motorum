@@ -2,12 +2,18 @@ package com.oguzhanp.motorum.data
 
 import com.oguzhanp.motorum.BuildConfig
 import com.oguzhanp.motorum.model.HavaDurumu
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
 internal const val ANAHTAR_YOK = "local.properties icinde OPENWEATHER_KEY yok"
 internal const val CEVAP_BOS = "Cevapta hava bilgisi yok"
 internal const val KONUM_YOK = "Konum alinamadi"
+
+// Son guvenlik agi: Play Services kendi suresini uyguluyor ama cagrilar askida
+// kalabiliyor. Konum saglayici en kotu durumda 15 saniye olcum bekliyor, bu sinir
+// onun bir tik ustunde olmali; yoksa olcum tamamlanmadan biz iptal ederiz.
+private const val KONUM_ZAMAN_ASIMI_MS = 20_000L
 
 data class HavaSonucu(
     val hava: HavaDurumu? = null,
@@ -38,7 +44,8 @@ class HavaDurumuDeposu @Inject constructor(
             onbellek.tazeOku()?.let { return HavaSonucu(hava = it) }
         }
 
-        val koordinat = konumSaglayici.konumAl() ?: return HavaSonucu(hata = KONUM_YOK)
+        val koordinat = withTimeoutOrNull(KONUM_ZAMAN_ASIMI_MS) { konumSaglayici.konumAl() }
+            ?: return HavaSonucu(hata = KONUM_YOK)
 
         return try {
             val yanit = servis.havaDurumu(

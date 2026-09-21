@@ -26,7 +26,12 @@ class HavaDurumuViewModel @Inject constructor(
         calisiyor = true
         viewModelScope.launch {
             try {
-                _hal.value = HavaDurumuHali.Yukleniyor
+                // Elde gosterilecek veri varken karti daireyle degistirmiyoruz:
+                // yenileme sirasinda eski deger ekranda kalsin, PullToRefresh
+                // zaten kendi gostergesini ciziyor.
+                if (_hal.value !is HavaDurumuHali.Hazir) {
+                    _hal.value = HavaDurumuHali.Yukleniyor
+                }
                 val sonuc = depo.getir(zorla)
                 _hal.value = sonuc.hava
                     ?.let { HavaDurumuHali.Hazir(it) }

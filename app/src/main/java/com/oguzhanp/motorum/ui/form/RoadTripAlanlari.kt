@@ -24,7 +24,8 @@ fun RoadTripAlanlari(
     onDegis: (KayitFormu.RoadTrip) -> Unit,
     modifier: Modifier = Modifier,
     molaGoster: Boolean = false,
-    bitisGoster: Boolean = false
+    bitisGoster: Boolean = false,
+    sonOkuma: Int? = null
 ) {
     Column(
         modifier = modifier,
@@ -34,6 +35,7 @@ fun RoadTripAlanlari(
             baslik = "Başlangıç",
             form = form.baslangic,
             onDegis = { onDegis(form.copy(baslangic = it)) },
+            sonOkuma = sonOkuma,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -51,6 +53,9 @@ fun RoadTripAlanlari(
                 form = form.bitis,
                 onDegis = { onDegis(form.copy(bitis = it)) },
                 kmMesaji = BITIS_KM_MESAJI,
+                // Bitis ucunda baslangic km kurali zaten var; onceki kayitlarin
+                // okumasi ayrica uyari olarak gosteriliyor.
+                sonOkuma = sonOkuma,
                 modifier = Modifier.fillMaxWidth()
             )
         }

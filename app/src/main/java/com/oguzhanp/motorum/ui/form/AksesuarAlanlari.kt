@@ -30,6 +30,8 @@ fun AksesuarAlanlari(
         TarihSecici(
             tarihMillis = form.tarihMillis,
             onTarihSec = { onDegis(form.copy(tarihMillis = it)) },
+            etiket = "Alım tarihi",
+            aciklama = "Aksesuarı aldığın gün",
             modifier = Modifier.fillMaxWidth()
         )
 

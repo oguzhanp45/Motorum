@@ -39,11 +39,16 @@ data class KayitBelgesi(
     val tutar: Double = 0.0,
     val not: String = "",
     val litre: Double? = null,
+    // Sadece yakit kayitlarinda, orada da istege bagli. Eski belgelerde bu alan
+    // yok; varsayilan null oldugu icin onlar da sorunsuz okunuyor.
+    val km: Int? = null,
     val bakimTuru: String? = null,
     val aksesuarAdi: String? = null,
     // Sadece bakim kayitlarinda dolu. Eski belgelerde bu alan yok, varsayilan
     // null oldugu icin onlar da sorunsuz okunuyor.
     val hatirlatmaMillis: Long? = null,
+    // "Yaptirdim" ani. Eski belgelerde yok; null = yapilmadi.
+    val hatirlatmaYapildiMillis: Long? = null,
     val baslangic: TripNoktasiBelgesi? = null,
     val bitis: TripNoktasiBelgesi? = null,
     val molalar: List<MolaBelgesi> = emptyList()

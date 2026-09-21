@@ -1,17 +1,19 @@
 package com.oguzhanp.motorum.ui.detay
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,14 +25,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.oguzhanp.motorum.core.constants.AppShape
 import com.oguzhanp.motorum.core.constants.AppSpacing
+import com.oguzhanp.motorum.model.HatirlatmaDurumu
 import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.model.TripNoktasi
 import com.oguzhanp.motorum.ui.form.AksesuarAlanlari
@@ -42,8 +49,19 @@ import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
 import com.oguzhanp.motorum.ui.form.YakitAlanlari
 import com.oguzhanp.motorum.ui.home.KayitViewModel
 import com.oguzhanp.motorum.ui.home.gorunum
+import com.oguzhanp.motorum.ui.theme.BakimMetin
+import com.oguzhanp.motorum.ui.theme.BakimRenk
+import com.oguzhanp.motorum.ui.theme.BakimZemin
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.ui.theme.Murekkep
+import com.oguzhanp.motorum.ui.theme.MurekkepUstu
+import com.oguzhanp.motorum.util.dakikaAl
+import com.oguzhanp.motorum.util.formatGunAy
+import com.oguzhanp.motorum.util.formatSaat
+import com.oguzhanp.motorum.util.saatAl
+import com.oguzhanp.motorum.util.sonKmOkumasi
 import com.oguzhanp.motorum.util.tarihSaatBirlestir
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 @Composable
 fun KayitDetaySayfasi(
@@ -72,7 +90,7 @@ fun KayitDetaySayfasi(
     val bildirimIzniIste = rememberBildirimIzni { verildi ->
         bildirimIzniVar = verildi
         (detay.form as? KayitFormu.Bakim)?.let { bakim ->
-            detayViewModel.formDegis(bakim.copy(hatirlatmaAcik = true))
+            detayViewModel.formDegis(bakim.hatirlatmayiAc())
         }
     }
 
@@ -80,8 +98,30 @@ fun KayitDetaySayfasi(
         if (detay.bitti) navController.popBackStack()
     }
 
+    // Duzenlenen kaydin kendi okumasi haric, en yuksek sayac degeri: kaydin
+    // kendisiyle karsilastirip bos yere uyari vermeyelim.
+    val sonOkuma = remember(kayitUiState.kayitlar, kayitId) {
+        sonKmOkumasi(kayitUiState.kayitlar.filterNot { it.id == kayitId })
+    }
+
+    // Zamani gelmis bakimda ustte kehribar serit. Dugmeler kaydi hemen
+    // degistiriyor; formdaki degerler eskidigi icin sayfa kapaniyor, sonuc
+    // ana sayfadaki cipte gorunuyor.
+    val zamaniGelen = (kayit as? Kayit.Bakim)
+        ?.takeIf { it.hatirlatmaDurumu() == HatirlatmaDurumu.ZAMANI_GELDI }
+
     KayitDetayIcerik(
+        zamaniGelenHatirlatma = zamaniGelen?.hatirlatmaMillis,
+        onYaptirdim = {
+            zamaniGelen?.let { kayitViewModel.hatirlatmaYaptirdim(it) }
+            navController.popBackStack()
+        },
+        onErtele = {
+            zamaniGelen?.let { kayitViewModel.hatirlatmaErtele(it) }
+            navController.popBackStack()
+        },
         form = detay.form,
+        sonOkuma = sonOkuma,
         silmeOnayiGoster = detay.silmeOnayiGoster,
         calisiyor = detay.calisiyor,
         hata = detay.hata,
@@ -102,7 +142,8 @@ fun KayitDetaySayfasi(
                         tarihMillis = kontrol.tarihMillis,
                         litre = kontrol.litre!!,
                         tutar = kontrol.tutar!!,
-                        not = kontrol.not.trim()
+                        not = kontrol.not.trim(),
+                        km = kontrol.km
                     )
 
                     is KayitFormu.RoadTrip -> Kayit.RoadTrip(
@@ -137,7 +178,9 @@ fun KayitDetaySayfasi(
                         tutar = kontrol.tutar!!,
                         not = kontrol.not.trim(),
                         bakimTuru = kontrol.bakimTuru.trim(),
-                        hatirlatmaMillis = kontrol.hatirlatmaMillis
+                        hatirlatmaMillis = kontrol.hatirlatmaMillis,
+                        // Hatirlatma degismediyse "yapildi" isareti korunuyor.
+                        hatirlatmaYapildiMillis = kontrol.korunanYapildi
                     )
 
                     is KayitFormu.Aksesuar -> Kayit.Aksesuar(
@@ -160,6 +203,7 @@ fun KayitDetaySayfasi(
 @Composable
 fun KayitDetayIcerik(
     form: KayitFormu,
+    sonOkuma: Int?,
     silmeOnayiGoster: Boolean,
     calisiyor: Boolean,
     hata: String?,
@@ -169,7 +213,11 @@ fun KayitDetayIcerik(
     onSilmeOnayiDegis: (Boolean) -> Unit,// Diyalogu acmak ve iptal etmek ayni islem.true/false yapmak.
     onSilOnayla: () -> Unit,
     onGuncelleTikla: () -> Unit,
-    onGeriTikla: () -> Unit
+    onGeriTikla: () -> Unit,
+    // Zamani gelmis hatirlatma varsa zamani; yoksa null ve serit cikmiyor.
+    zamaniGelenHatirlatma: Long? = null,
+    onYaptirdim: () -> Unit = {},
+    onErtele: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -177,7 +225,7 @@ fun KayitDetayIcerik(
                 title = { Text("Kayıt Detayı") },
                 navigationIcon = {
                     IconButton(onClick = onGeriTikla) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                        Icon(MotorumIkonlari.Geri, contentDescription = "Geri")
                     }
                 },
                 actions = {
@@ -185,7 +233,7 @@ fun KayitDetayIcerik(
                         onClick = { onSilmeOnayiDegis(true) },
                         enabled = !calisiyor
                     ) {
-                        Icon(Icons.Default.Delete, contentDescription = "Sil")
+                        Icon(MotorumIkonlari.Sil, contentDescription = "Sil")
                     }
                 }
             )
@@ -198,6 +246,14 @@ fun KayitDetayIcerik(
                 .padding(AppSpacing.normal),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            if (zamaniGelenHatirlatma != null) {
+                ZamaniGeldiSeridi(
+                    zaman = zamaniGelenHatirlatma,
+                    onYaptirdim = onYaptirdim,
+                    onErtele = onErtele
+                )
+            }
+
             Text(
                 text = "Kategori: ${form.kategori.etiket}",
                 style = MaterialTheme.typography.bodyLarge
@@ -209,6 +265,7 @@ fun KayitDetayIcerik(
                 is KayitFormu.Yakit -> YakitAlanlari(
                     form = form,
                     onDegis = onFormDegis,
+                    sonOkuma = sonOkuma,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -217,6 +274,7 @@ fun KayitDetayIcerik(
                     onDegis = onFormDegis,
                     molaGoster = true,
                     bitisGoster = true,
+                    sonOkuma = sonOkuma,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -287,12 +345,66 @@ fun KayitDetayIcerik(
     }
 }
 
+// Kehribar serit: detayi acan kullanici zamani gelen bakimi kacirmasin.
+// Paneldeki ilk iki eylem burada da var; "kapat" icin formdaki anahtar yeterli.
+@Composable
+private fun ZamaniGeldiSeridi(zaman: Long, onYaptirdim: () -> Unit, onErtele: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(AppShape.alan)
+            .background(BakimZemin)
+            .padding(horizontal = 14.dp, vertical = AppSpacing.orta)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(
+                MotorumIkonlari.Bildirim,
+                contentDescription = null,
+                tint = BakimRenk,
+                modifier = Modifier.size(18.dp)
+            )
+            Column {
+                Text(
+                    text = "Zamanı geldi",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = BakimMetin
+                )
+                Text(
+                    text = "${formatGunAy(zaman)}, ${formatSaat(saatAl(zaman), dakikaAl(zaman))}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = BakimMetin
+                )
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.kucuk)) {
+            Button(
+                onClick = onYaptirdim,
+                shape = AppShape.alan,
+                colors = ButtonDefaults.buttonColors(containerColor = Murekkep, contentColor = MurekkepUstu)
+            ) {
+                Icon(MotorumIkonlari.Onay, contentDescription = null, modifier = Modifier.size(16.dp))
+                Spacer(Modifier.size(6.dp))
+                Text("Yaptırdım")
+            }
+            TextButton(onClick = onErtele) {
+                Text("1 hafta ertele", color = BakimMetin, fontWeight = FontWeight.SemiBold)
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun KayitDetayIcerikPreview() {
     MotorumTheme {
         KayitDetayIcerik(
             form = KayitFormu.Yakit(),
+            sonOkuma = null,
             silmeOnayiGoster = false,
             calisiyor = false,
             hata = null,

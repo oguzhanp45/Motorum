@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,14 +41,22 @@ import com.oguzhanp.motorum.ui.form.YakitAlanlari
 import com.oguzhanp.motorum.ui.form.bosForm
 import com.oguzhanp.motorum.ui.home.gorunum
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.ui.home.KayitViewModel
+import com.oguzhanp.motorum.util.sonKmOkumasi
 import com.oguzhanp.motorum.util.tarihSaatBirlestir
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 @Composable
 fun KayitEkleSayfasi(
     navController: NavController,
+    // Ana sayfanin listesi burada sadece bir sey icin gerekiyor: en son sayac
+    // okumasini bilip formda uyari gosterebilmek.
+    kayitViewModel: KayitViewModel,
     ekleViewModel: KayitEkleViewModel = hiltViewModel()
 ) {
     val uiState by ekleViewModel.uiState.collectAsStateWithLifecycle()
+    val kayitUiState by kayitViewModel.uiState.collectAsStateWithLifecycle()
+    val sonOkuma = remember(kayitUiState.kayitlar) { sonKmOkumasi(kayitUiState.kayitlar) }
     val baglam = LocalContext.current
 
     var bildirimIzniVar by remember { mutableStateOf(bildirimIzniVerildiMi(baglam)) }
@@ -60,7 +66,7 @@ fun KayitEkleSayfasi(
     val bildirimIzniIste = rememberBildirimIzni { verildi ->
         bildirimIzniVar = verildi
         (uiState.form as? KayitFormu.Bakim)?.let { bakim ->
-            ekleViewModel.guncelle(uiState.copy(form = bakim.copy(hatirlatmaAcik = true)))
+            ekleViewModel.guncelle(uiState.copy(form = bakim.hatirlatmayiAc()))
         }
     }
 
@@ -72,6 +78,7 @@ fun KayitEkleSayfasi(
         form = uiState.form,
         kaydediliyor = uiState.kaydediliyor,
         hata = uiState.hata,
+        sonOkuma = sonOkuma,
         bildirimIzniVar = bildirimIzniVar,
         onHatirlatmaAcilsin = bildirimIzniIste,
         onFormDegis = { yeniForm -> ekleViewModel.guncelle(uiState.copy(form = yeniForm)) },
@@ -86,7 +93,10 @@ fun KayitEkleSayfasi(
                         tarihMillis = kontrol.tarihMillis,
                         litre = kontrol.litre!!,
                         tutar = kontrol.tutar!!,
-                        not = kontrol.not.trim()
+                        not = kontrol.not.trim(),
+                        // Bos birakildiysa null gidiyor: "girilmedi" ile "sifir km"
+                        // ayri seyler.
+                        km = kontrol.km
                     )
 
                     is KayitFormu.RoadTrip -> Kayit.RoadTrip(
@@ -131,6 +141,7 @@ fun KayitEkleSayfasi(
 @Composable
 fun KayitEkleIcerik(
     form: KayitFormu,
+    sonOkuma: Int?,
     bildirimIzniVar: Boolean,
     onHatirlatmaAcilsin: () -> Unit,
     kaydediliyor: Boolean,
@@ -145,7 +156,7 @@ fun KayitEkleIcerik(
                 title = { Text(stringResource(R.string.kayit_ekle)) },
                 navigationIcon = {
                     IconButton(onClick = onGeriTikla) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                        Icon(MotorumIkonlari.Geri, contentDescription = "Geri")
                     }
                 }
             )
@@ -171,12 +182,14 @@ fun KayitEkleIcerik(
                 is KayitFormu.Yakit -> YakitAlanlari(
                     form = form,
                     onDegis = onFormDegis,
+                    sonOkuma = sonOkuma,
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 is KayitFormu.RoadTrip -> RoadTripAlanlari(
                     form = form,
                     onDegis = onFormDegis,
+                    sonOkuma = sonOkuma,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -235,6 +248,7 @@ private fun KayitEkleIcerikPreview() {
     MotorumTheme {
         KayitEkleIcerik(
             form = KayitFormu.Yakit(),
+            sonOkuma = null,
             bildirimIzniVar = true,
             onHatirlatmaAcilsin = {},
             kaydediliyor = false,

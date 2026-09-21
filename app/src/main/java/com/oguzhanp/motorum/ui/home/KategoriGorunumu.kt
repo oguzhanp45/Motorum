@@ -1,13 +1,11 @@
 package com.oguzhanp.motorum.ui.home
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.LocalGasStation
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Shield
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.oguzhanp.motorum.model.Kategori
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 import com.oguzhanp.motorum.ui.theme.AksesuarMetin
 import com.oguzhanp.motorum.ui.theme.AksesuarRenk
 import com.oguzhanp.motorum.ui.theme.AksesuarZemin
@@ -21,6 +19,9 @@ import com.oguzhanp.motorum.ui.theme.YakitMetin
 import com.oguzhanp.motorum.ui.theme.YakitRenk
 import com.oguzhanp.motorum.ui.theme.YakitZemin
 
+// Ikonlar MotorumIkonlari'ndan geliyor: maketlerdeki cizimlerin birebir
+// karsiligi. Material'in hazir ikonlari dolu govdeliydi, bizim tasarimimiz
+// cizgi tabanli; ikisini karistirinca ekran iki ayri setten derlenmis duruyordu.
 // Kategoriye ait gorsel bilgiler burada, model katmaninda degil:
 // Kayit ve Kategori Compose'u tanimamali, yarin veritabanina yazilirken
 // ikon ve renk orada isi olmaz.
@@ -30,44 +31,43 @@ data class KategoriGorunumu(
     val renk: Color,
     val zemin: Color,
     val metin: Color,
-    val rozet: String,
     val notEtiketi: String
 )
 
+// @Composable cunku renkler temadan okunuyor: ayni kategori acik temada
+// acik, karanlikta koyu zeminle geliyor.
+@Composable
+@ReadOnlyComposable
 fun gorunum(kategori: Kategori): KategoriGorunumu = when (kategori) {
     Kategori.YAKIT -> KategoriGorunumu(
-        ikon = Icons.Default.LocalGasStation,
+        ikon = MotorumIkonlari.Yakit,
         renk = YakitRenk,
         zemin = YakitZemin,
         metin = YakitMetin,
-        rozet = "DOLUM",
         notEtiketi = "İstasyon (isteğe bağlı)"
     )
 
     Kategori.ROAD_TRIP -> KategoriGorunumu(
-        ikon = Icons.Default.Map,
+        ikon = MotorumIkonlari.RoadTrip,
         renk = RoadTripRenk,
         zemin = RoadTripZemin,
         metin = RoadTripMetin,
-        rozet = "SÜRÜŞ",
         notEtiketi = "Not (isteğe bağlı)"
     )
 
     Kategori.BAKIM -> KategoriGorunumu(
-        ikon = Icons.Default.Build,
+        ikon = MotorumIkonlari.Bakim,
         renk = BakimRenk,
         zemin = BakimZemin,
         metin = BakimMetin,
-        rozet = "SERVİS",
         notEtiketi = "Not (isteğe bağlı)"
     )
 
     Kategori.AKSESUAR -> KategoriGorunumu(
-        ikon = Icons.Default.Shield,
+        ikon = MotorumIkonlari.Aksesuar,
         renk = AksesuarRenk,
         zemin = AksesuarZemin,
         metin = AksesuarMetin,
-        rozet = "EKİPMAN",
         notEtiketi = "Dükkan (isteğe bağlı)"
     )
 }
