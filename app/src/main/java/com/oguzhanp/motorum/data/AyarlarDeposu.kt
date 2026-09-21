@@ -8,7 +8,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.oguzhanp.motorum.model.TemaSecimi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,6 +21,9 @@ import javax.inject.Singleton
 private val Context.ayarlarDataStore: DataStore<Preferences> by preferencesDataStore(name = "ayarlar")
 
 private val ONBOARDING_BITTI = booleanPreferencesKey("onboarding_bitti")
+// Enum'un adi yaziliyor ("KARANLIK"); sirasi degil. Enum'a yeni deger eklenince
+// sira kayar ama ad ayni kalir.
+private val TEMA = stringPreferencesKey("tema")
 
 // Anahtar kullaniciya bagli. DataStore cihazda duruyor, hesapta degil: duz bir
 // "secili_motor" anahtari olsaydi A hesabindan cikip B ile girildiginde B'ye
@@ -36,6 +42,17 @@ class AyarlarDeposu @Inject constructor(
 
     suspend fun onboardingiTamamla() {
         context.ayarlarDataStore.edit { tercihler -> tercihler[ONBOARDING_BITTI] = true }
+    }
+
+    // Tema cihaza ait, hesaba degil: anahtar kullaniciya bagli degil.
+    // Akis olarak veriliyor cunku secim degisince uygulama aninda yeniden
+    // renklenmeli; tek seferlik okuma yetmez. Taninmayan deger Sistem'e dusuyor.
+    val temaSecimi: Flow<TemaSecimi> = context.ayarlarDataStore.data.map { tercihler ->
+        TemaSecimi.entries.firstOrNull { it.name == tercihler[TEMA] } ?: TemaSecimi.SISTEM
+    }
+
+    suspend fun temaSeciminiYaz(secim: TemaSecimi) {
+        context.ayarlarDataStore.edit { tercihler -> tercihler[TEMA] = secim.name }
     }
 
     suspend fun seciliMotorId(uid: String): String? =

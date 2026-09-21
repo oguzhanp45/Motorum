@@ -12,12 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.AlternateEmail
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,6 +39,7 @@ import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MetinSolgun
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.ui.theme.SekmeZemin
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 private val ALAN_SEKLI = RoundedCornerShape(12.dp)
 
@@ -157,7 +152,7 @@ fun KimlikKarti(
                 shape = ALAN_SEKLI,
                 placeholder = { Text("ornek@motorum.com", color = MetinSolgun) },
                 leadingIcon = {
-                    Icon(Icons.Default.AlternateEmail, contentDescription = null, tint = MetinSolgun)
+                    Icon(MotorumIkonlari.Eposta, contentDescription = null, tint = MetinSolgun)
                 },
                 isError = form.epostaHatali,
                 supportingText = {
@@ -175,15 +170,15 @@ fun KimlikKarti(
                 shape = ALAN_SEKLI,
                 placeholder = { Text("••••••••", color = MetinSolgun) },
                 leadingIcon = {
-                    Icon(Icons.Default.Lock, contentDescription = null, tint = MetinSolgun)
+                    Icon(MotorumIkonlari.Kilitli, contentDescription = null, tint = MetinSolgun)
                 },
                 trailingIcon = {
                     IconButton(
                         onClick = { onFormDegis(form.copy(sifreGorunur = !form.sifreGorunur)) }
                     ) {
                         Icon(
-                            imageVector = if (form.sifreGorunur) Icons.Default.Visibility
-                            else Icons.Default.VisibilityOff,
+                            imageVector = if (form.sifreGorunur) MotorumIkonlari.Goz
+                            else MotorumIkonlari.GozKapali,
                             contentDescription = if (form.sifreGorunur) "Şifreyi gizle" else "Şifreyi göster",
                             tint = MetinSolgun
                         )
@@ -228,7 +223,7 @@ fun KimlikKarti(
                     ) {
                         Text(butonMetni, fontWeight = FontWeight.SemiBold)
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            imageVector = MotorumIkonlari.Ileri,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )

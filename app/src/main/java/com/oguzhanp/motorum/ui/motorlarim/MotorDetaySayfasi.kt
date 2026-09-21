@@ -22,14 +22,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -69,6 +64,7 @@ import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MetinSolgun
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.ui.theme.SekmeZemin
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 @Composable
 fun MotorDetaySayfasi(
@@ -151,7 +147,7 @@ fun MotorDetayIcerik(
                 title = { Text(if (uiState.yeniMi) "Motor Ekle" else "Motoru Düzenle") },
                 navigationIcon = {
                     IconButton(onClick = onGeriTikla) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                        Icon(MotorumIkonlari.Geri, contentDescription = "Geri")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -181,7 +177,7 @@ fun MotorDetayIcerik(
                 deger = form.marka,
                 onDegis = { onFormDegis(form.copy(marka = it, markaHatali = false)) },
                 ipucu = "Örn: Yamaha, Honda",
-                ikon = Icons.Default.TwoWheeler,
+                ikon = MotorumIkonlari.Motor,
                 hatali = form.markaHatali,
                 hataMetni = "Marka zorunlu",
                 klavye = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
@@ -204,7 +200,7 @@ fun MotorDetayIcerik(
                 deger = form.plaka,
                 onDegis = { onFormDegis(form.copy(plaka = it)) },
                 ipucu = "Örn: 34 BKR 102",
-                ikon = Icons.Default.Badge,
+                ikon = MotorumIkonlari.Plaka,
                 klavye = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Characters,
                     keyboardType = KeyboardType.Text
@@ -319,7 +315,7 @@ private fun FotografAlani(
                     }
                 )
                 PanelSatiri(
-                    ikon = Icons.Default.PhotoCamera,
+                    ikon = MotorumIkonlari.Fotograf,
                     metin = "Fotoğraf Çek",
                     onTikla = {
                         panelAcik = false
@@ -328,7 +324,7 @@ private fun FotografAlani(
                 )
                 if (fotograf != null) {
                     PanelSatiri(
-                        ikon = Icons.Default.Delete,
+                        ikon = MotorumIkonlari.Sil,
                         metin = "Kaldır",
                         renk = MaterialTheme.colorScheme.error,
                         onTikla = {

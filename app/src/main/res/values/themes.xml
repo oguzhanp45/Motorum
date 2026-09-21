@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Motorum" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Pencere zemini: Compose ilk kareyi cizmeden once bir an gorunen yuzey.
+         Karanlik temada beyaz parlamasin diye values-night'ta koyu tonu var. -->
+    <style name="Theme.Motorum" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/pencere_zemini</item>
+    </style>
 
     <!-- installSplashScreen() calissin diye zorunlu. Gorsel ozellestirme yok;
          postSplashScreenTheme splash bitince donulecek temayi soyluyor. -->

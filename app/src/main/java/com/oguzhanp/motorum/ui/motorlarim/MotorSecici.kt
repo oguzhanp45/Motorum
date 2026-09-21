@@ -14,12 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +34,7 @@ import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MetinSolgun
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.ui.theme.SekmeZemin
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 // Ust bardaki cip. Hangi hal oldugunu MotorSeciciUiState.cipDurumu
 // soyluyor. Sadece motor seciliyken tiklaniyor, digerlerinde acilacak liste yok.
@@ -69,7 +64,7 @@ fun MotorCipi(
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Icon(
-            Icons.Default.TwoWheeler,
+            MotorumIkonlari.Motor,
             contentDescription = null,
             tint = MetinIkincil,
             modifier = Modifier.size(16.dp)
@@ -84,7 +79,7 @@ fun MotorCipi(
         )
         if (secili) {
             Icon(
-                Icons.Default.ExpandMore,
+                MotorumIkonlari.AsagiOk,
                 contentDescription = "Motor seç",
                 tint = MetinIkincil,
                 modifier = Modifier.size(16.dp)
@@ -144,7 +139,7 @@ fun MotorSecimPaneli(
                     .padding(top = 8.dp)
                     .height(48.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(MotorumIkonlari.Ekle, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text("Motor Ekle")
             }
@@ -185,8 +180,8 @@ private fun MotorSecimSatiri(
         }
 
         Icon(
-            imageVector = if (secili) Icons.Default.CheckCircle
-            else Icons.Default.RadioButtonUnchecked,
+            imageVector = if (secili) MotorumIkonlari.Onay
+            else MotorumIkonlari.BosDaire,
             contentDescription = null,
             tint = if (secili) MaterialTheme.colorScheme.primary else MetinSolgun
         )

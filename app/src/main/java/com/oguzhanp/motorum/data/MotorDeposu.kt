@@ -87,6 +87,19 @@ class MotorDeposu @Inject constructor(
         return secili.id
     }
 
+    // Secili motorun kendisi (adi lazim oldugunda: hatirlatma bildirimi).
+    // Internet yoksa null; cagiran taraf adsiz devam etmeyi bilmeli.
+    suspend fun seciliMotor(): Motor? {
+        val id = seciliMotorId() ?: return null
+        val uid = auth.currentUser?.uid ?: return null
+        if (!agDurumu.internetVar()) return null
+        return try {
+            motorlariOku(uid).firstOrNull { it.id == id }
+        } catch (hata: Exception) {
+            null
+        }
+    }
+
     // Cikista cagriliyor: cozulmus motor kimligi bellekte kalmasin, bir sonraki
     // giriste bastan cozulsun.
     fun onbellegiTemizle() {

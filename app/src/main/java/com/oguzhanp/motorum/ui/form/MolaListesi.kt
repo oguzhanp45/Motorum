@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.model.Mola
 import com.oguzhanp.motorum.ui.ekle.components.SaatSecici
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 // Bir noktanin mola satirlari. Liste degismez: her islem yeni bir liste uretip
 // onDegis ile yukari veriyor, mevcut liste hic elden gecirilmiyor.
@@ -76,13 +74,13 @@ fun MolaListesi(
 
                 // filterIndexed: silinen sira disindaki her sey yeni listeye gecer.
                 IconButton(onClick = { onDegis(molalar.filterIndexed { i, _ -> i != sira }) }) {
-                    Icon(Icons.Default.Delete, contentDescription = "Molayı sil")
+                    Icon(MotorumIkonlari.Sil, contentDescription = "Molayı sil")
                 }
             }
         }
 
         TextButton(onClick = { onDegis(molalar + Mola()) }) {
-            Icon(Icons.Default.Add, contentDescription = null)
+            Icon(MotorumIkonlari.Ekle, contentDescription = null)
             Text("Mola ekle", modifier = Modifier.padding(start = 4.dp))
         }
     }

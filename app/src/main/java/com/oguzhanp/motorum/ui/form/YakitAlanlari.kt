@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.ui.ekle.components.TarihSecici
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.ui.theme.UyariMetin
+import com.oguzhanp.motorum.util.formatKm
 
 // Yakit kategorisinin form alanlari. Hem ekleme hem detay ekrani ayni blogu cagiriyor;
 // alan eklemek/degistirmek gerektiginde tek dosya degisiyor.
@@ -23,8 +25,15 @@ import com.oguzhanp.motorum.ui.theme.MotorumTheme
 fun YakitAlanlari(
     form: KayitFormu.Yakit,
     onDegis: (KayitFormu.Yakit) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    // Bugune kadar girilmis en yuksek sayac degeri. Sadece uyari icin.
+    sonOkuma: Int? = null
 ) {
+    // Sayac geriye gidiyorsa uyariyoruz ama engellemiyoruz: kullanici gecmise
+    // ait bir kaydi sonradan giriyor olabilir, o zaman kucuk deger dogrudur.
+    val girilenKm = form.km
+    val sayacGeride = sonOkuma != null && girilenKm != null && girilenKm < sonOkuma
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -32,6 +41,8 @@ fun YakitAlanlari(
         TarihSecici(
             tarihMillis = form.tarihMillis,
             onTarihSec = { onDegis(form.copy(tarihMillis = it)) },
+            etiket = "Dolum tarihi",
+            aciklama = "Yakıt aldığın gün",
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -44,6 +55,27 @@ fun YakitAlanlari(
                 if (form.litreHatali) Text(stringResource(R.string.gecerli_sayi))
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = form.kmYazi,
+            onValueChange = { onDegis(form.copy(kmYazi = it, kmHatali = false)) },
+            label = { Text("Aktif km (isteğe bağlı)") },
+            isError = form.kmHatali,
+            supportingText = {
+                when {
+                    form.kmHatali -> Text(stringResource(R.string.gecerli_sayi))
+                    sayacGeride -> Text(
+                        text = "Son kayıttaki sayaç ${formatKm(sonOkuma)}. Geçmişe ait bir kayıt giriyorsan sorun değil.",
+                        color = UyariMetin
+                    )
+                    // Km gidilen yolu ve km basi maliyeti besliyor.
+                    else -> Text("Sayacın o anki değeri. Gidilen yolu hesaplamaya yardım eder.")
+                }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )

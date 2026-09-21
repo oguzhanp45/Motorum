@@ -13,14 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,16 +24,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.Motor
+import com.oguzhanp.motorum.data.INTERNET_YOK
+import com.oguzhanp.motorum.ui.components.BosDurum
+import com.oguzhanp.motorum.ui.components.BosGorsel
+import com.oguzhanp.motorum.ui.components.MotorcuYukleniyor
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 import com.oguzhanp.motorum.ui.navigation.AnaBolgeKabugu
 import com.oguzhanp.motorum.ui.navigation.Routes
-import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 
 @Composable
@@ -101,36 +100,34 @@ fun MotorlarimIcerik(
             // barin hemen ustunde SABIT duruyor, listeyle birlikte kaymiyor.
             Box(modifier = Modifier.weight(1f)) {
                 when {
-                    uiState.yukleniyor -> CircularProgressIndicator(
+                    uiState.yukleniyor -> MotorcuYukleniyor(
+                        mesaj = "Motorların geliyor…",
                         modifier = Modifier.align(Alignment.Center)
                     )
 
-                    uiState.hata != null -> Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = uiState.hata,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center
-                        )
-                        OutlinedButton(onClick = onTekrarDeneTikla) { Text("Tekrar Dene") }
-                    }
+                    uiState.hata != null -> BosDurum(
+                        gorsel = BosGorsel.BAGLANTI_YOK,
+                        baslik = uiState.hata,
+                        aciklama = if (uiState.hata == INTERNET_YOK) {
+                            "Motorların güvende. Bağlanınca kaldığın yerden devam edeceksin."
+                        } else {
+                            null
+                        },
+                        eylem = "Tekrar Dene",
+                        eylemIkonu = MotorumIkonlari.Yenile,
+                        onEylem = onTekrarDeneTikla,
+                        anaEylem = false,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
 
-                    uiState.motorlar.isEmpty() -> Text(
-                        text = "Henüz motorun yok.\nAşağıdaki butonla ilk motorunu ekle.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MetinIkincil,
-                        textAlign = TextAlign.Center,
-                        // fillMaxWidth sart: align tek basina metni kutunun
-                        // ortasina koyuyor ama metnin kendi genisligi kadar.
-                        // Once tam genislige yayilsin, sonra satirlar icinde
-                        // ortalansin.
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxWidth()
+                    uiState.motorlar.isEmpty() -> BosDurum(
+                        gorsel = BosGorsel.MOTOR_YOK,
+                        baslik = "Henüz motorun yok",
+                        aciklama = "İlk motorunu ekle, yakıt ve bakım harcamaların tek yerde toplansın.",
+                        eylem = "Motor Ekle",
+                        eylemIkonu = MotorumIkonlari.Ekle,
+                        onEylem = onMotorEkleTikla,
+                        modifier = Modifier.align(Alignment.Center)
                     )
 
                     else -> LazyColumn(
@@ -151,16 +148,21 @@ fun MotorlarimIcerik(
                 }
             }
 
-            Button(
-                onClick = onMotorEkleTikla,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .padding(top = 0.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Motor Ekle")
+            // Liste bosken alttaki dugme gizli: bos durumun kendi "Motor Ekle"
+            // dugmesi var, ekranda ayni isi yapan iki dugme durmasin.
+            val listeDolu = !uiState.yukleniyor && uiState.hata == null && uiState.motorlar.isNotEmpty()
+            if (listeDolu) {
+                Button(
+                    onClick = onMotorEkleTikla,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(top = 0.dp)
+                ) {
+                    Icon(MotorumIkonlari.Ekle, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("Motor Ekle")
+                }
             }
 
             Spacer(Modifier.height(12.dp))

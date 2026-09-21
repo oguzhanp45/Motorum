@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,7 +31,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.model.HatirlatmaDurumu
 import com.oguzhanp.motorum.model.Kayit
+import com.oguzhanp.motorum.ui.theme.BakimMetin
+import com.oguzhanp.motorum.ui.theme.BakimZemin
 import com.oguzhanp.motorum.ui.theme.DurumYesilMetin
 import com.oguzhanp.motorum.ui.theme.DurumYesilZemin
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
@@ -45,6 +45,7 @@ import com.oguzhanp.motorum.util.formatKm
 import com.oguzhanp.motorum.util.formatLitre
 import com.oguzhanp.motorum.util.formatTarih
 import com.oguzhanp.motorum.util.formatTl
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 private val KART_SEKLI = RoundedCornerShape(16.dp)
 
@@ -54,7 +55,9 @@ fun KayitSatiri(
     kayit: Kayit,
     onTikla: () -> Unit,
     onKaydirarakSil: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    // "Zamani geldi" cipine dokunulunca: hatirlatma paneli.
+    onHatirlatmaTikla: () -> Unit = {}
 ) {
     // Esik asilinca confirmValueChange cagriliyor: silme istegini gonderiyor ama
     // false donerek durumu Settled'da birakiyor. Durum EndToStart'a girseydi
@@ -85,7 +88,7 @@ fun KayitSatiri(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Icon(
-                    imageVector = Icons.Default.Delete,
+                    imageVector = MotorumIkonlari.Sil,
                     contentDescription = "Sil",
                     tint = MaterialTheme.colorScheme.onErrorContainer,
                     modifier = Modifier.padding(end = 16.dp)
@@ -141,16 +144,8 @@ fun KayitSatiri(
                                 )
                             }
 
-                            // Hatirlatma cipi noktasiz ve gri: mavi "tiklanabilir",
-                            // yesil "tamamlandi" demek, ikisi de burada yanlis olurdu.
-                            // Saat degil sadece tarih yaziyor, yoksa cip satira sigmiyor.
-                            if (kayit is Kayit.Bakim && kayit.hatirlatmaMillis != null) {
-                                Cip(
-                                    metin = formatTarih(kayit.hatirlatmaMillis),
-                                    zemin = MaterialTheme.colorScheme.outlineVariant,
-                                    renk = MetinIkincil,
-                                    ikon = Icons.Default.Notifications
-                                )
+                            if (kayit is Kayit.Bakim) {
+                                HatirlatmaCipi(kayit = kayit, onTikla = onHatirlatmaTikla)
                             }
                         }
 
@@ -200,21 +195,12 @@ private fun UstSatir(
             }
 
             Column {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(7.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = kayit.kategori.etiket,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Cip(
-                        metin = gorunum.rozet,
-                        zemin = gorunum.zemin,
-                        renk = gorunum.metin,
-                        kucuk = true
-                    )
-                }
+                // Kategorinin yanindaki ek rozet (SERVIS, SURUS...) kaldirildi:
+                // ikon ve renk zaten kategoriyi soyluyor, ust filtre de ayni adi yaziyor.
+                Text(
+                    text = kayit.kategori.etiket,
+                    style = MaterialTheme.typography.titleSmall
+                )
                 Text(
                     text = formatTarih(kayit.tarihMillis),
                     style = MaterialTheme.typography.bodySmall,
@@ -256,6 +242,45 @@ private fun UstSatir(
     }
 }
 
+// Hatirlatmanin uc hali, uc renk:
+// - Ileride: gri zil + tarih. Saat yok, yoksa cip satira sigmiyor.
+// - Zamani geldi: kehribar (bakim rengi), dokunulabilir; panel aciliyor.
+// - Yapildi: yesil onay + yapildigi gun.
+@Composable
+private fun HatirlatmaCipi(kayit: Kayit.Bakim, onTikla: () -> Unit) {
+    when (kayit.hatirlatmaDurumu()) {
+        null -> {}
+
+        HatirlatmaDurumu.ILERIDE -> Cip(
+            metin = formatTarih(kayit.hatirlatmaMillis!!),
+            zemin = MaterialTheme.colorScheme.outlineVariant,
+            renk = MetinIkincil,
+            ikon = MotorumIkonlari.Bildirim
+        )
+
+        HatirlatmaDurumu.ZAMANI_GELDI -> Cip(
+            metin = "Zamanı geldi",
+            zemin = BakimZemin,
+            renk = BakimMetin,
+            ikon = MotorumIkonlari.Bildirim,
+            // Kartin geri kalani detayi aciyor; sadece cip paneli.
+            modifier = Modifier
+                .clip(RoundedCornerShape(6.dp))
+                .clickable(onClick = onTikla)
+        )
+
+        HatirlatmaDurumu.YAPILDI -> Cip(
+            metin = "Yapıldı · " + formatGunKisa(kayit.hatirlatmaYapildiMillis!!),
+            zemin = DurumYesilZemin,
+            renk = DurumYesilMetin,
+            ikon = MotorumIkonlari.Onay
+        )
+    }
+}
+
+// "15.06": cipte yil yer kapliyor, zaten yakin bir tarih.
+private fun formatGunKisa(millis: Long): String = formatTarih(millis).substring(0, 5)
+
 // Alt satirin kurali: solda kategoriyi tanimlayan bilgi, sagda not ya da
 // turetilmis bilgi. Ikisi de when oldugu icin yeni kategoride derleyici uyarir.
 private fun solAlanMetni(kayit: Kayit): String? = when (kayit) {
@@ -272,7 +297,7 @@ private fun sagAlanMetni(kayit: Kayit): String = when (kayit) {
     is Kayit.Aksesuar -> kayit.not
 }
 
-// Tek cip bileseni her yerde kullaniliyor: rozet (kucuk), litre/km, alt satir.
+// Tek cip bileseni her yerde kullaniliyor: litre/km ve alt satir.
 // nokta verilirse metnin onune kategori renginde daire, ikon verilirse kucuk
 // bir simge cizilir. Ikisi birden kullanilmiyor.
 @Composable
@@ -281,7 +306,6 @@ private fun Cip(
     zemin: Color,
     renk: Color,
     modifier: Modifier = Modifier,
-    kucuk: Boolean = false,
     nokta: Color? = null,
     ikon: ImageVector? = null
 ) {
@@ -289,7 +313,7 @@ private fun Cip(
         modifier = modifier
             .clip(RoundedCornerShape(6.dp))
             .background(zemin)
-            .padding(horizontal = if (kucuk) 6.dp else 9.dp, vertical = if (kucuk) 2.dp else 5.dp),
+            .padding(horizontal = 9.dp, vertical = 5.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -312,8 +336,7 @@ private fun Cip(
         Text(
             text = metin,
             color = renk,
-            style = if (kucuk) MaterialTheme.typography.labelSmall
-            else MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -356,5 +379,28 @@ private fun KayitSatiriHatirlatmaliPreview() {
             onKaydirarakSil = {},
             modifier = Modifier.padding(16.dp)
         )
+    }
+}
+
+// Hatirlatma cipinin uc hali alt alta: ileride (gri), zamani geldi (kehribar),
+// yapildi (yesil). Renkleri tek bakista karsilastirmak icin.
+@Preview(showBackground = true)
+@Composable
+private fun KayitSatiriHatirlatmaDurumlariPreview() {
+    val gun = 24L * 60 * 60 * 1000
+    val simdi = System.currentTimeMillis()
+    MotorumTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            listOf(
+                Kayit.Bakim(tarihMillis = simdi, tutar = 1250.0, bakimTuru = "Yağ değişimi", hatirlatmaMillis = simdi + 30 * gun),
+                Kayit.Bakim(tarihMillis = simdi - 90 * gun, tutar = 900.0, bakimTuru = "Zincir bakımı", hatirlatmaMillis = simdi - gun),
+                Kayit.Bakim(tarihMillis = simdi - 120 * gun, tutar = 1400.0, bakimTuru = "Fren balatası", hatirlatmaMillis = simdi - 10 * gun, hatirlatmaYapildiMillis = simdi - 2 * gun)
+            ).forEach { kayit ->
+                KayitSatiri(kayit = kayit, onTikla = {}, onKaydirarakSil = {})
+            }
+        }
     }
 }

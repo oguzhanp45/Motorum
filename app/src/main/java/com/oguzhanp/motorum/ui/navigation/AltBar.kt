@@ -1,10 +1,6 @@
 package com.oguzhanp.motorum.ui.navigation
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ReceiptLong
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -16,14 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.oguzhanp.motorum.ui.theme.AksiyonMaviZemin
+import com.oguzhanp.motorum.ui.theme.CizgiSolgun
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 enum class Sekme(val rota: String, val etiket: String, val ikon: ImageVector) {
-    MOTORLARIM(Routes.MOTORLARIM, "Motorlarım", Icons.Default.TwoWheeler),
-    ANA_SAYFA(Routes.ANA_SAYFA, "Ana Sayfa", Icons.Default.ReceiptLong),
-    AYARLAR(Routes.AYARLAR, "Ayarlar", Icons.Default.Settings)
+    MOTORLARIM(Routes.MOTORLARIM, "Motorlarım", MotorumIkonlari.Motor),
+    ANA_SAYFA(Routes.ANA_SAYFA, "Ana Sayfa", MotorumIkonlari.Ev),
+    AYARLAR(Routes.AYARLAR, "Ayarlar", MotorumIkonlari.Ayarlar)
 }
 
 @Composable
@@ -48,7 +45,9 @@ fun AltBar(
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
                         selectedTextColor = MaterialTheme.colorScheme.primary,
-                        indicatorColor = AksiyonMaviZemin,
+                        // Tasarimdaki gibi acik gri hap: secili sekmenin
+                        // murekkep ikonu uzerinde net okunuyor.
+                        indicatorColor = CizgiSolgun,
                         unselectedIconColor = MetinIkincil,
                         unselectedTextColor = MetinIkincil
                     )

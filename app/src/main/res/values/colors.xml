@@ -7,4 +7,6 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- Uygulama zemini (Color.kt: Zemin). Karanlik karsiligi values-night/colors.xml. -->
+    <color name="pencere_zemini">#FFF8FAFC</color>
 </resources>

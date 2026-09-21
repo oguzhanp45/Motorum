@@ -19,6 +19,9 @@ object Routes {
     const val MOTOR_DETAY = "motor_detay/{id}"
     const val KAYIT_EKLE = "kayit_ekle"
     const val KAYIT_DETAY = "kayit_detay/{id}"
+    // Ana bolgenin disinda duruyor: alt bar olmayan, geri oklu tam sayfa.
+    // Grafin icine koysaydik alt bar da cizilirdi.
+    const val ISTATISTIK = "istatistik"
     fun motorEkleRotasi(secilsin: Boolean = false) = "motor_ekle?sec=$secilsin"
 
     //Routes.KAYIT_DETAY = "kayit_detay/{id}" —
