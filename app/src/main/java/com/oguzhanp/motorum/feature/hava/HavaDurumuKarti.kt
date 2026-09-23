@@ -37,7 +37,6 @@ import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
 import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
-import com.oguzhanp.motorum.core.tasarim.gorunum
 import com.oguzhanp.motorum.core.tasarim.karanlikTema
 import com.oguzhanp.motorum.core.util.uygulamaAyarlariniAc
 import com.oguzhanp.motorum.model.HavaDurumu

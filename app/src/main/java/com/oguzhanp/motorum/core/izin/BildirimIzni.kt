@@ -1,6 +1,7 @@
 package com.oguzhanp.motorum.core.izin
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -34,6 +35,12 @@ fun bildirimIzniVerildiMi(baglam: Context): Boolean =
 // Bu bilesen stateful ekranlarda cagriliyor, icerik bilesenlerinde degil:
 // rememberLauncherForActivityResult'in bir Activity kaydina ihtiyaci var ve
 // @Preview icinde boyle bir kayit yok. Kamera ve galeri seciciyle ayni kalip.
+//
+// POST_NOTIFICATIONS sabiti API 33'te eklendi, minSdk ise 29. Lint bunu
+// uyari olarak isaretliyor; oysa sabit derleme aninda metne gomuluyor, eski
+// surumde aranan bir alan yok. Ustelik diyalog ancak izin verilmemisken
+// aciliyor: API 33 altinda bildirimIzniVerildiMi() zaten true donuyor.
+@SuppressLint("InlinedApi")
 @Composable
 fun rememberBildirimIzni(onSonuc: (verildi: Boolean) -> Unit): () -> Unit {
     val baglam = LocalActivity.current

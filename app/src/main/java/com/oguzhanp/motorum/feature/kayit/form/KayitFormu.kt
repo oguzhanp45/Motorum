@@ -6,15 +6,15 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.oguzhanp.motorum.R
-import com.oguzhanp.motorum.model.Kategori
-import com.oguzhanp.motorum.model.Mola
 import com.oguzhanp.motorum.core.util.ayEkle
 import com.oguzhanp.motorum.core.util.ayniGun
 import com.oguzhanp.motorum.core.util.saatAl
 import com.oguzhanp.motorum.core.util.tarihSaatBirlestir
+import com.oguzhanp.motorum.model.Kategori
+import com.oguzhanp.motorum.model.Mola
 
 
- //Kayit formunun ortak verisi ve dogrulama kurallari.
+//Kayit formunun ortak verisi ve dogrulama kurallari.
  //Hem ekleme hem detay ekrani ayni formu gosterdigi icin burada duruyor.
  //Kural tek yerde: birini guncelleyip digerini unutma riski yok.
  //googleda 2 ilke var birisi her ekranın kendi uistate olacak ona uymaya çalıştım

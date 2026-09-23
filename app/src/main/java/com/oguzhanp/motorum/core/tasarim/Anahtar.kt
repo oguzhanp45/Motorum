@@ -20,12 +20,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.oguzhanp.motorum.core.tasarim.AppMotion
-import com.oguzhanp.motorum.core.tasarim.AppShape
-import com.oguzhanp.motorum.core.tasarim.KartZemin
-import com.oguzhanp.motorum.core.tasarim.MotorumTheme
-import com.oguzhanp.motorum.core.tasarim.Murekkep
-import com.oguzhanp.motorum.core.tasarim.SekmeZemin
 
 // Tasarimdaki acma/kapama anahtari: 46x27 serit, 21'lik topuz. Material'in
 // Switch'i daha buyuk ve kapaliyken topuzu kuculuyor; maketteki sade

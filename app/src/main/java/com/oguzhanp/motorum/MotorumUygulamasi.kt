@@ -6,7 +6,6 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.MemoryCacheSettings
-import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.data.hatirlatma.BELGE_KANALI
 import com.oguzhanp.motorum.data.hatirlatma.BILDIRIM_KANALI
 import dagger.hilt.android.HiltAndroidApp

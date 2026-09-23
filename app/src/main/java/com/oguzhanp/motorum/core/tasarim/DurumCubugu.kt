@@ -8,7 +8,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.oguzhanp.motorum.core.tasarim.karanlikTema
 
 // Ustu iki temada da koyu olan ekranlar (acilis, giris) icin: durum cubugu
 // ikonlari ekran gorunurken beyaz, cikinca eski haline donuyor.

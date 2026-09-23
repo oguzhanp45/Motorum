@@ -18,10 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
-import com.oguzhanp.motorum.core.tasarim.AppMotion
-import com.oguzhanp.motorum.core.tasarim.Murekkep
-import com.oguzhanp.motorum.core.tasarim.MurekkepBasili
-import com.oguzhanp.motorum.core.tasarim.MurekkepUstu
 
 // Dokunma geri bildirimi (tasarim: Dokunma). Basilan sey hafifce kuculuyor:
 // basma hizli (110 ms), birakma yavas (220 ms). Kartlar ve satirlar biraz,

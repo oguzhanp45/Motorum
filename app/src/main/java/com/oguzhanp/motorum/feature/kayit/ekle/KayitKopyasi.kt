@@ -1,11 +1,11 @@
 package com.oguzhanp.motorum.feature.kayit.ekle
 
-import com.oguzhanp.motorum.model.Kayit
-import com.oguzhanp.motorum.feature.kayit.form.KayitFormu
-import com.oguzhanp.motorum.feature.kayit.form.TripNoktasiFormu
 import com.oguzhanp.motorum.core.util.formatLitre
 import com.oguzhanp.motorum.core.util.formatTl
 import com.oguzhanp.motorum.core.util.sayiyiYaziya
+import com.oguzhanp.motorum.feature.kayit.form.KayitFormu
+import com.oguzhanp.motorum.feature.kayit.form.TripNoktasiFormu
+import com.oguzhanp.motorum.model.Kayit
 
 // "Son kayittan doldur" ve Kayit Detayi'ndaki "tekrarla" icin: bir kaydin
 // degerleriyle dolu yeni bir form. Tarih hep bugun (formun varsayilani).

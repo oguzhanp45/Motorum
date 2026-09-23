@@ -4,8 +4,11 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -22,11 +25,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import com.oguzhanp.motorum.model.Motor
-import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.MotorArduvaz
 import com.oguzhanp.motorum.core.tasarim.MotorArduvazZemin
 import com.oguzhanp.motorum.core.tasarim.MotorCamgobegi
@@ -38,6 +36,8 @@ import com.oguzhanp.motorum.core.tasarim.MotorIndigoZemin
 import com.oguzhanp.motorum.core.tasarim.MotorLacivert
 import com.oguzhanp.motorum.core.tasarim.MotorLacivertZemin
 import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
+import com.oguzhanp.motorum.core.tasarim.MotorumTheme
+import com.oguzhanp.motorum.model.Motor
 
 data class MotorGorunumu(val renk: Color, val zemin: Color)
 

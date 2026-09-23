@@ -26,10 +26,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import java.util.Calendar
-import java.util.Locale
-import java.util.Date
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 // Kanal kimligi ve ek alan adlari tek yerde: kanali MotorumUygulamasi kuruyor,
 // alarmi HatirlatmaZamanlayici koyuyor, bildirimi burasi gosteriyor.

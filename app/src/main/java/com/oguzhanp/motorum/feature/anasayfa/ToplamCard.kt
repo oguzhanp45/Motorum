@@ -30,14 +30,14 @@ import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.tasarim.AppElevation
 import com.oguzhanp.motorum.core.tasarim.AppShape
 import com.oguzhanp.motorum.core.tasarim.AppSpacing
-import com.oguzhanp.motorum.core.tasarim.basilincaKucul
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
+import com.oguzhanp.motorum.core.tasarim.basilincaKucul
 import com.oguzhanp.motorum.core.util.formatKm
 import com.oguzhanp.motorum.core.util.formatLitre
 import com.oguzhanp.motorum.core.util.formatTl
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 
 @Composable
 fun ToplamCard(

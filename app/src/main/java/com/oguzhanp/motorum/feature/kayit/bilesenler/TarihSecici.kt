@@ -1,9 +1,5 @@
 package com.oguzhanp.motorum.feature.kayit.bilesenler
 
-import androidx.compose.ui.res.stringResource
-import com.oguzhanp.motorum.R
-import java.util.Calendar
-import java.util.TimeZone
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -14,14 +10,22 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.util.formatTarih
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
+import java.util.Calendar
+import java.util.TimeZone
 
 // Tarih gosterimi + takvim diyalogu.
 // Compose'da diyalog "gosterilmez", VAR ya da YOK olur: if (acik) { ... }

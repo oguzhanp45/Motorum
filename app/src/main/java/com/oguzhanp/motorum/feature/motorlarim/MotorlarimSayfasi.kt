@@ -31,17 +31,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oguzhanp.motorum.R
+import com.oguzhanp.motorum.core.navigation.AnaBolgeKabugu
+import com.oguzhanp.motorum.core.navigation.Routes
 import com.oguzhanp.motorum.core.tasarim.AppSpacing
-import com.oguzhanp.motorum.model.Motor
-import com.oguzhanp.motorum.data.ortak.INTERNET_YOK
 import com.oguzhanp.motorum.core.tasarim.BosDurum
 import com.oguzhanp.motorum.core.tasarim.BosGorsel
 import com.oguzhanp.motorum.core.tasarim.MotorcuYukleniyor
 import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
-import com.oguzhanp.motorum.core.tasarim.MurekkepDugme
-import com.oguzhanp.motorum.core.navigation.AnaBolgeKabugu
-import com.oguzhanp.motorum.core.navigation.Routes
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
+import com.oguzhanp.motorum.core.tasarim.MurekkepDugme
+import com.oguzhanp.motorum.data.ortak.INTERNET_YOK
+import com.oguzhanp.motorum.model.Motor
 
 @Composable
 fun MotorlarimSayfasi(

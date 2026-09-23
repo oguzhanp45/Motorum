@@ -39,11 +39,11 @@ import androidx.compose.ui.unit.sp
 import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.tasarim.AppMotion
 import com.oguzhanp.motorum.core.tasarim.AppShape
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.CizgiSolgun
 import com.oguzhanp.motorum.core.tasarim.Inter
 import com.oguzhanp.motorum.core.tasarim.KartZemin
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.Murekkep
 

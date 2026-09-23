@@ -16,9 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.oguzhanp.motorum.core.tasarim.MetinEtiket
-import com.oguzhanp.motorum.core.tasarim.MetinSolgun
-import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 
 // Etiketi alanin USTUNDE duran metin alani. Material'in kayan etiketi yerine
 // bunu kullaniyoruz cunku etiket her zaman gorunur kaliyor ve zorunlu alan
