@@ -47,14 +47,14 @@
              disaridan tetiklenemiyor. Niyeti dogrudan bu sinifa yonlendirdigimiz
              icin intent-filter'a da gerek yok. -->
         <receiver
-            android:name=".data.HatirlatmaAlicisi"
+            android:name=".data.hatirlatma.HatirlatmaAlicisi"
             android:exported="false" />
 
         <!-- Telefon acilinca ve uygulama guncellenince alarmlari yeniden kuruyor.
              exported="false" olsa da sistem yayinlari ulasiyor; baska uygulamalar
              bu aliciyi tetikleyemiyor. -->
         <receiver
-            android:name=".data.HatirlatmaYenileyici"
+            android:name=".data.hatirlatma.HatirlatmaYenileyici"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

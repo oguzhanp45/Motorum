@@ -6,8 +6,8 @@ import android.os.Bundle
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
@@ -25,18 +25,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.oguzhanp.motorum.data.HatirlatmaIstegi
-import com.oguzhanp.motorum.data.KimlikDeposu
-import com.oguzhanp.motorum.data.hatirlatmaIstegi
+import com.oguzhanp.motorum.core.navigation.MotorumApp
+import com.oguzhanp.motorum.core.navigation.Routes
+import com.oguzhanp.motorum.core.tasarim.MotorumTheme
+import com.oguzhanp.motorum.core.tasarim.TemaViewModel
+import com.oguzhanp.motorum.data.hatirlatma.HatirlatmaIstegi
+import com.oguzhanp.motorum.data.hatirlatma.hatirlatmaIstegi
+import com.oguzhanp.motorum.data.kimlik.KimlikDeposu
+import com.oguzhanp.motorum.feature.acilis.AcilisEkrani
+import com.oguzhanp.motorum.feature.onboarding.OnboardingViewModel
 import com.oguzhanp.motorum.model.TemaSecimi
-import com.oguzhanp.motorum.ui.acilis.AcilisEkrani
-import com.oguzhanp.motorum.ui.navigation.Routes
-import com.oguzhanp.motorum.ui.onboarding.OnboardingViewModel
-import com.oguzhanp.motorum.ui.theme.MotorumTheme
-import com.oguzhanp.motorum.ui.theme.TemaViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

@@ -1,0 +1,107 @@
+package com.oguzhanp.motorum.feature.kayit.form
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
+import com.oguzhanp.motorum.feature.kayit.bilesenler.TarihSecici
+import com.oguzhanp.motorum.core.tasarim.MotorumTheme
+import com.oguzhanp.motorum.core.tasarim.UyariMetin
+import com.oguzhanp.motorum.core.util.formatKm
+
+// Yakit kategorisinin form alanlari. Hem ekleme hem detay ekrani ayni blogu cagiriyor;
+// alan eklemek/degistirmek gerektiginde tek dosya degisiyor.
+
+@Composable
+fun YakitAlanlari(
+    form: KayitFormu.Yakit,
+    onDegis: (KayitFormu.Yakit) -> Unit,
+    modifier: Modifier = Modifier,
+    // Bugune kadar girilmis en yuksek sayac degeri. Sadece uyari icin.
+    sonOkuma: Int? = null
+) {
+    // Sayac geriye gidiyorsa uyariyoruz ama engellemiyoruz: kullanici gecmise
+    // ait bir kaydi sonradan giriyor olabilir, o zaman kucuk deger dogrudur.
+    val girilenKm = form.km
+    val sayacGeride = sonOkuma != null && girilenKm != null && girilenKm < sonOkuma
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        TarihSecici(
+            tarihMillis = form.tarihMillis,
+            onTarihSec = { onDegis(form.copy(tarihMillis = it)) },
+            etiket = stringResource(R.string.dolum_tarihi),
+            aciklama = stringResource(R.string.dolum_tarihi_aciklama),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = form.litreYazi,
+            onValueChange = { onDegis(form.copy(litreYazi = it, litreHatali = false)) },
+            label = { Text(stringResource(R.string.litre)) },
+            isError = form.litreHatali,
+            supportingText = {
+                if (form.litreHatali) Text(stringResource(R.string.gecerli_sayi))
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = form.kmYazi,
+            onValueChange = { onDegis(form.copy(kmYazi = it, kmHatali = false)) },
+            label = { Text(stringResource(R.string.aktif_km_istege_bagli)) },
+            isError = form.kmHatali,
+            supportingText = {
+                when {
+                    form.kmHatali -> Text(stringResource(R.string.gecerli_sayi))
+                    sayacGeride -> Text(
+                        text = stringResource(R.string.sayac_uyari, formatKm(sonOkuma)),
+                        color = UyariMetin
+                    )
+                    // Km gidilen yolu ve km basi maliyeti besliyor.
+                    else -> Text(stringResource(R.string.sayac_aciklama))
+                }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = form.tutarYazi,
+            onValueChange = { onDegis(form.copy(tutarYazi = it, tutarHatali = false)) },
+            label = { Text(stringResource(R.string.tutar_tl)) },
+            isError = form.tutarHatali,
+            supportingText = {
+                if (form.tutarHatali) Text(stringResource(R.string.gecerli_sayi))
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun YakitAlanlariPreview() {
+    MotorumTheme {
+        YakitAlanlari(
+            form = KayitFormu.Yakit(),
+            onDegis = {}
+        )
+    }
+}
