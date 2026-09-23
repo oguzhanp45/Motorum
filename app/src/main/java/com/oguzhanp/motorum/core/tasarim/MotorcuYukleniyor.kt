@@ -16,13 +16,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.oguzhanp.motorum.R
-import com.oguzhanp.motorum.core.tasarim.AppSpacing
-import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 
 // Sayfa boyu bekleme icin. Dönen daire yerine motorcu: bekleme suresi ayni
 // ama uygulamanin kendi sesiyle konusuyor.

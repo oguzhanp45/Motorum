@@ -29,12 +29,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oguzhanp.motorum.R
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.Inter
 import com.oguzhanp.motorum.core.tasarim.KartZemin
 import com.oguzhanp.motorum.core.tasarim.Kenar
 import com.oguzhanp.motorum.core.tasarim.MetinAna
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 
 // "Son kayittan doldur" seridi (tasarim: Fikir 2A). Kesikli cerceve: bir alan

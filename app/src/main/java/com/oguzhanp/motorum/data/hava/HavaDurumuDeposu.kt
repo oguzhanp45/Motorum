@@ -1,8 +1,8 @@
 package com.oguzhanp.motorum.data.hava
 
 import com.oguzhanp.motorum.BuildConfig
-import com.oguzhanp.motorum.model.HavaDurumu
 import com.oguzhanp.motorum.core.util.DilAyari
+import com.oguzhanp.motorum.model.HavaDurumu
 import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import javax.inject.Singleton

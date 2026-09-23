@@ -6,9 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,13 +30,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.R
-import com.oguzhanp.motorum.model.Motor
 import com.oguzhanp.motorum.core.tasarim.AksiyonMaviZemin
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.SekmeZemin
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
+import com.oguzhanp.motorum.model.Motor
 
 // Ust bardaki cip. Hangi hal oldugunu MotorSeciciUiState.cipDurumu
 // soyluyor. Sadece motor seciliyken tiklaniyor, digerlerinde acilacak liste yok.

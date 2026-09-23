@@ -13,10 +13,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.R
-import com.oguzhanp.motorum.feature.kayit.bilesenler.TarihSecici
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.UyariMetin
 import com.oguzhanp.motorum.core.util.formatKm
+import com.oguzhanp.motorum.feature.kayit.bilesenler.TarihSecici
 
 // Yakit kategorisinin form alanlari. Hem ekleme hem detay ekrani ayni blogu cagiriyor;
 // alan eklemek/degistirmek gerektiginde tek dosya degisiyor.

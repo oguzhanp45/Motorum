@@ -13,9 +13,9 @@ import com.oguzhanp.motorum.data.ortak.KOLEKSIYON_MOTORLAR
 import com.oguzhanp.motorum.data.ortak.OTURUM_YOK
 import com.oguzhanp.motorum.data.ortak.hataMesaji
 import com.oguzhanp.motorum.model.Kayit
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.tasks.await
 
 data class KayitSonucu(
     val kayitlar: List<Kayit> = emptyList(),

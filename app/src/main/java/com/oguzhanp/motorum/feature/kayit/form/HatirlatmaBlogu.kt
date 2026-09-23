@@ -50,17 +50,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oguzhanp.motorum.R
+import com.oguzhanp.motorum.core.tasarim.Anahtar
 import com.oguzhanp.motorum.core.tasarim.AppMotion
 import com.oguzhanp.motorum.core.tasarim.AppShape
-import com.oguzhanp.motorum.core.tasarim.Anahtar
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
-import com.oguzhanp.motorum.feature.kayit.bilesenler.SaatDiyalogu
-import com.oguzhanp.motorum.feature.kayit.bilesenler.TarihDiyalogu
 import com.oguzhanp.motorum.core.tasarim.Inter
 import com.oguzhanp.motorum.core.tasarim.Kenar
 import com.oguzhanp.motorum.core.tasarim.MetinAna
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.Murekkep
 import com.oguzhanp.motorum.core.tasarim.MurekkepUstu
@@ -71,6 +69,8 @@ import com.oguzhanp.motorum.core.tasarim.Zemin
 import com.oguzhanp.motorum.core.util.formatGunAy
 import com.oguzhanp.motorum.core.util.formatSaat
 import com.oguzhanp.motorum.core.util.formatTarih
+import com.oguzhanp.motorum.feature.kayit.bilesenler.SaatDiyalogu
+import com.oguzhanp.motorum.feature.kayit.bilesenler.TarihDiyalogu
 
 // Formdaki hatirlatma blogu (tasarim: Hatirlatma ①②). Kapaliyken tek satir,
 // acilinca asagi dogru genisliyor: hazir aralik cipleri + tarih ve saat.

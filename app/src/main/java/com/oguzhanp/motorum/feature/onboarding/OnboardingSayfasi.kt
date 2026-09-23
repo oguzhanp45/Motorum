@@ -43,16 +43,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.oguzhanp.motorum.core.tasarim.DUGME_BASILI
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
-import com.oguzhanp.motorum.core.tasarim.basiliMurekkep
-import com.oguzhanp.motorum.core.tasarim.basilincaKucul
 import com.oguzhanp.motorum.core.tasarim.MetinAna
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.Murekkep
 import com.oguzhanp.motorum.core.tasarim.MurekkepUstu
 import com.oguzhanp.motorum.core.tasarim.SekmeZemin
 import com.oguzhanp.motorum.core.tasarim.Zemin
+import com.oguzhanp.motorum.core.tasarim.basiliMurekkep
+import com.oguzhanp.motorum.core.tasarim.basilincaKucul
 import com.oguzhanp.motorum.core.tasarim.karanlikTema
 import kotlinx.coroutines.launch
 

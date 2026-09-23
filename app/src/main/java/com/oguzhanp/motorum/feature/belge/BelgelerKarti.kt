@@ -39,9 +39,6 @@ import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.tasarim.AppElevation
 import com.oguzhanp.motorum.core.tasarim.AppShape
 import com.oguzhanp.motorum.core.tasarim.AppSpacing
-import com.oguzhanp.motorum.model.Belge
-import com.oguzhanp.motorum.model.BelgeTuru
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.BakimMetin
 import com.oguzhanp.motorum.core.tasarim.BakimZemin
 import com.oguzhanp.motorum.core.tasarim.CizgiSolgun
@@ -51,11 +48,14 @@ import com.oguzhanp.motorum.core.tasarim.MetinAna
 import com.oguzhanp.motorum.core.tasarim.MetinEtiket
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.Murekkep
 import com.oguzhanp.motorum.core.tasarim.YakitMetin
 import com.oguzhanp.motorum.core.tasarim.YakitRenk
 import com.oguzhanp.motorum.core.tasarim.YakitZemin
+import com.oguzhanp.motorum.model.Belge
+import com.oguzhanp.motorum.model.BelgeTuru
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date

@@ -50,24 +50,24 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.oguzhanp.motorum.R
+import com.oguzhanp.motorum.core.tasarim.Anahtar
 import com.oguzhanp.motorum.core.tasarim.AppMotion
 import com.oguzhanp.motorum.core.tasarim.AppShape
 import com.oguzhanp.motorum.core.tasarim.AppSpacing
-import com.oguzhanp.motorum.model.BelgeTuru
-import com.oguzhanp.motorum.core.tasarim.Anahtar
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
-import com.oguzhanp.motorum.core.tasarim.MurekkepDugme
-import com.oguzhanp.motorum.feature.kayit.bilesenler.TarihSecici
 import com.oguzhanp.motorum.core.tasarim.Inter
 import com.oguzhanp.motorum.core.tasarim.KartZemin
 import com.oguzhanp.motorum.core.tasarim.Kenar
 import com.oguzhanp.motorum.core.tasarim.MetinAna
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.Murekkep
+import com.oguzhanp.motorum.core.tasarim.MurekkepDugme
 import com.oguzhanp.motorum.core.tasarim.MurekkepUstu
 import com.oguzhanp.motorum.core.tasarim.SekmeZemin
+import com.oguzhanp.motorum.feature.kayit.bilesenler.TarihSecici
+import com.oguzhanp.motorum.model.BelgeTuru
 
 // Belge ekleme ve duzenleme sayfasi (tasarim: Belgeler ③).
 @Composable

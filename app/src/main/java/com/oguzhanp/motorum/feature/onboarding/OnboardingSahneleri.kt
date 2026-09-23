@@ -55,12 +55,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.oguzhanp.motorum.core.tasarim.AppMotion
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
-import com.oguzhanp.motorum.core.tasarim.MotorumLogosu
 import com.oguzhanp.motorum.core.tasarim.AksesuarMetin
 import com.oguzhanp.motorum.core.tasarim.AksesuarRenk
 import com.oguzhanp.motorum.core.tasarim.AksesuarZemin
+import com.oguzhanp.motorum.core.tasarim.AppMotion
 import com.oguzhanp.motorum.core.tasarim.BakimMetin
 import com.oguzhanp.motorum.core.tasarim.BakimRenk
 import com.oguzhanp.motorum.core.tasarim.BakimZemin
@@ -70,6 +68,8 @@ import com.oguzhanp.motorum.core.tasarim.Kenar
 import com.oguzhanp.motorum.core.tasarim.MetinAna
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
+import com.oguzhanp.motorum.core.tasarim.MotorumLogosu
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.Murekkep
 import com.oguzhanp.motorum.core.tasarim.RoadTripMetin

@@ -59,35 +59,33 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oguzhanp.motorum.R
-import com.oguzhanp.motorum.core.tasarim.AppElevation
-import com.oguzhanp.motorum.core.tasarim.AppMotion
-import com.oguzhanp.motorum.core.tasarim.AppShape
-import com.oguzhanp.motorum.core.tasarim.AppSpacing
-import com.oguzhanp.motorum.model.DilSecimi
-import com.oguzhanp.motorum.model.TemaSecimi
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.izin.bildirimIzniVerildiMi
 import com.oguzhanp.motorum.core.izin.konumIzniVerildiMi
 import com.oguzhanp.motorum.core.izin.rememberBildirimIzni
 import com.oguzhanp.motorum.core.izin.rememberKonumIzni
 import com.oguzhanp.motorum.core.navigation.AnaBolgeKabugu
 import com.oguzhanp.motorum.core.navigation.Routes
+import com.oguzhanp.motorum.core.tasarim.AppElevation
+import com.oguzhanp.motorum.core.tasarim.AppMotion
+import com.oguzhanp.motorum.core.tasarim.AppShape
+import com.oguzhanp.motorum.core.tasarim.AppSpacing
 import com.oguzhanp.motorum.core.tasarim.BakimRenk
 import com.oguzhanp.motorum.core.tasarim.BakimZemin
 import com.oguzhanp.motorum.core.tasarim.CizgiSolgun
 import com.oguzhanp.motorum.core.tasarim.DurumYesilMetin
 import com.oguzhanp.motorum.core.tasarim.DurumYesilZemin
 import com.oguzhanp.motorum.core.tasarim.HataKirmizi
-import com.oguzhanp.motorum.core.tasarim.Inter
 import com.oguzhanp.motorum.core.tasarim.HataMetin
 import com.oguzhanp.motorum.core.tasarim.HataSolgun
 import com.oguzhanp.motorum.core.tasarim.HataZemin
+import com.oguzhanp.motorum.core.tasarim.Inter
 import com.oguzhanp.motorum.core.tasarim.KartZemin
 import com.oguzhanp.motorum.core.tasarim.Kenar
 import com.oguzhanp.motorum.core.tasarim.MetinAna
 import com.oguzhanp.motorum.core.tasarim.MetinEtiket
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.Murekkep
 import com.oguzhanp.motorum.core.tasarim.RoadTripRenk
@@ -99,6 +97,8 @@ import com.oguzhanp.motorum.core.util.formatSaat
 import com.oguzhanp.motorum.core.util.formatTarih
 import com.oguzhanp.motorum.core.util.saatAl
 import com.oguzhanp.motorum.core.util.uygulamaAyarlariniAc
+import com.oguzhanp.motorum.model.DilSecimi
+import com.oguzhanp.motorum.model.TemaSecimi
 
 // Izin satirinin ekranda gosterdigi hali. Uc durum var cunku "verilmedi"nin
 // ikisi farkli davraniyor: hic sorulmadiysa dokununca izin isteniyor,

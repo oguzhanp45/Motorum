@@ -36,8 +36,8 @@ import com.oguzhanp.motorum.feature.acilis.AcilisEkrani
 import com.oguzhanp.motorum.feature.onboarding.OnboardingViewModel
 import com.oguzhanp.motorum.model.TemaSecimi
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

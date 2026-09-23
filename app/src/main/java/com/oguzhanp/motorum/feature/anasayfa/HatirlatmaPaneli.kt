@@ -37,15 +37,13 @@ import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.tasarim.AppShape
 import com.oguzhanp.motorum.core.tasarim.AppSpacing
-import com.oguzhanp.motorum.model.HatirlatmaDurumu
-import com.oguzhanp.motorum.model.Kayit
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.BakimRenk
 import com.oguzhanp.motorum.core.tasarim.BakimZemin
-import com.oguzhanp.motorum.core.tasarim.Kenar
 import com.oguzhanp.motorum.core.tasarim.KartZemin
+import com.oguzhanp.motorum.core.tasarim.Kenar
 import com.oguzhanp.motorum.core.tasarim.MetinAna
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.Murekkep
 import com.oguzhanp.motorum.core.tasarim.MurekkepUstu
@@ -54,6 +52,8 @@ import com.oguzhanp.motorum.core.util.formatGunAy
 import com.oguzhanp.motorum.core.util.formatSaat
 import com.oguzhanp.motorum.core.util.formatTarih
 import com.oguzhanp.motorum.core.util.saatAl
+import com.oguzhanp.motorum.model.HatirlatmaDurumu
+import com.oguzhanp.motorum.model.Kayit
 
 // Hatirlatma paneli: alttan acilan pencere. Ana sayfadaki "Zamani geldi"
 // cipinden ve bildirimin govdesinden ayni sekilde aciliyor; kullanici bir

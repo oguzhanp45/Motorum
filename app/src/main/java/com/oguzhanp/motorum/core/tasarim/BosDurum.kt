@@ -55,15 +55,6 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.oguzhanp.motorum.core.tasarim.AppShape
-import com.oguzhanp.motorum.core.tasarim.CizgiSolgun
-import com.oguzhanp.motorum.core.tasarim.MetinAna
-import com.oguzhanp.motorum.core.tasarim.MetinIkincil
-import com.oguzhanp.motorum.core.tasarim.MetinSolgun
-import com.oguzhanp.motorum.core.tasarim.MotorumTheme
-import com.oguzhanp.motorum.core.tasarim.Murekkep
-import com.oguzhanp.motorum.core.tasarim.MurekkepUstu
-import com.oguzhanp.motorum.core.tasarim.SekmeZemin
 
 // Bos ekranlarin ortak kalibi: ustte bir gorsel, altinda baslik, aciklama
 // ve tek bir eylem. Uc ekran ayni iskeleti kullaniyor ki bos durumlar

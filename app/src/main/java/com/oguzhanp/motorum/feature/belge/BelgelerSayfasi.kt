@@ -24,13 +24,13 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.oguzhanp.motorum.R
+import com.oguzhanp.motorum.core.navigation.Routes
 import com.oguzhanp.motorum.core.tasarim.AppSpacing
+import com.oguzhanp.motorum.core.tasarim.MetinIkincil
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
+import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.model.Belge
 import com.oguzhanp.motorum.model.BelgeTuru
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
-import com.oguzhanp.motorum.core.navigation.Routes
-import com.oguzhanp.motorum.core.tasarim.MetinIkincil
-import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 
 // Ayarlar'dan acilan Belgeler sayfasi. Istatistikler'deki kartin aynisini
 // tek basina gosteriyor; iki yerde ayni bilesen, ayni davranis.

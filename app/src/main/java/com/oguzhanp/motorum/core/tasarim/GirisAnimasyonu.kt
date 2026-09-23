@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
-import com.oguzhanp.motorum.core.tasarim.AppMotion
 import kotlinx.coroutines.delay
 
 // Form alanlarinin sirayla yukselerek belirmesi (tasarim: Kayit Ekle, "yuksel").

@@ -58,12 +58,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oguzhanp.motorum.R
-import com.oguzhanp.motorum.core.tasarim.DUGME_BASILI
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
-import com.oguzhanp.motorum.core.tasarim.basiliMurekkep
-import com.oguzhanp.motorum.core.tasarim.basilincaKucul
-import com.oguzhanp.motorum.core.tasarim.yukselerekGir
 import com.oguzhanp.motorum.core.tasarim.CizgiSolgun
+import com.oguzhanp.motorum.core.tasarim.DUGME_BASILI
 import com.oguzhanp.motorum.core.tasarim.DurumYesilMetin
 import com.oguzhanp.motorum.core.tasarim.HataKirmizi
 import com.oguzhanp.motorum.core.tasarim.HataMetin
@@ -72,6 +68,7 @@ import com.oguzhanp.motorum.core.tasarim.MetinAna
 import com.oguzhanp.motorum.core.tasarim.MetinEtiket
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.Murekkep
 import com.oguzhanp.motorum.core.tasarim.MurekkepUstu
@@ -79,7 +76,10 @@ import com.oguzhanp.motorum.core.tasarim.RoadTripMetin
 import com.oguzhanp.motorum.core.tasarim.RoadTripRenk
 import com.oguzhanp.motorum.core.tasarim.SekmeZemin
 import com.oguzhanp.motorum.core.tasarim.Zemin
+import com.oguzhanp.motorum.core.tasarim.basiliMurekkep
+import com.oguzhanp.motorum.core.tasarim.basilincaKucul
 import com.oguzhanp.motorum.core.tasarim.karanlikTema
+import com.oguzhanp.motorum.core.tasarim.yukselerekGir
 
 private val ALAN_SEKLI = RoundedCornerShape(12.dp)
 private val KART_SEKLI = RoundedCornerShape(22.dp)

@@ -2,15 +2,15 @@ package com.oguzhanp.motorum.feature.kayit.detay
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oguzhanp.motorum.data.hatirlatma.HatirlatmaZamanlayici
-import com.oguzhanp.motorum.data.kayit.KayitDeposu
-import com.oguzhanp.motorum.model.Kayit
-import com.oguzhanp.motorum.feature.kayit.form.KayitFormu
-import com.oguzhanp.motorum.feature.kayit.form.hatirlatmaAraligiBul
-import com.oguzhanp.motorum.feature.kayit.form.TripNoktasiFormu
 import com.oguzhanp.motorum.core.util.dakikaAl
 import com.oguzhanp.motorum.core.util.saatAl
 import com.oguzhanp.motorum.core.util.sayiyiYaziya
+import com.oguzhanp.motorum.data.hatirlatma.HatirlatmaZamanlayici
+import com.oguzhanp.motorum.data.kayit.KayitDeposu
+import com.oguzhanp.motorum.feature.kayit.form.KayitFormu
+import com.oguzhanp.motorum.feature.kayit.form.TripNoktasiFormu
+import com.oguzhanp.motorum.feature.kayit.form.hatirlatmaAraligiBul
+import com.oguzhanp.motorum.model.Kayit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

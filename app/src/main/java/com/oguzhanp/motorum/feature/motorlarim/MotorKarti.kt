@@ -1,8 +1,8 @@
 package com.oguzhanp.motorum.feature.motorlarim
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,13 +28,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.R
-import com.oguzhanp.motorum.model.Motor
-import com.oguzhanp.motorum.core.tasarim.basilincaKucul
 import com.oguzhanp.motorum.core.tasarim.AksiyonMaviZemin
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
-import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
+import com.oguzhanp.motorum.core.tasarim.MotorumTheme
+import com.oguzhanp.motorum.core.tasarim.basilincaKucul
+import com.oguzhanp.motorum.model.Motor
 
 @Composable
 fun MotorKarti(

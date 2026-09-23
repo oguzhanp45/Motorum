@@ -2,8 +2,8 @@ package com.oguzhanp.motorum.data.ayarlar
 
 import android.content.Context
 import android.net.Uri
-import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.core.util.formatTarih
+import com.oguzhanp.motorum.model.Kayit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

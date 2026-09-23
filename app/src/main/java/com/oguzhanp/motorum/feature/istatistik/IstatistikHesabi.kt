@@ -1,8 +1,8 @@
 package com.oguzhanp.motorum.feature.istatistik
 
+import com.oguzhanp.motorum.core.util.tarihliOkumalar
 import com.oguzhanp.motorum.model.Kategori
 import com.oguzhanp.motorum.model.Kayit
-import com.oguzhanp.motorum.core.util.tarihliOkumalar
 import java.util.Calendar
 
 // Saf fonksiyon: Compose ve Firestore tanimiyor, ayni girdiye her zaman ayni

@@ -19,10 +19,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oguzhanp.motorum.R
-import com.oguzhanp.motorum.model.Mola
-import com.oguzhanp.motorum.feature.kayit.bilesenler.SaatSecici
-import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
+import com.oguzhanp.motorum.core.tasarim.MotorumTheme
+import com.oguzhanp.motorum.feature.kayit.bilesenler.SaatSecici
+import com.oguzhanp.motorum.model.Mola
 
 // Bir noktanin mola satirlari. Liste degismez: her islem yeni bir liste uretip
 // onDegis ile yukari veriyor, mevcut liste hic elden gecirilmiyor.

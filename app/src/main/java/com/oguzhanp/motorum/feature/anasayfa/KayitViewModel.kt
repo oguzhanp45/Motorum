@@ -2,12 +2,12 @@ package com.oguzhanp.motorum.feature.anasayfa
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oguzhanp.motorum.core.util.gidilenYolHesapla
 import com.oguzhanp.motorum.data.hatirlatma.HatirlatmaZamanlayici
 import com.oguzhanp.motorum.data.kayit.KayitDeposu
 import com.oguzhanp.motorum.data.kayit.KayitSonucu
 import com.oguzhanp.motorum.data.motor.MotorDeposu
 import com.oguzhanp.motorum.model.Kayit
-import com.oguzhanp.motorum.core.util.gidilenYolHesapla
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

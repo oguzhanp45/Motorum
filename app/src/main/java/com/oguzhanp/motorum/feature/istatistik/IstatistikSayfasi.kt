@@ -14,11 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
-import com.oguzhanp.motorum.R
-import com.oguzhanp.motorum.core.tasarim.AppElevation
-import com.oguzhanp.motorum.core.tasarim.AppShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,27 +44,30 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.oguzhanp.motorum.feature.belge.BelgelerKarti
-import com.oguzhanp.motorum.feature.belge.BelgelerViewModel
-import com.oguzhanp.motorum.core.navigation.Routes
 import androidx.navigation.NavController
+import com.oguzhanp.motorum.R
+import com.oguzhanp.motorum.core.navigation.Routes
+import com.oguzhanp.motorum.core.tasarim.AppElevation
+import com.oguzhanp.motorum.core.tasarim.AppShape
 import com.oguzhanp.motorum.core.tasarim.AppSpacing
-import com.oguzhanp.motorum.feature.anasayfa.KayitViewModel
-import com.oguzhanp.motorum.core.tasarim.gorunum
 import com.oguzhanp.motorum.core.tasarim.CizgiSolgun
 import com.oguzhanp.motorum.core.tasarim.DurumYesilMetin
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
+import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 import com.oguzhanp.motorum.core.tasarim.MotorumTheme
 import com.oguzhanp.motorum.core.tasarim.YakitMetin
+import com.oguzhanp.motorum.core.tasarim.gorunum
 import com.oguzhanp.motorum.core.util.formatBirimFiyat
 import com.oguzhanp.motorum.core.util.formatKm
 import com.oguzhanp.motorum.core.util.formatKmMaliyet
 import com.oguzhanp.motorum.core.util.formatLitre
 import com.oguzhanp.motorum.core.util.formatTarih
 import com.oguzhanp.motorum.core.util.formatTl
+import com.oguzhanp.motorum.feature.anasayfa.KayitViewModel
+import com.oguzhanp.motorum.feature.belge.BelgelerKarti
+import com.oguzhanp.motorum.feature.belge.BelgelerViewModel
 import kotlin.math.roundToInt
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
 
 @Composable
 fun IstatistikSayfasi(

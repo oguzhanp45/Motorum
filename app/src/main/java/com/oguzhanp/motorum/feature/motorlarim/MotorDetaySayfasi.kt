@@ -1,9 +1,9 @@
 package com.oguzhanp.motorum.feature.motorlarim
 
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -57,12 +57,12 @@ import androidx.navigation.NavController
 import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.tasarim.AppSpacing
 import com.oguzhanp.motorum.core.tasarim.EtiketliAlan
-import com.oguzhanp.motorum.core.tasarim.MurekkepDugme
 import com.oguzhanp.motorum.core.tasarim.MetinIkincil
 import com.oguzhanp.motorum.core.tasarim.MetinSolgun
-import com.oguzhanp.motorum.core.tasarim.MotorumTheme
-import com.oguzhanp.motorum.core.tasarim.SekmeZemin
 import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
+import com.oguzhanp.motorum.core.tasarim.MotorumTheme
+import com.oguzhanp.motorum.core.tasarim.MurekkepDugme
+import com.oguzhanp.motorum.core.tasarim.SekmeZemin
 
 @Composable
 fun MotorDetaySayfasi(

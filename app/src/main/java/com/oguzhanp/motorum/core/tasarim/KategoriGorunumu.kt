@@ -7,19 +7,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.model.Kategori
-import com.oguzhanp.motorum.core.tasarim.MotorumIkonlari
-import com.oguzhanp.motorum.core.tasarim.AksesuarMetin
-import com.oguzhanp.motorum.core.tasarim.AksesuarRenk
-import com.oguzhanp.motorum.core.tasarim.AksesuarZemin
-import com.oguzhanp.motorum.core.tasarim.BakimMetin
-import com.oguzhanp.motorum.core.tasarim.BakimRenk
-import com.oguzhanp.motorum.core.tasarim.BakimZemin
-import com.oguzhanp.motorum.core.tasarim.RoadTripMetin
-import com.oguzhanp.motorum.core.tasarim.RoadTripRenk
-import com.oguzhanp.motorum.core.tasarim.RoadTripZemin
-import com.oguzhanp.motorum.core.tasarim.YakitMetin
-import com.oguzhanp.motorum.core.tasarim.YakitRenk
-import com.oguzhanp.motorum.core.tasarim.YakitZemin
 
 // Ikonlar MotorumIkonlari'ndan geliyor: maketlerdeki cizimlerin birebir
 // karsiligi. Material'in hazir ikonlari dolu govdeliydi, bizim tasarimimiz
