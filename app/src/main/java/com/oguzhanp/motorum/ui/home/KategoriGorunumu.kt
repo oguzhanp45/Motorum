@@ -1,9 +1,11 @@
 package com.oguzhanp.motorum.ui.home
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.model.Kategori
 import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 import com.oguzhanp.motorum.ui.theme.AksesuarMetin
@@ -31,7 +33,8 @@ data class KategoriGorunumu(
     val renk: Color,
     val zemin: Color,
     val metin: Color,
-    val notEtiketi: String
+    // Not alaninin etiketi kategoriye gore degisiyor; metin degil kimligi.
+    @StringRes val notEtiketi: Int
 )
 
 // @Composable cunku renkler temadan okunuyor: ayni kategori acik temada
@@ -44,7 +47,7 @@ fun gorunum(kategori: Kategori): KategoriGorunumu = when (kategori) {
         renk = YakitRenk,
         zemin = YakitZemin,
         metin = YakitMetin,
-        notEtiketi = "İstasyon (isteğe bağlı)"
+        notEtiketi = R.string.not_istasyon
     )
 
     Kategori.ROAD_TRIP -> KategoriGorunumu(
@@ -52,7 +55,7 @@ fun gorunum(kategori: Kategori): KategoriGorunumu = when (kategori) {
         renk = RoadTripRenk,
         zemin = RoadTripZemin,
         metin = RoadTripMetin,
-        notEtiketi = "Not (isteğe bağlı)"
+        notEtiketi = R.string.not_serbest
     )
 
     Kategori.BAKIM -> KategoriGorunumu(
@@ -60,7 +63,7 @@ fun gorunum(kategori: Kategori): KategoriGorunumu = when (kategori) {
         renk = BakimRenk,
         zemin = BakimZemin,
         metin = BakimMetin,
-        notEtiketi = "Not (isteğe bağlı)"
+        notEtiketi = R.string.not_serbest
     )
 
     Kategori.AKSESUAR -> KategoriGorunumu(
@@ -68,6 +71,6 @@ fun gorunum(kategori: Kategori): KategoriGorunumu = when (kategori) {
         renk = AksesuarRenk,
         zemin = AksesuarZemin,
         metin = AksesuarMetin,
-        notEtiketi = "Dükkan (isteğe bağlı)"
+        notEtiketi = R.string.not_dukkan
     )
 }

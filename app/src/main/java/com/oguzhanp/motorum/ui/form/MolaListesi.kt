@@ -15,8 +15,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.model.Mola
 import com.oguzhanp.motorum.ui.ekle.components.SaatSecici
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
@@ -36,7 +38,7 @@ fun MolaListesi(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text("Molalar", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.molalar), style = MaterialTheme.typography.titleSmall)
 
         molalar.forEachIndexed { sira, mola ->
             Row(
@@ -54,7 +56,7 @@ fun MolaListesi(
                             }
                         )
                     },
-                    label = { Text("Yer") },
+                    label = { Text(stringResource(R.string.mola_yer)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f)
                 )
@@ -74,14 +76,14 @@ fun MolaListesi(
 
                 // filterIndexed: silinen sira disindaki her sey yeni listeye gecer.
                 IconButton(onClick = { onDegis(molalar.filterIndexed { i, _ -> i != sira }) }) {
-                    Icon(MotorumIkonlari.Sil, contentDescription = "Molayı sil")
+                    Icon(MotorumIkonlari.Sil, contentDescription = stringResource(R.string.molayi_sil))
                 }
             }
         }
 
         TextButton(onClick = { onDegis(molalar + Mola()) }) {
             Icon(MotorumIkonlari.Ekle, contentDescription = null)
-            Text("Mola ekle", modifier = Modifier.padding(start = 4.dp))
+            Text(stringResource(R.string.mola_ekle), modifier = Modifier.padding(start = 4.dp))
         }
     }
 }

@@ -41,12 +41,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -58,10 +58,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppElevation
 import com.oguzhanp.motorum.core.constants.AppMotion
 import com.oguzhanp.motorum.core.constants.AppShape
 import com.oguzhanp.motorum.core.constants.AppSpacing
+import com.oguzhanp.motorum.model.DilSecimi
 import com.oguzhanp.motorum.model.TemaSecimi
 import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 import com.oguzhanp.motorum.ui.components.bildirimIzniVerildiMi
@@ -90,6 +92,7 @@ import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.ui.theme.Murekkep
 import com.oguzhanp.motorum.ui.theme.RoadTripRenk
 import com.oguzhanp.motorum.ui.theme.RoadTripZemin
+import com.oguzhanp.motorum.util.DilAyari
 import com.oguzhanp.motorum.util.bildirimAyarlariniAc
 import com.oguzhanp.motorum.util.dakikaAl
 import com.oguzhanp.motorum.util.formatSaat
@@ -106,6 +109,7 @@ enum class IzinHali { VERILDI, SORULMADI, REDDEDILDI }
 fun AyarlarSayfasi(
     onSekmeTikla: (String) -> Unit,
     onCikisYapildi: () -> Unit,
+    onBelgelerTikla: () -> Unit = {},
     viewModel: AyarlarViewModel = hiltViewModel()
 ) {
     val durum by viewModel.durum.collectAsStateWithLifecycle()
@@ -144,10 +148,12 @@ fun AyarlarSayfasi(
     }
 
     val snackbarDurumu = remember { SnackbarHostState() }
+    // Mesajin metni burada seciliyor: dil secimi ekranin tarafinda.
+    val mesajMetni = durum.mesaj?.let { mesajMetni(it) }
     LaunchedEffect(durum.mesaj) {
-        val mesaj = durum.mesaj ?: return@LaunchedEffect
+        val metin = mesajMetni ?: return@LaunchedEffect
         viewModel.mesajGosterildi()
-        snackbarDurumu.showSnackbar(mesaj)
+        snackbarDurumu.showSnackbar(metin)
     }
 
     // Surum Gradle'daki versionName'den: elle yazilsaydi guncellemede unutulurdu.
@@ -157,8 +163,14 @@ fun AyarlarSayfasi(
         }.getOrNull().orEmpty()
     }
 
+    // Dil secimi DataStore'da degil, Android'in kendisinde duruyor; ekran
+    // kuruldugunda oradan okunuyor. Secim degisince Android ekrani zaten
+    // yeniden kuruyor ve deger tekrar okunuyor.
+    var dil by remember { mutableStateOf(DilAyari.oku()) }
+
     AyarlarIcerik(
         durum = durum,
+        dil = dil,
         bildirimHali = izinHali(bildirimVar, bildirimReddedildi),
         konumHali = izinHali(konumVar, konumReddedildi),
         surum = surum,
@@ -172,8 +184,13 @@ fun AyarlarSayfasi(
             if (konumVar || konumReddedildi) uygulamaAyarlariniAc(baglam) else konumIste()
         },
         onTemaSec = viewModel::temaSec,
+        onDilSec = { secim ->
+            dil = secim
+            DilAyari.yaz(secim)
+        },
         onOnbellekTemizle = viewModel::havaOnbelleginiTemizle,
         onDisaAktar = viewModel::disaAktarimaBasla,
+        onBelgelerTikla = onBelgelerTikla,
         onCikisTikla = {
             viewModel.cikisYap()
             onCikisYapildi()
@@ -190,6 +207,7 @@ private fun izinHali(verildi: Boolean, reddedildi: Boolean): IzinHali = when {
 @Composable
 fun AyarlarIcerik(
     durum: AyarlarUiState,
+    dil: DilSecimi = DilSecimi.SISTEM,
     bildirimHali: IzinHali,
     konumHali: IzinHali,
     surum: String,
@@ -198,16 +216,18 @@ fun AyarlarIcerik(
     onBildirimTikla: () -> Unit,
     onKonumTikla: () -> Unit,
     onTemaSec: (TemaSecimi) -> Unit,
+    onDilSec: (DilSecimi) -> Unit = {},
     onOnbellekTemizle: () -> Unit,
     onDisaAktar: () -> Unit,
-    onCikisTikla: () -> Unit
+    onCikisTikla: () -> Unit,
+    onBelgelerTikla: () -> Unit = {}
 ) {
     // Onay diyalogu ekranin yerel durumu: ViewModel'e tasimaya deger bir bilgi
     // degil, ekran kapaninca kaybolmasi zaten dogru.
     var onayGoster by rememberSaveable { mutableStateOf(false) }
 
     AnaBolgeKabugu(
-        baslik = "Ayarlar",
+        baslik = stringResource(R.string.sekme_ayarlar),
         seciliRota = Routes.AYARLAR,
         onSekmeTikla = onSekmeTikla,
         snackbarAlani = { SnackbarHost(snackbarDurumu) }
@@ -229,13 +249,13 @@ fun AyarlarIcerik(
                     .padding(start = AppSpacing.normal, end = AppSpacing.normal, top = 6.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
-                Bolum("BİLDİRİMLER") {
+                Bolum(stringResource(R.string.bolum_bildirimler)) {
                     IzinSatiri(
                         ikon = MotorumIkonlari.Bildirim,
                         ikonRengi = BakimRenk,
                         ikonZemini = BakimZemin,
-                        baslik = "Bakım hatırlatmaları",
-                        aciklama = "Bildirim izni gerekiyor",
+                        baslik = stringResource(R.string.bakim_hatirlatmalari),
+                        aciklama = stringResource(R.string.bildirim_izni_gerekiyor),
                         hal = bildirimHali,
                         onTikla = onBildirimTikla
                     )
@@ -244,14 +264,14 @@ fun AyarlarIcerik(
                         ikon = MotorumIkonlari.Konum,
                         ikonRengi = Murekkep,
                         ikonZemini = CizgiSolgun,
-                        baslik = "Konum izni",
-                        aciklama = "Hava durumu için gerekiyor",
+                        baslik = stringResource(R.string.konum_izni),
+                        aciklama = stringResource(R.string.konum_izni_gerekiyor),
                         hal = konumHali,
                         onTikla = onKonumTikla
                     )
                 }
 
-                Bolum("GÖRÜNÜM") {
+                Bolum(stringResource(R.string.bolum_gorunum)) {
                     Column(
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 13.dp),
                         verticalArrangement = Arrangement.spacedBy(11.dp)
@@ -261,33 +281,51 @@ fun AyarlarIcerik(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             IkonKutusu(MotorumIkonlari.Ay, Murekkep, CizgiSolgun)
-                            Text("Tema", style = BASLIK_STILI, color = MetinAna)
+                            Text(stringResource(R.string.tema), style = BASLIK_STILI, color = MetinAna)
                         }
                         TemaSecici(secili = durum.tema, onSec = onTemaSec)
                     }
                     Ayirici()
-                    // Tasarimdaki gibi soluk ve dokunulmaz: yerini simdiden
-                    // gosteriyor, ceviri gelince acilacak.
-                    Satir(
-                        ikon = MotorumIkonlari.Dunya,
-                        ikonRengi = MetinIkincil,
-                        ikonZemini = CizgiSolgun,
-                        baslik = "Dil",
-                        modifier = Modifier.alpha(0.5f)
+                    Column(
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 13.dp),
+                        verticalArrangement = Arrangement.spacedBy(11.dp)
                     ) {
-                        Rozet("Yakında", MetinIkincil, CizgiSolgun)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            IkonKutusu(MotorumIkonlari.Dunya, Murekkep, CizgiSolgun)
+                            Text(stringResource(R.string.dil), style = BASLIK_STILI, color = MetinAna)
+                        }
+                        DilSecici(secili = dil, onSec = onDilSec)
                     }
                 }
 
-                Bolum("VERİLER") {
+                // Belgeler asil olarak Istatistikler'de duruyor; buradan da
+                // ulasilabilsin, cunku kullanici "sigorta tarihim nerede" diye
+                // once ayarlara bakiyor.
+                Bolum(stringResource(R.string.bolum_motor)) {
+                    Satir(
+                        ikon = MotorumIkonlari.Klasor,
+                        ikonRengi = Murekkep,
+                        ikonZemini = CizgiSolgun,
+                        baslik = stringResource(R.string.belgeler),
+                        aciklama = stringResource(R.string.belgeler_aciklama),
+                        onTikla = onBelgelerTikla
+                    ) {
+                        Cevron(Kenar)
+                    }
+                }
+
+                Bolum(stringResource(R.string.bolum_veriler)) {
                     Satir(
                         ikon = MotorumIkonlari.Sil,
                         ikonRengi = RoadTripRenk,
                         ikonZemini = RoadTripZemin,
-                        baslik = "Hava durumu önbelleğini temizle",
+                        baslik = stringResource(R.string.hava_onbellegini_temizle),
                         aciklama = durum.havaSonGuncelleme
-                            ?.let { "Son güncelleme: ${sonGuncellemeYazisi(it)}" }
-                            ?: "Önbellek boş",
+                            ?.let { stringResource(R.string.son_guncelleme, sonGuncellemeYazisi(it)) }
+                            ?: stringResource(R.string.onbellek_bos),
                         // Bos onbellegi temizlemenin anlami yok.
                         onTikla = if (durum.havaSonGuncelleme != null) onOnbellekTemizle else null
                     )
@@ -296,8 +334,8 @@ fun AyarlarIcerik(
                         ikon = MotorumIkonlari.DisaAktar,
                         ikonRengi = Murekkep,
                         ikonZemini = CizgiSolgun,
-                        baslik = "Kayıtları dışa aktar",
-                        aciklama = "Seçili motorun kayıtları, CSV dosyası",
+                        baslik = stringResource(R.string.kayitlari_disa_aktar),
+                        aciklama = stringResource(R.string.disa_aktar_aciklama),
                         onTikla = if (durum.disaAktarimHazirlaniyor) null else onDisaAktar
                     ) {
                         if (durum.disaAktarimHazirlaniyor) {
@@ -312,7 +350,7 @@ fun AyarlarIcerik(
                     }
                 }
 
-                Bolum("HESAP") {
+                Bolum(stringResource(R.string.bolum_hesap)) {
                     Satir(
                         ikon = MotorumIkonlari.Kisi,
                         ikonRengi = MetinIkincil,
@@ -326,7 +364,7 @@ fun AyarlarIcerik(
                         ikon = MotorumIkonlari.Cikis,
                         ikonRengi = HataKirmizi,
                         ikonZemini = HataZemin,
-                        baslik = "Çıkış yap",
+                        baslik = stringResource(R.string.cikis_yap),
                         baslikStili = BASLIK_STILI.copy(fontWeight = FontWeight.Bold),
                         baslikRengi = HataKirmizi,
                         onTikla = { onayGoster = true }
@@ -338,7 +376,8 @@ fun AyarlarIcerik(
                 // Kalan bosluk surumu dibe itiyor.
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = "Motorum $surum".trim(),
+                    // Uygulama adi cevrilmiyor ama tek yerden geliyor.
+                    text = "${stringResource(R.string.app_name)} $surum".trim(),
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold
@@ -356,18 +395,18 @@ fun AyarlarIcerik(
     if (onayGoster) {
         AlertDialog(
             onDismissRequest = { onayGoster = false },
-            title = { Text("Çıkış yap") },
-            text = { Text("Hesabından çıkmak istediğine emin misin?") },
+            title = { Text(stringResource(R.string.cikis_yap)) },
+            text = { Text(stringResource(R.string.cikis_onayi)) },
             confirmButton = {
                 TextButton(onClick = {
                     onayGoster = false
                     onCikisTikla()
                 }) {
-                    Text("Çıkış yap", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.cikis_yap), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { onayGoster = false }) { Text("İptal") }
+                TextButton(onClick = { onayGoster = false }) { Text(stringResource(R.string.iptal)) }
             }
         )
     }
@@ -478,13 +517,17 @@ private fun IzinSatiri(
         ikonZemini = ikonZemini,
         baslik = baslik,
         // Reddedildiyse neden ayarlara gittigimizi onceden soyluyoruz.
-        aciklama = if (hal == IzinHali.REDDEDILDI) "Telefon ayarlarından açabilirsin" else aciklama,
+        aciklama = if (hal == IzinHali.REDDEDILDI) {
+            stringResource(R.string.izin_telefon_ayarlarindan)
+        } else {
+            aciklama
+        },
         onTikla = onTikla
     ) {
         if (hal == IzinHali.VERILDI) {
-            Rozet("İzin verildi", DurumYesilMetin, DurumYesilZemin)
+            Rozet(stringResource(R.string.izin_verildi), DurumYesilMetin, DurumYesilZemin)
         } else {
-            Rozet("Verilmedi", HataMetin, HataZemin)
+            Rozet(stringResource(R.string.izin_verilmedi), HataMetin, HataZemin)
         }
         Cevron(Kenar)
     }
@@ -525,6 +568,39 @@ private fun Ayirici() {
 // icinden "kalkmis" bir dugme gibi duruyor. Renk gecisi uygulamanin egrisiyle.
 @Composable
 private fun TemaSecici(secili: TemaSecimi, onSec: (TemaSecimi) -> Unit) {
+    SecimSeridi(
+        secenekler = TemaSecimi.entries,
+        secili = secili,
+        etiket = { stringResource(it.etiket) },
+        onSec = onSec
+    )
+}
+
+// Dil adlari cevrilmiyor: her dil listede kendi adiyla duruyor. Sadece
+// "Sistem" cevriliyor, cunku o bir dil adi degil.
+@Composable
+private fun DilSecici(secili: DilSecimi, onSec: (DilSecimi) -> Unit) {
+    SecimSeridi(
+        secenekler = DilSecimi.entries,
+        secili = secili,
+        etiket = { secim ->
+            when (secim) {
+                DilSecimi.SISTEM -> stringResource(R.string.secim_sistem)
+                DilSecimi.TURKCE -> "Türkçe"
+                DilSecimi.INGILIZCE -> "English"
+            }
+        },
+        onSec = onSec
+    )
+}
+
+@Composable
+private fun <T> SecimSeridi(
+    secenekler: List<T>,
+    secili: T,
+    etiket: @Composable (T) -> String,
+    onSec: (T) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -533,15 +609,15 @@ private fun TemaSecici(secili: TemaSecimi, onSec: (TemaSecimi) -> Unit) {
             .padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.cokKucuk)
     ) {
-        TemaSecimi.entries.forEach { secim ->
+        secenekler.forEach { secim ->
             val seciliMi = secim == secili
             val zemin by animateColorAsState(
                 targetValue = if (seciliMi) KartZemin else CizgiSolgun,
                 animationSpec = tween(AppMotion.PANEL, easing = AppMotion.egri),
-                label = "temaZemini"
+                label = "segmentZemini"
             )
             Text(
-                text = secim.etiket,
+                text = etiket(secim),
                 style = TextStyle(
                     fontFamily = Inter,
                     fontSize = 12.sp,
@@ -562,6 +638,16 @@ private fun TemaSecici(secili: TemaSecimi, onSec: (TemaSecimi) -> Unit) {
             )
         }
     }
+}
+
+// ViewModel hangi mesaj oldugunu soyluyor, metni burada seciyoruz.
+@Composable
+private fun mesajMetni(mesaj: AyarlarMesaji): String = when (mesaj) {
+    AyarlarMesaji.OnbellekTemizlendi -> stringResource(R.string.onbellek_temizlendi)
+    AyarlarMesaji.MotorYok -> stringResource(R.string.once_motor_ekle)
+    AyarlarMesaji.KayitYok -> stringResource(R.string.disa_aktarilacak_kayit_yok)
+    is AyarlarMesaji.Aktarildi -> stringResource(R.string.kayit_disa_aktarildi, mesaj.adet)
+    is AyarlarMesaji.Hata -> mesaj.metin
 }
 
 // Bugun alindiysa sadece saat ("14:30"), degilse tarihiyle birlikte.

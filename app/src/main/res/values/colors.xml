@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <!-- Uygulama zemini (Color.kt: Zemin). Karanlik karsiligi values-night/colors.xml. -->
     <color name="pencere_zemini">#FFF8FAFC</color>
+    <!-- Acilis ekraninin zemini: iki temada da murekkep (AcilisEkrani.kt ile ayni). -->
+    <color name="acilis_zemini">#FF111827</color>
 </resources>

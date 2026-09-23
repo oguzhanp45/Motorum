@@ -17,6 +17,9 @@ data class KimlikFormu(
 
     val gecerli: Boolean get() = !epostaGecersiz && !sifreGecersiz
 
+    // Sifremi unuttum icin sadece e-postanin dogru olmasi yetiyor.
+    val epostaGecerli: Boolean get() = !epostaGecersiz
+
     fun dogrula(): KimlikFormu = copy(
         epostaHatali = epostaGecersiz,
         sifreHatali = sifreGecersiz

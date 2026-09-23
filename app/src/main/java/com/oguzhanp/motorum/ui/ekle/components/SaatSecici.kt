@@ -12,8 +12,10 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
 import com.oguzhanp.motorum.util.formatSaat
 import com.oguzhanp.motorum.ui.components.MotorumIkonlari
@@ -27,7 +29,7 @@ fun SaatSecici(
     dakika: Int?,
     onSaatSec: (Int, Int) -> Unit,
     modifier: Modifier = Modifier,
-    etiket: String = "Saat"
+    etiket: String = stringResource(R.string.saat)
 ) {
     var acik by remember { mutableStateOf(false) }
 
@@ -38,7 +40,7 @@ fun SaatSecici(
         label = { Text(etiket) },
         trailingIcon = {
             IconButton(onClick = { acik = true }) {
-                Icon(MotorumIkonlari.Saat, contentDescription = "Saat sec")
+                Icon(MotorumIkonlari.Saat, contentDescription = stringResource(R.string.saat_sec))
             }
         },
         modifier = modifier
@@ -77,10 +79,10 @@ fun SaatDiyalogu(
                     onSaatSec(durum.hour, durum.minute)
                     onKapat()
                 }
-            ) { Text("Tamam") }
+            ) { Text(stringResource(R.string.tamam)) }
         },
         dismissButton = {
-            TextButton(onClick = onKapat) { Text("Iptal") }
+            TextButton(onClick = onKapat) { Text(stringResource(R.string.iptal)) }
         },
         text = { TimePicker(state = durum) }
     )

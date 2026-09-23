@@ -2,6 +2,7 @@ package com.oguzhanp.motorum.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,25 +15,29 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.model.HatirlatmaDurumu
 import com.oguzhanp.motorum.model.Kayit
+import com.oguzhanp.motorum.ui.components.basilincaKucul
 import com.oguzhanp.motorum.ui.theme.BakimMetin
 import com.oguzhanp.motorum.ui.theme.BakimZemin
 import com.oguzhanp.motorum.ui.theme.DurumYesilMetin
@@ -49,7 +54,6 @@ import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 
 private val KART_SEKLI = RoundedCornerShape(16.dp)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KayitSatiri(
     kayit: Kayit,
@@ -59,26 +63,30 @@ fun KayitSatiri(
     // "Zamani geldi" cipine dokunulunca: hatirlatma paneli.
     onHatirlatmaTikla: () -> Unit = {}
 ) {
-    // Esik asilinca confirmValueChange cagriliyor: silme istegini gonderiyor ama
-    // false donerek durumu Settled'da birakiyor. Durum EndToStart'a girseydi
-    // LazyColumn onu satir anahtariyla birlikte sakliyordu; geri alinan kayit
-    // ayni anahtarla dondugunde o durum canlanip kaydi tekrar siliyordu.
-    val kaydirmaDurumu = rememberSwipeToDismissBoxState(
-        // positionalThreshold: satir genisliginin %85'i kadar cekilmeden silinmez.
-        // Kaza sonucu tetiklenmeyi engelleyen tek ayar bu.
-        positionalThreshold = { toplamGenislik -> toplamGenislik * 0.85f },
-        confirmValueChange = { hedef ->
-            // Yon kontrolu zaten enableDismissFromStartToEnd = false ile yapiliyor.
-            if (hedef == SwipeToDismissBoxValue.EndToStart) onKaydirarakSil()
-            false
-        }
-    )
+    // Durum bilerek rememberSwipeToDismissBoxState ile degil, duz remember ile
+    // kuruluyor: o surum durumu kaydedip geri yukluyor. Silinen satir "Geri al"
+    // ile ayni anahtarla listeye dondugunde kaydedilmis "silindi" durumu
+    // canlanip kaydi tekrar siliyordu. Burada satir yeniden kurulunca durum da
+    // sifirdan basliyor.
+    val kaydirmaDurumu = remember(kayit.id) {
+        SwipeToDismissBoxState(
+            initialValue = SwipeToDismissBoxValue.Settled,
+            // positionalThreshold: satir genisliginin %85'i kadar cekilmeden
+            // silinmez. Kaza sonucu tetiklenmeyi engelleyen tek ayar bu.
+            positionalThreshold = { toplamGenislik -> toplamGenislik * 0.85f }
+        )
+    }
 
     SwipeToDismissBox(
         state = kaydirmaDurumu,
         modifier = modifier,
         enableDismissFromStartToEnd = false,    // Saga kaydirma tamamen kapali.
         enableDismissFromEndToStart = true,
+        // Satir tamamen cekilince: yon kontrolu zaten yukarida kapali ama
+        // acik kalan tek yonu burada da kontrol ediyoruz.
+        onDismiss = { yon ->
+            if (yon == SwipeToDismissBoxValue.EndToStart) onKaydirarakSil()
+        },
         backgroundContent = {
             Box(
                 modifier = Modifier
@@ -89,7 +97,7 @@ fun KayitSatiri(
             ) {
                 Icon(
                     imageVector = MotorumIkonlari.Sil,
-                    contentDescription = "Sil",
+                    contentDescription = stringResource(R.string.sil),
                     tint = MaterialTheme.colorScheme.onErrorContainer,
                     modifier = Modifier.padding(end = 16.dp)
                 )
@@ -97,14 +105,19 @@ fun KayitSatiri(
         }
     ) {
         val gorunum = gorunum(kayit.kategori)
+        // Basilinca kart hafifce kuculuyor ve golgesi iniyor (tasarim: Dokunma).
+        // Card'in onClick'li surumu: dokunma dalgasi kartin koselerine uyuyor.
+        val etkilesim = remember { MutableInteractionSource() }
 
         Card(
+            onClick = onTikla,
+            interactionSource = etkilesim,
             shape = KART_SEKLI,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp, pressedElevation = 0.dp),
             modifier = Modifier
+                .basilincaKucul(etkilesim)
                 .fillMaxWidth()
-                .clickable { onTikla() }
         ) {
             Column(
                 modifier = Modifier
@@ -198,7 +211,7 @@ private fun UstSatir(
                 // Kategorinin yanindaki ek rozet (SERVIS, SURUS...) kaldirildi:
                 // ikon ve renk zaten kategoriyi soyluyor, ust filtre de ayni adi yaziyor.
                 Text(
-                    text = kayit.kategori.etiket,
+                    text = stringResource(kayit.kategori.ad),
                     style = MaterialTheme.typography.titleSmall
                 )
                 Text(
@@ -259,7 +272,7 @@ private fun HatirlatmaCipi(kayit: Kayit.Bakim, onTikla: () -> Unit) {
         )
 
         HatirlatmaDurumu.ZAMANI_GELDI -> Cip(
-            metin = "Zamanı geldi",
+            metin = stringResource(R.string.zamani_geldi),
             zemin = BakimZemin,
             renk = BakimMetin,
             ikon = MotorumIkonlari.Bildirim,
@@ -270,7 +283,10 @@ private fun HatirlatmaCipi(kayit: Kayit.Bakim, onTikla: () -> Unit) {
         )
 
         HatirlatmaDurumu.YAPILDI -> Cip(
-            metin = "Yapıldı · " + formatGunKisa(kayit.hatirlatmaYapildiMillis!!),
+            metin = stringResource(
+                R.string.hatirlatma_yapildi,
+                formatGunKisa(kayit.hatirlatmaYapildiMillis!!)
+            ),
             zemin = DurumYesilZemin,
             renk = DurumYesilMetin,
             ikon = MotorumIkonlari.Onay
@@ -283,9 +299,13 @@ private fun formatGunKisa(millis: Long): String = formatTarih(millis).substring(
 
 // Alt satirin kurali: solda kategoriyi tanimlayan bilgi, sagda not ya da
 // turetilmis bilgi. Ikisi de when oldugu icin yeni kategoride derleyici uyarir.
+@Composable
+@ReadOnlyComposable
 private fun solAlanMetni(kayit: Kayit): String? = when (kayit) {
     is Kayit.Yakit -> kayit.not.ifBlank { null }
-    is Kayit.RoadTrip -> "${kayit.baslangic.sehir} → ${kayit.bitis?.sehir ?: "devam ediyor"}"
+    // Bitis sehri yoksa yolculuk suruyor demek.
+    is Kayit.RoadTrip ->
+        "${kayit.baslangic.sehir} → ${kayit.bitis?.sehir ?: stringResource(R.string.yolculuk_devam)}"
     is Kayit.Bakim -> kayit.bakimTuru
     is Kayit.Aksesuar -> kayit.aksesuarAdi
 }

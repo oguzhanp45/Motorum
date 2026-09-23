@@ -21,11 +21,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,8 +54,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.ui.components.EtiketliAlan
+import com.oguzhanp.motorum.ui.components.MurekkepDugme
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MetinSolgun
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
@@ -144,10 +142,10 @@ fun MotorDetayIcerik(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(if (uiState.yeniMi) "Motor Ekle" else "Motoru Düzenle") },
+                title = { Text(stringResource(if (uiState.yeniMi) R.string.motor_ekle else R.string.motoru_duzenle)) },
                 navigationIcon = {
                     IconButton(onClick = onGeriTikla) {
-                        Icon(MotorumIkonlari.Geri, contentDescription = "Geri")
+                        Icon(MotorumIkonlari.Geri, contentDescription = stringResource(R.string.geri))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -172,39 +170,38 @@ fun MotorDetayIcerik(
             )
 
             EtiketliAlan(
-                etiket = "Marka",
+                etiket = stringResource(R.string.marka),
                 zorunlu = true,
                 deger = form.marka,
                 onDegis = { onFormDegis(form.copy(marka = it, markaHatali = false)) },
-                ipucu = "Örn: Yamaha, Honda",
+                ipucu = stringResource(R.string.marka_ipucu),
                 ikon = MotorumIkonlari.Motor,
                 hatali = form.markaHatali,
-                hataMetni = "Marka zorunlu",
+                hataMetni = stringResource(R.string.marka_zorunlu),
                 klavye = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
             )
 
             EtiketliAlan(
-                etiket = "Model",
+                etiket = stringResource(R.string.model),
                 zorunlu = true,
                 deger = form.model,
                 onDegis = { onFormDegis(form.copy(model = it, modelHatali = false)) },
-                ipucu = "Örn: MT-07, CRF 250",
-                ikon = Icons.Default.Speed,
+                ipucu = stringResource(R.string.model_ipucu),
+                ikon = MotorumIkonlari.Gosterge,
                 hatali = form.modelHatali,
-                hataMetni = "Model zorunlu",
-                klavye = KeyboardOptions(capitalization = KeyboardCapitalization.Characters)
+                hataMetni = stringResource(R.string.model_zorunlu)
             )
 
             EtiketliAlan(
-                etiket = "Plaka (isteğe bağlı)",
+                etiket = stringResource(R.string.plaka),
                 deger = form.plaka,
                 onDegis = { onFormDegis(form.copy(plaka = it)) },
-                ipucu = "Örn: 34 BKR 102",
+                ipucu = stringResource(R.string.plaka_ipucu),
                 ikon = MotorumIkonlari.Plaka,
-                klavye = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Characters,
-                    keyboardType = KeyboardType.Text
-                )
+                // Buyuk harfe cevirmeyi klavyeye birakmiyoruz: klavyenin dili
+                // Ingilizce oldugunda "i" harfini "I" yapiyordu, "İ" degil.
+                // Yazilan neyse o kaliyor.
+                klavye = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
 
             if (uiState.hata != null) {
@@ -215,7 +212,7 @@ fun MotorDetayIcerik(
                 )
             }
 
-            Button(
+            MurekkepDugme(
                 onClick = onKaydetTikla,
                 enabled = !uiState.calisiyor,
                 modifier = Modifier
@@ -229,7 +226,7 @@ fun MotorDetayIcerik(
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
-                    Text("Kaydet")
+                    Text(stringResource(R.string.kaydet))
                 }
             }
         }
@@ -262,7 +259,7 @@ private fun FotografAlani(
         if (fotograf != null) {
             Image(
                 bitmap = fotograf,
-                contentDescription = "Motor fotoğrafı",
+                contentDescription = stringResource(R.string.motor_fotografi),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
@@ -272,13 +269,13 @@ private fun FotografAlani(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Icon(
-                    Icons.Default.AddAPhoto,
+                    MotorumIkonlari.Fotograf,
                     contentDescription = null,
                     tint = MetinSolgun,
                     modifier = Modifier.size(32.dp)
                 )
                 Text(
-                    text = "Fotoğraf ekle",
+                    text = stringResource(R.string.fotograf_ekle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MetinIkincil
                 )
@@ -301,14 +298,14 @@ private fun FotografAlani(
                     .padding(bottom = 24.dp)
             ) {
                 Text(
-                    text = "Motor Fotoğrafı",
+                    text = stringResource(R.string.motor_fotografi_baslik),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
                 PanelSatiri(
-                    ikon = Icons.Default.PhotoLibrary,
-                    metin = "Galeriden Seç",
+                    ikon = MotorumIkonlari.Galeri,
+                    metin = stringResource(R.string.galeriden_sec),
                     onTikla = {
                         panelAcik = false
                         onGaleriAc()
@@ -316,7 +313,7 @@ private fun FotografAlani(
                 )
                 PanelSatiri(
                     ikon = MotorumIkonlari.Fotograf,
-                    metin = "Fotoğraf Çek",
+                    metin = stringResource(R.string.fotograf_cek),
                     onTikla = {
                         panelAcik = false
                         onKameraAc()
@@ -325,7 +322,7 @@ private fun FotografAlani(
                 if (fotograf != null) {
                     PanelSatiri(
                         ikon = MotorumIkonlari.Sil,
-                        metin = "Kaldır",
+                        metin = stringResource(R.string.kaldir),
                         renk = MaterialTheme.colorScheme.error,
                         onTikla = {
                             panelAcik = false

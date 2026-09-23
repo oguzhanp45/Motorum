@@ -8,6 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 internal const val KOLEKSIYON_KULLANICILAR = "users"
 internal const val KOLEKSIYON_MOTORLAR = "motorlar"
 internal const val KOLEKSIYON_KAYITLAR = "kayitlar"
+internal const val KOLEKSIYON_BELGELER = "belgeler"
 
 // Motorun tam boy fotografi. Motor basina tek fotograf oldugu icin belge
 // kimligi de sabit: rastgele kimlik uretip saklamaya gerek yok, yolu biliyoruz.

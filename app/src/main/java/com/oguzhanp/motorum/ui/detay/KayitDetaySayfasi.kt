@@ -1,6 +1,8 @@
 package com.oguzhanp.motorum.ui.detay
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,10 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,18 +29,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppShape
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.HatirlatmaDurumu
 import com.oguzhanp.motorum.model.Kayit
 import com.oguzhanp.motorum.model.TripNoktasi
+import com.oguzhanp.motorum.ui.components.MurekkepDugme
 import com.oguzhanp.motorum.ui.form.AksesuarAlanlari
 import com.oguzhanp.motorum.ui.components.bildirimIzniVerildiMi
 import com.oguzhanp.motorum.ui.components.rememberBildirimIzni
@@ -48,13 +57,14 @@ import com.oguzhanp.motorum.ui.form.KayitFormu
 import com.oguzhanp.motorum.ui.form.RoadTripAlanlari
 import com.oguzhanp.motorum.ui.form.YakitAlanlari
 import com.oguzhanp.motorum.ui.home.KayitViewModel
+import com.oguzhanp.motorum.ui.navigation.Routes
 import com.oguzhanp.motorum.ui.home.gorunum
 import com.oguzhanp.motorum.ui.theme.BakimMetin
 import com.oguzhanp.motorum.ui.theme.BakimRenk
 import com.oguzhanp.motorum.ui.theme.BakimZemin
+import com.oguzhanp.motorum.ui.theme.CizgiSolgun
+import com.oguzhanp.motorum.ui.theme.MetinAna
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
-import com.oguzhanp.motorum.ui.theme.Murekkep
-import com.oguzhanp.motorum.ui.theme.MurekkepUstu
 import com.oguzhanp.motorum.util.dakikaAl
 import com.oguzhanp.motorum.util.formatGunAy
 import com.oguzhanp.motorum.util.formatSaat
@@ -84,6 +94,10 @@ fun KayitDetaySayfasi(
     val baglam = LocalContext.current
 
     var bildirimIzniVar by remember { mutableStateOf(bildirimIzniVerildiMi(baglam)) }
+
+    // Sablon cipi formu kendisi dolduruyor; bu kapi sadece izni istiyor,
+    // sonuc gelince formun ustune yazmiyor.
+    val sadeceIzinIste = rememberBildirimIzni { verildi -> bildirimIzniVar = verildi }
 
     // Izin verilsin verilmesin hatirlatma alanini aciyoruz: tarih yine
     // kaydedilecek, izin yoksa formda uyari cikiyor.
@@ -127,10 +141,18 @@ fun KayitDetaySayfasi(
         hata = detay.hata,
         bildirimIzniVar = bildirimIzniVar,
         onHatirlatmaAcilsin = bildirimIzniIste,
+        onHatirlatmaIzniIste = sadeceIzinIste,
         onFormDegis = detayViewModel::formDegis,
         onSilmeOnayiDegis = detayViewModel::silmeOnayiDegis,
         onSilOnayla = { detayViewModel.sil(kayitId) },
         onGeriTikla = { navController.popBackStack() },
+        // Bu kaydin aynisini bugunun tarihiyle ekle. Detay yigindan cikiyor:
+        // kaydettikten sonra geri tusu ana sayfaya donsun, eski kayda degil.
+        onTekrarlaTikla = {
+            navController.navigate(Routes.kayitKopyaRotasi(kayitId)) {
+                popUpTo(Routes.KAYIT_DETAY) { inclusive = true }
+            }
+        },
         onGuncelleTikla = {
             val kontrol = detay.form.dogrula()
             if (kontrol.gecerli) {
@@ -209,11 +231,13 @@ fun KayitDetayIcerik(
     hata: String?,
     bildirimIzniVar: Boolean,
     onHatirlatmaAcilsin: () -> Unit,
+    onHatirlatmaIzniIste: () -> Unit = {},
     onFormDegis: (KayitFormu) -> Unit,
     onSilmeOnayiDegis: (Boolean) -> Unit,// Diyalogu acmak ve iptal etmek ayni islem.true/false yapmak.
     onSilOnayla: () -> Unit,
     onGuncelleTikla: () -> Unit,
     onGeriTikla: () -> Unit,
+    onTekrarlaTikla: () -> Unit = {},
     // Zamani gelmis hatirlatma varsa zamani; yoksa null ve serit cikmiyor.
     zamaniGelenHatirlatma: Long? = null,
     onYaptirdim: () -> Unit = {},
@@ -222,18 +246,30 @@ fun KayitDetayIcerik(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Kayıt Detayı") },
+                title = { Text(stringResource(R.string.kayit_detayi)) },
                 navigationIcon = {
                     IconButton(onClick = onGeriTikla) {
-                        Icon(MotorumIkonlari.Geri, contentDescription = "Geri")
+                        Icon(MotorumIkonlari.Geri, contentDescription = stringResource(R.string.geri))
                     }
                 },
                 actions = {
+                    // Tekrarla: tasarimdaki gibi hafif gri kutu icinde, copun yaninda.
+                    IconButton(onClick = onTekrarlaTikla, enabled = !calisiyor) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(CizgiSolgun),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(MotorumIkonlari.Yenile, contentDescription = stringResource(R.string.tekrarla), modifier = Modifier.size(17.dp))
+                        }
+                    }
                     IconButton(
                         onClick = { onSilmeOnayiDegis(true) },
                         enabled = !calisiyor
                     ) {
-                        Icon(MotorumIkonlari.Sil, contentDescription = "Sil")
+                        Icon(MotorumIkonlari.Sil, contentDescription = stringResource(R.string.sil))
                     }
                 }
             )
@@ -254,10 +290,28 @@ fun KayitDetayIcerik(
                 )
             }
 
-            Text(
-                text = "Kategori: ${form.kategori.etiket}",
-                style = MaterialTheme.typography.bodyLarge
-            )
+            // Kategori satiri: renkli ikon kutusu ve kalin kategori adi (tasarim: 2C).
+            val kategoriGorunumu = gorunum(form.kategori)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Box(
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clip(RoundedCornerShape(9.dp))
+                        .background(kategoriGorunumu.zemin),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(kategoriGorunumu.ikon, contentDescription = null, tint = kategoriGorunumu.renk, modifier = Modifier.size(14.dp))
+                }
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(R.string.kategori_etiketi))
+                        withStyle(SpanStyle(fontWeight = FontWeight.ExtraBold)) { append(stringResource(form.kategori.ad)) }
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MetinAna
+                )
+            }
 
             // Alan blogu kategoriye gore secilir. Yeni kategori eklendiginde
             // derleyici bu when'in eksik oldugunu gosterir.
@@ -283,6 +337,7 @@ fun KayitDetayIcerik(
                     onDegis = onFormDegis,
                     bildirimIzniVar = bildirimIzniVar,
                     onHatirlatmaAcilsin = onHatirlatmaAcilsin,
+                    onHatirlatmaIzniIste = onHatirlatmaIzniIste,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -296,7 +351,12 @@ fun KayitDetayIcerik(
             OutlinedTextField(
                 value = form.not,
                 onValueChange = { onFormDegis(form.notDegistir(it)) },
-                label = { Text(gorunum(form.kategori).notEtiketi) },
+                label = { Text(stringResource(gorunum(form.kategori).notEtiketi)) },
+                // Not serbest metin: klavye cumle duzeninde acilsin.
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    keyboardType = KeyboardType.Text
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -308,7 +368,7 @@ fun KayitDetayIcerik(
                 )
             }
 
-            Button(
+            MurekkepDugme(
                 onClick = onGuncelleTikla,
                 enabled = !calisiyor,
                 modifier = Modifier.fillMaxWidth()
@@ -320,7 +380,7 @@ fun KayitDetayIcerik(
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
-                    Text("Güncelle")
+                    Text(stringResource(R.string.guncelle))
                 }
             }
         }
@@ -333,13 +393,13 @@ fun KayitDetayIcerik(
             // Disari tiklama ve geri tusu buraya duser.
             // Burada false yazmazsak diyalog kapanmaz.
             onDismissRequest = { onSilmeOnayiDegis(false) },
-            title = { Text("Kaydı sil") },
-            text = { Text("Bu kaydı silmek istediğinize emin misiniz?") },
+            title = { Text(stringResource(R.string.kaydi_sil)) },
+            text = { Text(stringResource(R.string.kaydi_sil_onayi)) },
             confirmButton = {
-                TextButton(onClick = onSilOnayla) { Text("Sil") }
+                TextButton(onClick = onSilOnayla) { Text(stringResource(R.string.sil)) }
             },
             dismissButton = {
-                TextButton(onClick = { onSilmeOnayiDegis(false) }) { Text("İptal") }
+                TextButton(onClick = { onSilmeOnayiDegis(false) }) { Text(stringResource(R.string.iptal)) }
             }
         )
     }
@@ -368,7 +428,7 @@ private fun ZamaniGeldiSeridi(zaman: Long, onYaptirdim: () -> Unit, onErtele: ()
             )
             Column {
                 Text(
-                    text = "Zamanı geldi",
+                    text = stringResource(R.string.zamani_geldi),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     color = BakimMetin
@@ -382,17 +442,16 @@ private fun ZamaniGeldiSeridi(zaman: Long, onYaptirdim: () -> Unit, onErtele: ()
         }
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.kucuk)) {
-            Button(
+            MurekkepDugme(
                 onClick = onYaptirdim,
-                shape = AppShape.alan,
-                colors = ButtonDefaults.buttonColors(containerColor = Murekkep, contentColor = MurekkepUstu)
+                shape = AppShape.alan
             ) {
                 Icon(MotorumIkonlari.Onay, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(Modifier.size(6.dp))
-                Text("Yaptırdım")
+                Text(stringResource(R.string.yaptirdim))
             }
             TextButton(onClick = onErtele) {
-                Text("1 hafta ertele", color = BakimMetin, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.bir_hafta_ertele), color = BakimMetin, fontWeight = FontWeight.SemiBold)
             }
         }
     }

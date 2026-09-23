@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Uygulamanin destekledigi diller. Android bunu iki yerde kullaniyor:
+     sistem ayarlarindaki "Uygulama dili" listesi ve bizim Ayarlar'daki
+     secim (AppCompatDelegate.setApplicationLocales). Yeni bir dil
+     eklerken hem buraya hem values-<dil>/strings.xml'e eklemek gerekiyor. -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="tr" />
+    <locale android:name="en" />
+</locale-config>

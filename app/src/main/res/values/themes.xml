@@ -3,13 +3,19 @@
 
     <!-- Pencere zemini: Compose ilk kareyi cizmeden once bir an gorunen yuzey.
          Karanlik temada beyaz parlamasin diye values-night'ta koyu tonu var. -->
-    <style name="Theme.Motorum" parent="android:Theme.Material.Light.NoActionBar">
+    <!-- Ust tema AppCompat: MainActivity AppCompatActivity'den turuyor (uygulama
+         dili ozelligi icin) ve AppCompat temasi olmadan calismiyor. Gorunum
+         degismiyor, ekranlarin tamami Compose. -->
+    <style name="Theme.Motorum" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/pencere_zemini</item>
     </style>
 
-    <!-- installSplashScreen() calissin diye zorunlu. Gorsel ozellestirme yok;
-         postSplashScreenTheme splash bitince donulecek temayi soyluyor. -->
+    <!-- installSplashScreen() calissin diye zorunlu. postSplashScreenTheme splash
+         bitince donulecek temayi soyluyor. Zemin ve ikon, Compose'daki acilis
+         ekraninin ilk karesiyle birebir ayni (murekkep zemin, beyaz M). -->
     <style name="Theme.Motorum.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/acilis_zemini</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/acilis_isareti</item>
         <item name="postSplashScreenTheme">@style/Theme.Motorum</item>
     </style>
 </resources>

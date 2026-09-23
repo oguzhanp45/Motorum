@@ -26,6 +26,8 @@ data class MotorumRenkleri(
     val kenar: Color,
     val murekkep: Color,
     val murekkepUstu: Color,
+    // Basili murekkep dugme: bir ton koyu (tasarim: Dokunma).
+    val murekkepBasili: Color,
 
     // Metin
     val metinAna: Color,
@@ -71,6 +73,7 @@ internal val AcikRenkler = MotorumRenkleri(
     kenar = Color(0xFFCBD5E1),
     murekkep = Color(0xFF111827),
     murekkepUstu = Color(0xFFFFFFFF),
+    murekkepBasili = Color(0xFF0B1220),
 
     metinAna = Color(0xFF0F172A),
     metinEtiket = Color(0xFF334155),
@@ -118,6 +121,7 @@ internal val KaranlikRenkler = MotorumRenkleri(
     kenar = Color(0xFF47536A),
     murekkep = Color(0xFFF1F5F9),
     murekkepUstu = Color(0xFF0B1220),
+    murekkepBasili = Color(0xFFE2E8F0),
 
     metinAna = Color(0xFFF1F5F9),
     metinEtiket = Color(0xFFCBD5E1),
@@ -173,6 +177,7 @@ val SekmeZemin: Color @Composable @ReadOnlyComposable get() = r.sekmeZemin
 val Kenar: Color @Composable @ReadOnlyComposable get() = r.kenar
 val Murekkep: Color @Composable @ReadOnlyComposable get() = r.murekkep
 val MurekkepUstu: Color @Composable @ReadOnlyComposable get() = r.murekkepUstu
+val MurekkepBasili: Color @Composable @ReadOnlyComposable get() = r.murekkepBasili
 
 val MetinAna: Color @Composable @ReadOnlyComposable get() = r.metinAna
 val MetinEtiket: Color @Composable @ReadOnlyComposable get() = r.metinEtiket

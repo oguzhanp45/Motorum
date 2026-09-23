@@ -158,6 +158,24 @@ object MotorumIkonlari {
         )
     }
 
+    // Galeri: onde bir fotograf, arkasinda ikinci bir cerceve: "bircok
+    // fotograf arasindan sec". Maketlerde yoktu, setin diliyle cizildi.
+    val Galeri: ImageVector by lazy {
+        ikon(
+            "Galeri",
+            "M7 6.5V5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2h-1.5",
+            "M3 9a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z",
+            "M3 18l4.2-4.2a1.2 1.2 0 011.7 0L13 18",
+            "M11.5 16.5l1.3-1.3a1.2 1.2 0 011.7 0L17 17.7",
+            daire(12.6f, 10.8f, 1.2f)
+        )
+    }
+
+    // Hiz gostergesi: motor formundaki "Model" alani (Motor Formu maketi).
+    val Gosterge: ImageVector by lazy {
+        ikon("Gosterge", "M12 15a3 3 0 100-6 3 3 0 000 6z", "M4 18a9 9 0 1116 0", "M14.2 9.8L18 6")
+    }
+
     // Plaka: cerceve ve icindeki uc satir.
     val Plaka: ImageVector by lazy {
         ikon(
@@ -205,7 +223,47 @@ object MotorumIkonlari {
     // Tepsiye inen ok: disa aktar. Maketlerde yoktu, ayni dilde cizildi.
     val DisaAktar: ImageVector by lazy { ikon("DisaAktar", "M12 3v12", "M7 10l5 5 5-5", "M5 21h14") }
 
+    // --- Belgeler ---
+    // Bilerek kategori ikonlarindan farkli: goz "bu harcama degil" desin.
+
+    // Klasor: Belgeler kartinin basligi.
+    val Klasor: ImageVector by lazy {
+        ikon("Klasor", "M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z")
+    }
+
+    // Muhurlu belge: sigorta.
+    val MuhurluBelge: ImageVector by lazy {
+        ikon("MuhurluBelge", "M6 3h9l4 4v14H6z", "M15 3v4h4", daire(12.4f, 14.2f, 3f), "M12.4 17.2v3")
+    }
+
+    // Panolu tik: muayene.
+    val PanoluTik: ImageVector by lazy {
+        ikon(
+            "PanoluTik",
+            "M7.5 4h9A2.5 2.5 0 0119 6.5v12a2.5 2.5 0 01-2.5 2.5h-9A2.5 2.5 0 015 18.5v-12A2.5 2.5 0 017.5 4z",
+            "M9 4V2.5h6V4",
+            "M8.8 13l2.2 2.2L15.4 11"
+        )
+    }
+
+    // Semsiye: kasko.
+    val Semsiye: ImageVector by lazy {
+        ikon("Semsiye", "M12 3.5v17a2.4 2.4 0 01-4.8 0", "M2.6 12.5a9.4 9.4 0 0118.8 0z")
+    }
+
+    // Ucgen icinde unlem: suresi dolmus belge.
+    val Uyari: ImageVector by lazy {
+        ikon(
+            "Uyari",
+            "M12 8v5",
+            "M12 17h.01",
+            "M10.3 3.9L2.6 17.5A1.8 1.8 0 004.2 20h15.6a1.8 1.8 0 001.6-2.5L13.7 3.9a1.9 1.9 0 00-3.4 0z"
+        )
+    }
+
     val Onay: ImageVector by lazy { ikon("Onay", daire(12f, 12f, 9f), "M8 12.3l2.6 2.6L16 9.5") }
+    // Cercevesiz onay isareti: tanitimin son sayfasindaki "Basla" dugmesi.
+    val Tik: ImageVector by lazy { ikon("Tik", "M5 12.5l5 5L19 7") }
     val BosDaire: ImageVector by lazy { ikon("BosDaire", daire(12f, 12f, 9f)) }
 }
 

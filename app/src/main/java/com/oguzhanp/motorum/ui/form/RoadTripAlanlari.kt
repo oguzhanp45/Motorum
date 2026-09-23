@@ -8,12 +8,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
-
-private const val BITIS_KM_MESAJI = "Başlangıç km'sinden büyük bir değer girin"
 
 // Road trip kategorisinin form alanlari. Hem ekleme hem detay ekrani bunu cagiriyor.
 // Alanlarin sirasi yolculugun zaman sirasi: baslangic, molalar, bitis, masraf.
@@ -32,7 +32,7 @@ fun RoadTripAlanlari(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         TripNoktasiAlanlari(
-            baslik = "Başlangıç",
+            baslik = stringResource(R.string.baslangic),
             form = form.baslangic,
             onDegis = { onDegis(form.copy(baslangic = it)) },
             sonOkuma = sonOkuma,
@@ -49,10 +49,10 @@ fun RoadTripAlanlari(
 
         if (bitisGoster) {
             TripNoktasiAlanlari(
-                baslik = "Bitiş",
+                baslik = stringResource(R.string.bitis),
                 form = form.bitis,
                 onDegis = { onDegis(form.copy(bitis = it)) },
-                kmMesaji = BITIS_KM_MESAJI,
+                kmMesaji = stringResource(R.string.bitis_km_hatasi),
                 // Bitis ucunda baslangic km kurali zaten var; onceki kayitlarin
                 // okumasi ayrica uyari olarak gosteriliyor.
                 sonOkuma = sonOkuma,
@@ -63,7 +63,7 @@ fun RoadTripAlanlari(
         OutlinedTextField(
             value = form.masrafYazi,
             onValueChange = { onDegis(form.copy(masrafYazi = it)) },
-            label = { Text("Masraf (₺) — isteğe bağlı") },
+            label = { Text(stringResource(R.string.masraf_istege_bagli)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()

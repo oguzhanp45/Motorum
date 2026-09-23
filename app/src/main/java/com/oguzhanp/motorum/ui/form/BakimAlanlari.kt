@@ -1,20 +1,46 @@
 package com.oguzhanp.motorum.ui.form
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.oguzhanp.motorum.core.constants.AppMotion
+import com.oguzhanp.motorum.core.constants.AppShape
 import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.ui.ekle.components.TarihSecici
+import com.oguzhanp.motorum.ui.theme.BakimMetin
+import com.oguzhanp.motorum.ui.theme.BakimRenk
+import com.oguzhanp.motorum.ui.theme.BakimZemin
+import com.oguzhanp.motorum.ui.theme.Inter
+import com.oguzhanp.motorum.ui.theme.KartZemin
+import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
+import com.oguzhanp.motorum.ui.theme.SekmeZemin
+import java.util.Locale
 
 // Bakim kategorisinin form alanlari. Hem ekleme hem detay ekrani ayni blogu cagiriyor.
 @Composable
@@ -23,7 +49,10 @@ fun BakimAlanlari(
     onDegis: (KayitFormu.Bakim) -> Unit,
     bildirimIzniVar: Boolean,
     onHatirlatmaAcilsin: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    // Sadece izin ister, formu degistirmez. Sablon cipi formu kendisi
+    // dolduruyor; izin sonucu gelince formun ustune yazilmasin diye ayri.
+    onHatirlatmaIzniIste: () -> Unit = {}
 ) {
     Column(
         modifier = modifier,
@@ -32,11 +61,21 @@ fun BakimAlanlari(
         OutlinedTextField(
             value = form.bakimTuru,
             onValueChange = { onDegis(form.copy(bakimTuru = it, bakimTuruHatali = false)) },
-            label = { Text("Bakım türü") },
+            label = { Text(stringResource(R.string.bakim_turu)) },
             isError = form.bakimTuruHatali,
             supportingText = { if (form.bakimTuruHatali) Text(stringResource(R.string.zorunlu_alan)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
+        )
+
+        SablonCipleri(
+            yazilan = form.bakimTuru,
+            onSec = { ad, onerilenAy ->
+                onDegis(form.sablonSec(ad, onerilenAy))
+                // Izin yoksa blok yine aciliyor ve uyari yaziyor; izni de burada
+                // istiyoruz ki kullanici ayrica anahtara dokunmak zorunda kalmasin.
+                if (!bildirimIzniVar) onHatirlatmaIzniIste()
+            }
         )
 
         // Once "ne yaptirdim", sonra "ne zaman": tur ilk alan.
@@ -44,15 +83,15 @@ fun BakimAlanlari(
             tarihMillis = form.tarihMillis,
             // Secili aralik varsa hatirlatma tarihi de onunla kayiyor.
             onTarihSec = { onDegis(form.tarihDegistir(it)) },
-            etiket = "Bakım tarihi",
-            aciklama = "Bakımı yaptırdığın gün",
+            etiket = stringResource(R.string.bakim_tarihi),
+            aciklama = stringResource(R.string.bakim_tarihi_aciklama),
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
             value = form.tutarYazi,
             onValueChange = { onDegis(form.copy(tutarYazi = it, tutarHatali = false)) },
-            label = { Text("Tutar (₺)") },
+            label = { Text(stringResource(R.string.tutar_tl)) },
             isError = form.tutarHatali,
             supportingText = { if (form.tutarHatali) Text(stringResource(R.string.gecerli_sayi)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -61,7 +100,7 @@ fun BakimAlanlari(
         )
 
         HatirlatmaBlogu(
-            baslik = "Bakım zamanı hatırlat",
+            baslik = stringResource(R.string.bakim_zamani_hatirlat),
             acik = form.hatirlatmaAcik,
             secilenAy = form.hatirlatmaAyi,
             tarihMillis = form.hatirlatmaTarihMillis,
@@ -95,6 +134,62 @@ fun BakimAlanlari(
     }
 }
 
+// Bakim turunun altindaki kisayol cipleri (tasarim: Fikir 3A).
+// Cipin ekranda gorunen hali: adi cozulmus sablon.
+private data class Sablon(val ad: String, val onerilenAy: Int)
+
+// Bos alanda hepsi gorunuyor. Yazmaya baslayinca eslesenler kaliyor, eslesen
+// yoksa satir kayboluyor. Yazilan metin bir sablonun ta kendisiyse o cip
+// isaretli (kehribar + tik) ve digerleri de gorunuyor: fikir degistirilebilsin.
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SablonCipleri(yazilan: String, onSec: (String, Int) -> Unit) {
+    // Cipin yazisi burada cozuluyor: arama da, kayda giren ad da ekranda
+    // gorunen yaziyla ayni olsun.
+    val sablonlar = BAKIM_SABLONLARI.map { Sablon(stringResource(it.ad), it.onerilenAy) }
+    val arama = yazilan.trim().lowercase(TR)
+    val secili = sablonlar.firstOrNull { it.ad.lowercase(TR) == arama }
+    val gorunenler = when {
+        arama.isEmpty() || secili != null -> sablonlar
+        else -> sablonlar.filter { it.ad.lowercase(TR).contains(arama) }
+    }
+
+    AnimatedVisibility(
+        visible = gorunenler.isNotEmpty(),
+        enter = expandVertically(tween(AppMotion.PANEL, easing = AppMotion.egri)) + fadeIn(),
+        exit = shrinkVertically(tween(AppMotion.PANEL, easing = AppMotion.egri)) + fadeOut()
+    ) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            gorunenler.forEach { sablon ->
+                val secildi = sablon == secili
+                Text(
+                    text = if (secildi) stringResource(R.string.sablon_secili, sablon.ad) else sablon.ad,
+                    style = TextStyle(
+                        fontFamily = Inter,
+                        fontSize = 11.sp,
+                        fontWeight = if (secildi) FontWeight.ExtraBold else FontWeight.Bold
+                    ),
+                    color = if (secildi) BakimMetin else MetinIkincil,
+                    modifier = Modifier
+                        .clip(AppShape.cip)
+                        .background(if (secildi) BakimZemin else KartZemin)
+                        .border(1.4.dp, if (secildi) BakimRenk.copy(alpha = 0.45f) else SekmeZemin, AppShape.cip)
+                        .clickable { onSec(sablon.ad, sablon.onerilenAy) }
+                        .padding(horizontal = 12.dp, vertical = 7.dp)
+                )
+            }
+        }
+    }
+}
+
+// Turkce kucuk harf: "İ" -> "i", "I" -> "ı". Varsayilan dil Ingilizce olan
+// telefonda da arama dogru eslessin.
+private val TR: Locale = Locale.forLanguageTag("tr")
+
+// Bos form: bes sablon cipi de gorunuyor.
 @Preview(showBackground = true)
 @Composable
 private fun BakimAlanlariPreview() {
@@ -108,7 +203,8 @@ private fun BakimAlanlariPreview() {
     }
 }
 
-// Hatirlatma acikken ve izin yokken nasil gorundugu: iki secici ve uyari satiri.
+// Sablon secilmis hali: "Yag degisimi" cipi isaretli, hatirlatma acik ve
+// izin yokken altta uyari satiri.
 @Preview(showBackground = true)
 @Composable
 private fun BakimAlanlariHatirlatmaliPreview() {

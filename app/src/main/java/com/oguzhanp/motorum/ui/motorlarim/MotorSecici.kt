@@ -25,9 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.model.Motor
 import com.oguzhanp.motorum.ui.theme.AksiyonMaviZemin
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
@@ -45,9 +47,9 @@ fun MotorCipi(
     modifier: Modifier = Modifier
 ) {
     val metin = when (durum) {
-        CipDurumu.Yukleniyor -> "Yükleniyor…"
-        CipDurumu.MotorYok -> "Motor yok"
-        CipDurumu.BaglantiYok -> "Bağlantı yok"
+        CipDurumu.Yukleniyor -> stringResource(R.string.yukleniyor)
+        CipDurumu.MotorYok -> stringResource(R.string.motor_yok_kisa)
+        CipDurumu.BaglantiYok -> stringResource(R.string.baglanti_yok_kisa)
         is CipDurumu.Secili -> cipMetni(durum.motor)
     }
     val secili = durum is CipDurumu.Secili
@@ -80,7 +82,7 @@ fun MotorCipi(
         if (secili) {
             Icon(
                 MotorumIkonlari.AsagiOk,
-                contentDescription = "Motor seç",
+                contentDescription = stringResource(R.string.motor_sec),
                 tint = MetinIkincil,
                 modifier = Modifier.size(16.dp)
             )
@@ -115,7 +117,7 @@ fun MotorSecimPaneli(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "Motor Seç",
+                text = stringResource(R.string.motor_sec_baslik),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -141,7 +143,7 @@ fun MotorSecimPaneli(
             ) {
                 Icon(MotorumIkonlari.Ekle, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("Motor Ekle")
+                Text(stringResource(R.string.motor_ekle))
             }
         }
     }
@@ -173,7 +175,7 @@ private fun MotorSecimSatiri(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = motor.plaka.ifBlank { "Plaka yok" },
+                text = motor.plaka.ifBlank { stringResource(R.string.plaka_yok) },
                 style = MaterialTheme.typography.bodySmall,
                 color = if (motor.plaka.isBlank()) MetinSolgun else MetinIkincil
             )

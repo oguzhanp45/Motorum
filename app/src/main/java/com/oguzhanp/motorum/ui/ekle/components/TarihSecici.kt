@@ -1,5 +1,7 @@
 package com.oguzhanp.motorum.ui.ekle.components
 
+import androidx.compose.ui.res.stringResource
+import com.oguzhanp.motorum.R
 import java.util.Calendar
 import java.util.TimeZone
 import androidx.compose.foundation.layout.padding
@@ -32,7 +34,7 @@ fun TarihSecici(
     modifier: Modifier = Modifier,
     // Ayni ekranda iki tarih alani olabiliyor (kayit tarihi ve hatirlatma),
     // ikisinin de "Tarih" yazmasi kafa karistiriyordu.
-    etiket: String = "Tarih",
+    etiket: String = stringResource(R.string.tarih),
     // Alanin altinda soluk aciklama: "Bakimi yaptirdigin gun" gibi. Formda iki
     // tarih olunca (kayit ve hatirlatma) hangisinin ne oldugu buradan anlasiliyor.
     aciklama: String? = null
@@ -47,7 +49,7 @@ fun TarihSecici(
         supportingText = aciklama?.let { { Text(it, color = MetinSolgun) } },
         trailingIcon = {
             IconButton(onClick = { acik = true }) {
-                Icon(MotorumIkonlari.Takvim, contentDescription = "Tarih sec")
+                Icon(MotorumIkonlari.Takvim, contentDescription = stringResource(R.string.tarih_sec))
             }
         },
         modifier = modifier
@@ -88,10 +90,10 @@ fun TarihDiyalogu(
                     durum.selectedDateMillis?.let { onTarihSec(utcGundenYerele(it, tarihMillis)) }
                     onKapat()
                 }
-            ) { Text("Tamam") }
+            ) { Text(stringResource(R.string.tamam)) }
         },
         dismissButton = {
-            TextButton(onClick = onKapat) { Text("Iptal") }
+            TextButton(onClick = onKapat) { Text(stringResource(R.string.iptal)) }
         }
     ) {
         DatePicker(state = durum)

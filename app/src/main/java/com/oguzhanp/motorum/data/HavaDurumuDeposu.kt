@@ -2,6 +2,7 @@ package com.oguzhanp.motorum.data
 
 import com.oguzhanp.motorum.BuildConfig
 import com.oguzhanp.motorum.model.HavaDurumu
+import com.oguzhanp.motorum.util.DilAyari
 import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,8 +41,13 @@ class HavaDurumuDeposu @Inject constructor(
 
         // Taze veri varsa konumu hic sormuyoruz. Pili yiyen sey istek degil,
         // konum olcumu; asil tasarruf burada.
+        // Servisin aciklamayi hangi dilde gonderecegi: uygulama Turkce ise tr,
+        // diger her durumda en. Baska dil eklersek burasi da buyur.
+        val dil = if (DilAyari.etkinDilKodu() == "tr") "tr" else "en"
+
         if (!zorla) {
-            onbellek.tazeOku()?.let { return HavaSonucu(hava = it) }
+            // Onbellek baska dildeyse taze sayilmiyor: eski dildeki aciklama gosterilmesin.
+            onbellek.tazeOku(dil)?.let { return HavaSonucu(hava = it) }
         }
 
         val koordinat = withTimeoutOrNull(KONUM_ZAMAN_ASIMI_MS) { konumSaglayici.konumAl() }
@@ -51,11 +57,12 @@ class HavaDurumuDeposu @Inject constructor(
             val yanit = servis.havaDurumu(
                 enlem = koordinat.enlem,
                 boylam = koordinat.boylam,
-                anahtar = BuildConfig.OPENWEATHER_KEY
+                anahtar = BuildConfig.OPENWEATHER_KEY,
+                dil = dil
             )
             val hava = yanit.havayaCevir() ?: return HavaSonucu(hata = CEVAP_BOS)
             // Onbellege ancak basarili cevap yaziliyor.
-            onbellek.yaz(hava)
+            onbellek.yaz(hava, dil)
             HavaSonucu(hava = hava)
         } catch (hata: Exception) {
             // Retrofit 2xx disi cevapta istisna firlatiyor ve mesajinda

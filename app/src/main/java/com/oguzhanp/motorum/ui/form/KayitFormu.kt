@@ -1,5 +1,11 @@
 package com.oguzhanp.motorum.ui.form
 
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.model.Kategori
 import com.oguzhanp.motorum.model.Mola
 import com.oguzhanp.motorum.util.ayEkle
@@ -195,6 +201,15 @@ sealed interface KayitFormu {
             hatirlatmaTarihMillis = hatirlatmaAyi?.let { ayEkle(yeni, it) } ?: hatirlatmaTarihMillis
         )
 
+        // Sablon cipine basildi: tur doluyor, hatirlatma aciliyor ve sablonun
+        // onerdigi aralik seciliyor. Kullanici sadece bakiyor; dogruysa dokunmuyor.
+        // Cipin ekranda gorunen yazisi ve onerdigi aralik disaridan geliyor:
+        // form sinifi metinleri tanimiyor.
+        fun sablonSec(ad: String, onerilenAy: Int): Bakim =
+            copy(bakimTuru = ad, bakimTuruHatali = false)
+                .hatirlatmayiAc()
+                .araligiSec(onerilenAy)
+
         // Tarih elle secildi: artik hazir aralik degil, "Ozel".
         // Bugun secildi ve saat (orn. 10:00) coktan gectiyse saati bir sonraki
         // tam saate aliyoruz; yoksa kullanici neden kaydedemedigini anlamiyordu.
@@ -254,11 +269,39 @@ sealed interface KayitFormu {
 
 // Formdaki hazir araliklar ve varsayilanlar. Belgeler geldiginde ayni
 // liste orada da kullanilabilir.
-val HATIRLATMA_ARALIKLARI = listOf(1, 3, 6)
+// 12 = 1 yil: yillik sablonlar (fren, lastik, filtre) da bir cipe denk gelsin.
+val HATIRLATMA_ARALIKLARI = listOf(1, 3, 6, 12)
+
+// Cipteki yazi: 12 ay "1 yil" olarak okunuyor. Ay sayisi dile gore tekil
+// ya da cogul yaziliyor (Ingilizce "1 month" / "3 months").
+@Composable
+@ReadOnlyComposable
+fun aralikEtiketi(ay: Int): String =
+    if (ay == 12) {
+        stringResource(R.string.aralik_bir_yil)
+    } else {
+        pluralStringResource(R.plurals.aralik_ay, ay, ay)
+    }
+
+// Bakim turu icin hazir kisayollar. Tur alani serbest metin kaliyor; sablon
+// sadece kisayol. Aralik yazilan metinden tahmin edilmiyor, cipin kendisinden
+// geliyor. Yeni sablon eklemek tek satir.
+// ad metin degil kimligi: cipin yazisini ekran seciyor. Cipe basilinca o
+// yazi bakim turu alanina giriyor, yani kayda hangi dilde goruluyorsa o adla
+// kaydediliyor; alan zaten serbest metin.
+data class BakimSablonu(@StringRes val ad: Int, val onerilenAy: Int)
+
+val BAKIM_SABLONLARI = listOf(
+    BakimSablonu(R.string.sablon_yag, 6),
+    BakimSablonu(R.string.sablon_zincir, 1),
+    BakimSablonu(R.string.sablon_fren, 12),
+    BakimSablonu(R.string.sablon_lastik, 12),
+    BakimSablonu(R.string.sablon_filtre, 12)
+)
 private const val VARSAYILAN_ARALIK = 3
 private const val VARSAYILAN_SAAT = 10
 
-// Kayitli bir hatirlatma bakim tarihinden tam 1, 3 ya da 6 ay sonraya
+// Kayitli bir hatirlatma bakim tarihinden tam 1, 3, 6 ay ya da 1 yil sonraya
 // dusuyorsa o cip secili gelsin; degilse "Ozel".
 fun hatirlatmaAraligiBul(tarihMillis: Long, hatirlatmaMillis: Long?): Int? {
     hatirlatmaMillis ?: return null

@@ -14,8 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.oguzhanp.motorum.R
 
 // Ikisi birlikte isteniyor. FINE tek basina gonderilirse Android 12'den beri
 // sistem istegi yok sayiyor, yani izin diyalogu hic cikmiyor.
@@ -50,25 +52,23 @@ fun rememberKonumIzni(onSonuc: (verildi: Boolean) -> Unit): () -> Unit {
                 aciklamaAcik = false
                 onSonuc(false)
             },
-            title = { Text("Konum izni") },
+            title = { Text(stringResource(R.string.konum_izni)) },
             text = {
                 Text(
-                    "Bulunduğun yerin hava durumunu gösterebilmemiz için konum " +
-                            "izni gerekiyor. Konum yalnızca hava durumu sorgusunda " +
-                            "kullanılıyor, hiçbir yerde saklanmıyor."
+                    stringResource(R.string.konum_izni_metin)
                 )
             },
             confirmButton = {
                 TextButton(onClick = {
                     aciklamaAcik = false
                     isteyici.launch(KONUM_IZINLERI)
-                }) { Text("Devam") }
+                }) { Text(stringResource(R.string.devam)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     aciklamaAcik = false
                     onSonuc(false)
-                }) { Text("Vazgeç") }
+                }) { Text(stringResource(R.string.vazgec)) }
             }
         )
     }

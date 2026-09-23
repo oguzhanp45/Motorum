@@ -41,15 +41,15 @@ fun YakitAlanlari(
         TarihSecici(
             tarihMillis = form.tarihMillis,
             onTarihSec = { onDegis(form.copy(tarihMillis = it)) },
-            etiket = "Dolum tarihi",
-            aciklama = "Yakıt aldığın gün",
+            etiket = stringResource(R.string.dolum_tarihi),
+            aciklama = stringResource(R.string.dolum_tarihi_aciklama),
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
             value = form.litreYazi,
             onValueChange = { onDegis(form.copy(litreYazi = it, litreHatali = false)) },
-            label = { Text("Litre") },
+            label = { Text(stringResource(R.string.litre)) },
             isError = form.litreHatali,
             supportingText = {
                 if (form.litreHatali) Text(stringResource(R.string.gecerli_sayi))
@@ -62,17 +62,17 @@ fun YakitAlanlari(
         OutlinedTextField(
             value = form.kmYazi,
             onValueChange = { onDegis(form.copy(kmYazi = it, kmHatali = false)) },
-            label = { Text("Aktif km (isteğe bağlı)") },
+            label = { Text(stringResource(R.string.aktif_km_istege_bagli)) },
             isError = form.kmHatali,
             supportingText = {
                 when {
                     form.kmHatali -> Text(stringResource(R.string.gecerli_sayi))
                     sayacGeride -> Text(
-                        text = "Son kayıttaki sayaç ${formatKm(sonOkuma)}. Geçmişe ait bir kayıt giriyorsan sorun değil.",
+                        text = stringResource(R.string.sayac_uyari, formatKm(sonOkuma)),
                         color = UyariMetin
                     )
                     // Km gidilen yolu ve km basi maliyeti besliyor.
-                    else -> Text("Sayacın o anki değeri. Gidilen yolu hesaplamaya yardım eder.")
+                    else -> Text(stringResource(R.string.sayac_aciklama))
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -83,7 +83,7 @@ fun YakitAlanlari(
         OutlinedTextField(
             value = form.tutarYazi,
             onValueChange = { onDegis(form.copy(tutarYazi = it, tutarHatali = false)) },
-            label = { Text("Tutar (₺)") },
+            label = { Text(stringResource(R.string.tutar_tl)) },
             isError = form.tutarHatali,
             supportingText = {
                 if (form.tutarHatali) Text(stringResource(R.string.gecerli_sayi))

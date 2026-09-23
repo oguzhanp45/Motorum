@@ -14,20 +14,23 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.Motor
 import com.oguzhanp.motorum.data.INTERNET_YOK
@@ -35,6 +38,7 @@ import com.oguzhanp.motorum.ui.components.BosDurum
 import com.oguzhanp.motorum.ui.components.BosGorsel
 import com.oguzhanp.motorum.ui.components.MotorcuYukleniyor
 import com.oguzhanp.motorum.ui.components.MotorumIkonlari
+import com.oguzhanp.motorum.ui.components.MurekkepDugme
 import com.oguzhanp.motorum.ui.navigation.AnaBolgeKabugu
 import com.oguzhanp.motorum.ui.navigation.Routes
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
@@ -86,7 +90,7 @@ fun MotorlarimIcerik(
     onTekrarDeneTikla: () -> Unit
 ) {
     AnaBolgeKabugu(
-        baslik = "Motorlarım",
+        baslik = stringResource(R.string.sekme_motorlarim),
         seciliRota = Routes.MOTORLARIM,
         onSekmeTikla = onSekmeTikla
     ) { icPadding ->
@@ -101,7 +105,7 @@ fun MotorlarimIcerik(
             Box(modifier = Modifier.weight(1f)) {
                 when {
                     uiState.yukleniyor -> MotorcuYukleniyor(
-                        mesaj = "Motorların geliyor…",
+                        mesaj = stringResource(R.string.motorlar_geliyor),
                         modifier = Modifier.align(Alignment.Center)
                     )
 
@@ -109,11 +113,11 @@ fun MotorlarimIcerik(
                         gorsel = BosGorsel.BAGLANTI_YOK,
                         baslik = uiState.hata,
                         aciklama = if (uiState.hata == INTERNET_YOK) {
-                            "Motorların güvende. Bağlanınca kaldığın yerden devam edeceksin."
+                            stringResource(R.string.cevrimdisi_motor_aciklama)
                         } else {
                             null
                         },
-                        eylem = "Tekrar Dene",
+                        eylem = stringResource(R.string.tekrar_dene),
                         eylemIkonu = MotorumIkonlari.Yenile,
                         onEylem = onTekrarDeneTikla,
                         anaEylem = false,
@@ -122,9 +126,9 @@ fun MotorlarimIcerik(
 
                     uiState.motorlar.isEmpty() -> BosDurum(
                         gorsel = BosGorsel.MOTOR_YOK,
-                        baslik = "Henüz motorun yok",
-                        aciklama = "İlk motorunu ekle, yakıt ve bakım harcamaların tek yerde toplansın.",
-                        eylem = "Motor Ekle",
+                        baslik = stringResource(R.string.motor_yok_baslik),
+                        aciklama = stringResource(R.string.motor_yok_aciklama),
+                        eylem = stringResource(R.string.motor_ekle),
                         eylemIkonu = MotorumIkonlari.Ekle,
                         onEylem = onMotorEkleTikla,
                         modifier = Modifier.align(Alignment.Center)
@@ -152,7 +156,7 @@ fun MotorlarimIcerik(
             // dugmesi var, ekranda ayni isi yapan iki dugme durmasin.
             val listeDolu = !uiState.yukleniyor && uiState.hata == null && uiState.motorlar.isNotEmpty()
             if (listeDolu) {
-                Button(
+                MurekkepDugme(
                     onClick = onMotorEkleTikla,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -161,7 +165,7 @@ fun MotorlarimIcerik(
                 ) {
                     Icon(MotorumIkonlari.Ekle, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Motor Ekle")
+                    Text(stringResource(R.string.motor_ekle))
                 }
             }
 
@@ -173,26 +177,29 @@ fun MotorlarimIcerik(
     if (silinecek != null) {
         AlertDialog(
             onDismissRequest = onSilmeIptal,
-            title = { Text("Motoru sil") },
+            title = { Text(stringResource(R.string.motoru_sil)) },
             text = { Text(silmeMetni(silinecek, uiState.silinecekKayitSayisi)) },
             confirmButton = {
                 TextButton(onClick = { onSilOnayla(silinecek.id) }) {
-                    Text("Sil", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.sil), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
-                TextButton(onClick = onSilmeIptal) { Text("İptal") }
+                TextButton(onClick = onSilmeIptal) { Text(stringResource(R.string.iptal)) }
             }
         )
     }
 }
 
+// Kayit sayisi dile gore tekil ya da cogul yaziliyor (Ingilizce
+// "1 entry" / "3 entries"); kayit yoksa cumle tamamen degisiyor.
+@Composable
+@ReadOnlyComposable
 private fun silmeMetni(motor: Motor, kayitSayisi: Int): String =
     if (kayitSayisi > 0) {
-        "\"${motor.adi}\" motorunu ve altındaki $kayitSayisi kaydı silmek üzeresin. " +
-                "Bu işlem geri alınamaz."
+        pluralStringResource(R.plurals.motor_sil_onayi, kayitSayisi, motor.adi, kayitSayisi)
     } else {
-        "\"${motor.adi}\" motorunu silmek üzeresin. Bu işlem geri alınamaz."
+        stringResource(R.string.motor_sil_onayi_bos, motor.adi)
     }
 
 @Preview(showBackground = true)

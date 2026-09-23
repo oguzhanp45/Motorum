@@ -6,6 +6,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,6 +58,9 @@ import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.HavaDurumu
 import com.oguzhanp.motorum.model.Kategori
 import com.oguzhanp.motorum.model.Kayit
+import com.oguzhanp.motorum.ui.components.DUGME_BASILI
+import com.oguzhanp.motorum.ui.components.basiliMurekkep
+import com.oguzhanp.motorum.ui.components.basilincaKucul
 import com.oguzhanp.motorum.ui.components.konumIzniVerildiMi
 import com.oguzhanp.motorum.ui.components.rememberKonumIzni
 import com.oguzhanp.motorum.ui.motorlarim.MotorCipi
@@ -127,13 +131,18 @@ fun AnaSayfa(
         }
     }
 
+    // Snackbar metinleri onceden okunuyor: LaunchedEffect'in icinde
+    // stringResource cagrilamiyor (orasi composable degil).
+    val silindiMesaji = stringResource(R.string.kayit_silindi)
+    val geriAlEtiketi = stringResource(R.string.geri_al)
+
     // showSnackbar askiya alinan bir fonksiyon: snackbar kapanana kadar
     // burada bekliyor ve nasil kapandigini donduruyor.
     LaunchedEffect(uiState.geriAlinabilir) {
         if (uiState.geriAlinabilir == null) return@LaunchedEffect
         val sonuc = snackbarDurumu.showSnackbar(
-            message = "Kayıt silindi",
-            actionLabel = "Geri Al",
+            message = silindiMesaji,
+            actionLabel = geriAlEtiketi,
             duration = SnackbarDuration.Short
         )
         if (sonuc == SnackbarResult.ActionPerformed) viewModel.geriAl()
@@ -235,12 +244,16 @@ fun AnaSayfaIcerik(
         kayanButon = {
             // FAB varsayilan olarak primaryContainer kullaniyor, primary degil.
             // Tasarimdaki dolu murekkep icin renkleri burada aciktan veriyoruz.
+            // Basilinca diger murekkep dugmeler gibi kuculup koyulasiyor.
+            val fabEtkilesim = remember { MutableInteractionSource() }
             FloatingActionButton(
                 onClick = onEkleTikla,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                interactionSource = fabEtkilesim,
+                containerColor = basiliMurekkep(fabEtkilesim),
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.basilincaKucul(fabEtkilesim, DUGME_BASILI)
             ) {
-                Icon(MotorumIkonlari.Ekle, contentDescription = "Kayıt ekle")
+                Icon(MotorumIkonlari.Ekle, contentDescription = stringResource(R.string.kayit_ekle))
             }
         }
     ) { icPadding ->
@@ -257,7 +270,7 @@ fun AnaSayfaIcerik(
                 // varken listeyi daireyle degistirmek, sekmeden her donuste
                 // listeyi sifirdan kurup kaydirma konumunu sifirliyordu.
                 uiState.yukleniyor && uiState.kayitlar.isEmpty() -> MotorcuYukleniyor(
-                    mesaj = "Kayıtların geliyor…",
+                    mesaj = stringResource(R.string.kayitlar_geliyor),
                     modifier = Modifier.align(Alignment.Center)
                 )
 
@@ -268,11 +281,11 @@ fun AnaSayfaIcerik(
                     gorsel = BosGorsel.BAGLANTI_YOK,
                     baslik = uiState.hata,
                     aciklama = if (uiState.hata == INTERNET_YOK) {
-                        "Kayıtların güvende. Bağlanınca kaldığın yerden devam edeceksin."
+                        stringResource(R.string.cevrimdisi_aciklama)
                     } else {
                         null
                     },
-                    eylem = "Tekrar Dene",
+                    eylem = stringResource(R.string.tekrar_dene),
                     eylemIkonu = MotorumIkonlari.Yenile,
                     onEylem = onTekrarDeneTikla,
                     anaEylem = false,
@@ -287,9 +300,9 @@ fun AnaSayfaIcerik(
                 // ekleme formu aciliyor ve eklenen motor otomatik seciliyor.
                 uiState.motorYok -> BosDurum(
                     gorsel = BosGorsel.MOTOR_YOK,
-                    baslik = "Henüz motorun yok",
-                    aciklama = "İlk motorunu ekle, yakıt ve bakım harcamaların tek yerde toplansın.",
-                    eylem = "Motor Ekle",
+                    baslik = stringResource(R.string.motor_yok_baslik),
+                    aciklama = stringResource(R.string.motor_yok_aciklama),
+                    eylem = stringResource(R.string.motor_ekle),
                     eylemIkonu = MotorumIkonlari.Ekle,
                     onEylem = onMotorEkleTikla,
                     modifier = Modifier.align(Alignment.Center)
@@ -427,9 +440,9 @@ private fun Liste(
                     if (seciliKategori == null) {
                         BosDurum(
                             gorsel = BosGorsel.KAYIT_YOK,
-                            baslik = "Bu motorda kayıt yok",
-                            aciklama = "Depoyu doldurduğunda ya da bakım yaptırdığında buraya ekle; aylık özet kendiliğinden oluşur.",
-                            eylem = "İlk Kaydı Ekle",
+                            baslik = stringResource(R.string.kayit_yok_baslik),
+                            aciklama = stringResource(R.string.kayit_yok_aciklama),
+                            eylem = stringResource(R.string.ilk_kaydi_ekle),
                             eylemIkonu = MotorumIkonlari.Ekle,
                             onEylem = onEkleTikla,
                             modifier = Modifier
@@ -438,7 +451,7 @@ private fun Liste(
                         )
                     } else {
                         Text(
-                            text = "Bu filtrede kayıt yok.",
+                            text = stringResource(R.string.filtrede_kayit_yok),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MetinIkincil,
                             modifier = Modifier.padding(top = AppSpacing.kucuk)

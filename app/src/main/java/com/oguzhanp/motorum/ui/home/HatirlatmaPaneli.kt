@@ -30,9 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppShape
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.HatirlatmaDurumu
@@ -112,14 +114,20 @@ private fun HatirlatmaPaneliIcerik(
             }
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = kayit.bakimTuru + if (zamaniGeldi) " zamanı geldi" else " hatırlatması",
+                    text = stringResource(
+                        if (zamaniGeldi) R.string.panel_zamani_geldi else R.string.panel_hatirlatmasi,
+                        kayit.bakimTuru
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MetinAna
                 )
                 Text(
-                    text = "${formatTarih(kayit.tarihMillis)} tarihli bakım · " +
-                            "${formatGunAy(zaman)}, ${formatSaat(saatAl(zaman), dakikaAl(zaman))}",
+                    text = stringResource(
+                        R.string.panel_alt_satir,
+                        formatTarih(kayit.tarihMillis),
+                        "${formatGunAy(zaman)}, ${formatSaat(saatAl(zaman), dakikaAl(zaman))}"
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MetinIkincil
                 )
@@ -138,7 +146,7 @@ private fun HatirlatmaPaneliIcerik(
                 .fillMaxWidth()
                 .height(48.dp)
         ) {
-            DugmeIcerigi(MotorumIkonlari.Onay, "Yaptırdım")
+            DugmeIcerigi(MotorumIkonlari.Onay, stringResource(R.string.yaptirdim))
         }
         OutlinedButton(
             onClick = onErtele,
@@ -148,13 +156,13 @@ private fun HatirlatmaPaneliIcerik(
                 .fillMaxWidth()
                 .height(48.dp)
         ) {
-            DugmeIcerigi(MotorumIkonlari.Saat, "1 hafta ertele", MetinAna)
+            DugmeIcerigi(MotorumIkonlari.Saat, stringResource(R.string.bir_hafta_ertele), MetinAna)
         }
         TextButton(
             onClick = onKapat,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Hatırlatmayı kapat", color = MetinIkincil)
+            Text(stringResource(R.string.hatirlatmayi_kapat), color = MetinIkincil)
         }
     }
 }

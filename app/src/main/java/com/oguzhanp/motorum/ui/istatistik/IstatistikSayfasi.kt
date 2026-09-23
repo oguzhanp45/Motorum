@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppElevation
 import com.oguzhanp.motorum.core.constants.AppShape
 import androidx.compose.material3.Card
@@ -40,7 +43,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.oguzhanp.motorum.ui.belge.BelgelerKarti
+import com.oguzhanp.motorum.ui.belge.BelgelerViewModel
+import com.oguzhanp.motorum.ui.navigation.Routes
 import androidx.navigation.NavController
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.ui.home.KayitViewModel
@@ -63,7 +72,8 @@ import com.oguzhanp.motorum.ui.components.MotorumIkonlari
 @Composable
 fun IstatistikSayfasi(
     kayitViewModel: KayitViewModel,
-    navController: NavController
+    navController: NavController,
+    belgelerViewModel: BelgelerViewModel = hiltViewModel()
 ) {
     // Kendi deposu yok: ana sayfanin listesini kullaniyor. Motor degisince
     // ya da asagi cekilince o liste tazeleniyor, burasi kendiliginden guncelleniyor.
@@ -79,10 +89,23 @@ fun IstatistikSayfasi(
         istatistikHesapla(kayitUiState.kayitlar, donem)
     }
 
+    // Belge sayfasindan donunce de calisiyor: eklenen ya da silinen belge
+    // kartta hemen gorunsun.
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { belgelerViewModel.yukle() }
+    val belgeler by belgelerViewModel.uiState.collectAsStateWithLifecycle()
+
     IstatistikIcerik(
         durum = durum,
         onDonemSec = { donem = it },
-        onGeriTikla = { navController.popBackStack() }
+        onGeriTikla = { navController.popBackStack() },
+        belgelerKarti = {
+            BelgelerKarti(
+                durum = belgeler,
+                onEkle = { navController.navigate(Routes.belgeRotasi()) },
+                onBelgeTikla = { navController.navigate(Routes.belgeRotasi(id = it.id)) },
+                onBosTurTikla = { navController.navigate(Routes.belgeRotasi(tur = it.name)) }
+            )
+        }
     )
 }
 
@@ -91,15 +114,18 @@ fun IstatistikSayfasi(
 fun IstatistikIcerik(
     durum: IstatistikUiState,
     onDonemSec: (Donem) -> Unit,
-    onGeriTikla: () -> Unit
+    onGeriTikla: () -> Unit,
+    // Belgeler donemden bagimsiz; kart disaridan veriliyor ki onizleme
+    // ViewModel'siz calissin.
+    belgelerKarti: @Composable () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("İstatistikler") },
+                title = { Text(stringResource(R.string.istatistikler)) },
                 navigationIcon = {
                     IconButton(onClick = onGeriTikla) {
-                        Icon(MotorumIkonlari.Geri, contentDescription = "Geri")
+                        Icon(MotorumIkonlari.Geri, contentDescription = stringResource(R.string.geri))
                     }
                 }
             )
@@ -119,10 +145,12 @@ fun IstatistikIcerik(
             // yoksa "tumu"ne gecebilmeli.
             if (durum.bos) {
                 BosDurum()
+                belgelerKarti()
                 return@Column
             }
 
             OzetKart(durum)
+            belgelerKarti()
             KategoriKirilimi(durum)
             if (durum.toplamLitre > 0) YakitKarti(durum)
             // Tek dolumla cizgi olmaz: kart da cikmiyor.
@@ -164,7 +192,7 @@ private fun DonemSecici(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = donem.etiket,
+                    text = stringResource(donem.etiket),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = if (seciliMi) FontWeight.Bold else FontWeight.Medium,
                     color = if (seciliMi) MaterialTheme.colorScheme.surface else MetinIkincil
@@ -177,7 +205,7 @@ private fun DonemSecici(
 @Composable
 private fun OzetKart(durum: IstatistikUiState) {
     IstatistikKarti {
-        Baslik("TOPLAM HARCAMA")
+        Baslik(stringResource(R.string.bolum_toplam_harcama))
         Text(
             text = formatTl(durum.toplamTutar),
             style = MaterialTheme.typography.headlineMedium,
@@ -185,7 +213,12 @@ private fun OzetKart(durum: IstatistikUiState) {
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = "${durum.kayitAdedi} kayıt · aylık ortalama ${formatTl(durum.aylikOrtalama)}",
+            text = pluralStringResource(
+                R.plurals.kayit_adedi,
+                durum.kayitAdedi,
+                durum.kayitAdedi,
+                formatTl(durum.aylikOrtalama)
+            ),
             style = MaterialTheme.typography.bodySmall,
             color = MetinIkincil
         )
@@ -195,7 +228,7 @@ private fun OzetKart(durum: IstatistikUiState) {
 @Composable
 private fun KategoriKirilimi(durum: IstatistikUiState) {
     IstatistikKarti {
-        Baslik("KATEGORİ DAĞILIMI")
+        Baslik(stringResource(R.string.bolum_kategori_dagilimi))
         durum.paylar.forEach { pay ->
             val gorunum = gorunum(pay.kategori)
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -207,7 +240,7 @@ private fun KategoriKirilimi(durum: IstatistikUiState) {
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = pay.kategori.etiket,
+                        text = stringResource(pay.kategori.ad),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(start = 8.dp)
@@ -242,14 +275,14 @@ private fun KategoriKirilimi(durum: IstatistikUiState) {
 @Composable
 private fun YakitKarti(durum: IstatistikUiState) {
     IstatistikKarti {
-        Baslik("YAKIT")
-        Satir("Toplam litre", formatLitre(durum.toplamLitre))
-        Satir("Ortalama litre fiyatı", formatBirimFiyat(durum.ortalamaBirimFiyat))
+        Baslik(stringResource(R.string.bolum_yakit))
+        Satir(stringResource(R.string.toplam_litre_satiri), formatLitre(durum.toplamLitre))
+        Satir(stringResource(R.string.ortalama_litre_fiyati), formatBirimFiyat(durum.ortalamaBirimFiyat))
         durum.enUcuzDolum?.let {
-            Satir("En ucuz dolum", "${formatBirimFiyat(it.birimFiyat)} · ${formatTarih(it.tarihMillis)}")
+            Satir(stringResource(R.string.en_ucuz_dolum), "${formatBirimFiyat(it.birimFiyat)} · ${formatTarih(it.tarihMillis)}")
         }
         durum.enPahaliDolum?.let {
-            Satir("En pahalı dolum", "${formatBirimFiyat(it.birimFiyat)} · ${formatTarih(it.tarihMillis)}")
+            Satir(stringResource(R.string.en_pahali_dolum), "${formatBirimFiyat(it.birimFiyat)} · ${formatTarih(it.tarihMillis)}")
         }
     }
 }
@@ -264,7 +297,7 @@ private fun YakitFiyatKarti(durum: IstatistikUiState) {
     val artti = degisim > 0
 
     IstatistikKarti {
-        Baslik("LİTRE FİYATI")
+        Baslik(stringResource(R.string.bolum_litre_fiyati))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = formatBirimFiyat(son.birimFiyat),
@@ -302,13 +335,13 @@ private fun YakitFiyatKarti(durum: IstatistikUiState) {
 @Composable
 private fun YolKarti(durum: IstatistikUiState) {
     IstatistikKarti {
-        Baslik("YOL")
-        Satir("Gidilen yol", formatKm(durum.gidilenYol))
-        if (durum.enUzunMesafe > 0) Satir("En uzun yolculuk", formatKm(durum.enUzunMesafe))
+        Baslik(stringResource(R.string.bolum_yol))
+        Satir(stringResource(R.string.gidilen_yol_satiri), formatKm(durum.gidilenYol))
+        if (durum.enUzunMesafe > 0) Satir(stringResource(R.string.en_uzun_yolculuk), formatKm(durum.enUzunMesafe))
         // Yol bilindigi icin burada: ayri karta gerek yok.
-        durum.kmBasiMaliyet?.let { Satir("Km başı yakıt maliyeti", formatKmMaliyet(it)) }
+        durum.kmBasiMaliyet?.let { Satir(stringResource(R.string.km_basi_maliyet), formatKmMaliyet(it)) }
         Text(
-            text = "Girilen sayaç değerlerinden hesaplanıyor: en yüksek okuma eksi en düşük. Motorun ömür boyu kilometresi değil, kayıt tutmaya başladığından beri gidilen yol.",
+            text = stringResource(R.string.yol_aciklamasi),
             style = MaterialTheme.typography.bodySmall,
             color = MetinSolgun
         )
@@ -325,12 +358,12 @@ private fun BosDurum() {
         verticalArrangement = Arrangement.spacedBy(AppSpacing.kucuk)
     ) {
         Text(
-            text = "Bu dönemde kayıt yok",
+            text = stringResource(R.string.donemde_kayit_yok),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = "Başka bir dönem seçebilir ya da yeni kayıt ekleyebilirsin.",
+            text = stringResource(R.string.donem_bos_aciklama),
             style = MaterialTheme.typography.bodyMedium,
             color = MetinIkincil,
             textAlign = TextAlign.Center

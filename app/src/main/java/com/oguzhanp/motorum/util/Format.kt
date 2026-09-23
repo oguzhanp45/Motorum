@@ -4,40 +4,47 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-// Locale("tr") yapicisi kullanimdan kaldirildi: verdigin metni hic dogrulamiyordu.
-// forLanguageTag dil etiketini standarda gore okuyor.
-// Tek yerde durup her fonksiyonda kullaniliyor, bes tekrar yerine bir tanim.
-private val TR: Locale = Locale.forLanguageTag("tr")
+// Bicimler uygulamanin o anki diline gore: ay adlari, binlik ve ondalik
+// ayraclari buradan geliyor. Uygulama dili degisince Android varsayilan
+// Locale'i de degistiriyor, yani deger degil fonksiyon (get) olmali.
+private val yerel: Locale get() = Locale.getDefault()
+
+// Turkce'de gun.ay.yil, diger dillerde gun/ay/yil. Ay adi gerekmeyen kisa bicim.
+private val tarihKalibi: String get() = if (yerel.language == "tr") "dd.MM.yyyy" else "dd/MM/yyyy"
 
 fun formatTarih(millis: Long): String =
-    SimpleDateFormat("dd.MM.yyyy", TR).format(Date(millis))
+    SimpleDateFormat(tarihKalibi, yerel).format(Date(millis))
 
 //formatTl: %.2f = "ondalıklı sayıyı 2 basamakla yaz".
 //%.0f yaparsan kuruş görünmez
 //tarihMillis). Date(millis) bu sayıyı tarih nesnesine çevirir,
 // SimpleDateFormat("dd.MM.yyyy") de onu "01.09.2026" metnine
 
-fun formatTl(deger: Double): String = String.format(TR, "%.2f ₺", deger)
+fun formatTl(deger: Double): String = String.format(yerel, "%.2f ₺", deger)
 
-fun formatLitre(deger: Double): String = String.format(TR, "%.2f L", deger)
+fun formatLitre(deger: Double): String = String.format(yerel, "%.2f L", deger)
 
 // %,d binlik ayraci koyar: 1234 -> "1.234 km"
-fun formatKm(deger: Int): String = String.format(TR, "%,d km", deger)
+fun formatKm(deger: Int): String = String.format(yerel, "%,d km", deger)
 
-fun formatBirimFiyat(deger: Double): String = String.format(TR, "%.2f ₺/L", deger)
+fun formatBirimFiyat(deger: Double): String = String.format(yerel, "%.2f ₺/L", deger)
 
-fun formatKmMaliyet(deger: Double): String = String.format(TR, "%.2f ₺/km", deger)
+fun formatKmMaliyet(deger: Double): String = String.format(yerel, "%.2f ₺/km", deger)
 
 // Duzenleme alanina yazilacak sayi. Digerlerinden farki birim ve binlik ayraci
 // koymamasi: kullanici bu metni duzenleyip geri gonderecek, sonra tekrar sayiya
 // cevrilecek. Tam sayida ondalik hic yazilmiyor (1200.0 -> "1200"), ondalikli
 // sayida virgul kullaniliyor; form zaten virgulu noktaya cevirerek okuyor.
-fun sayiyiYaziya(deger: Double): String =
-    if (deger % 1.0 == 0.0) deger.toLong().toString()
-    else deger.toString().replace('.', ',')
+fun sayiyiYaziya(deger: Double): String = when {
+    deger % 1.0 == 0.0 -> deger.toLong().toString()
+    // Ondalik ayraci dile gore: Turkce virgul, digerlerinde nokta. Form iki
+    // ayraci da okuyor, yani kullanici hangisini yazarsa yazsin calisiyor.
+    yerel.language == "tr" -> deger.toString().replace('.', ',')
+    else -> deger.toString()
+}
 
 fun formatSaat(saat: Int, dakika: Int): String =
-    String.format(TR, "%02d:%02d", saat, dakika)
+    String.format(yerel, "%02d:%02d", saat, dakika)
 
 // DatePicker sadece gunu, TimePicker sadece saat/dakikayi veriyor.
 // Modeldeki tek Long ikisini birden tasidigi icin burada birlestiriliyor.
@@ -81,5 +88,5 @@ fun formatGunAy(millis: Long): String {
     val buYil = Calendar.getInstance().get(Calendar.YEAR)
     val yil = Calendar.getInstance().apply { timeInMillis = millis }.get(Calendar.YEAR)
     val kalip = if (yil == buYil) "d MMMM" else "d MMMM yyyy"
-    return SimpleDateFormat(kalip, TR).format(Date(millis))
+    return SimpleDateFormat(kalip, yerel).format(Date(millis))
 }

@@ -31,9 +31,21 @@ data class AyarlarUiState(
     val disaAktarimHazirlaniyor: Boolean = false,
     // Dolu oldugunda ekran "farkli kaydet" penceresini bu adla aciyor.
     val kaydedilecekDosyaAdi: String? = null,
-    // Snackbar'da bir kez gosterilecek metin.
-    val mesaj: String? = null
+    // Snackbar'da bir kez gosterilecek mesaj.
+    val mesaj: AyarlarMesaji? = null
 )
+
+// Snackbar mesajlari metin olarak degil, "hangi mesaj" olarak tasiniyor:
+// metni ekran seciyor, cunku dil secimi ekranin tarafinda. ViewModel'e
+// Context verip getString cagirsaydik dil degisince eski dilde kalabilirdi.
+sealed interface AyarlarMesaji {
+    data object OnbellekTemizlendi : AyarlarMesaji
+    data object MotorYok : AyarlarMesaji
+    data object KayitYok : AyarlarMesaji
+    data class Aktarildi(val adet: Int) : AyarlarMesaji
+    // Depodan gelen hazir metin (su an Turkce): henuz cevrilmedi.
+    data class Hata(val metin: String) : AyarlarMesaji
+}
 
 @HiltViewModel
 class AyarlarViewModel @Inject constructor(
@@ -70,7 +82,7 @@ class AyarlarViewModel @Inject constructor(
         viewModelScope.launch {
             havaOnbellegi.temizle()
             _durum.update {
-                it.copy(havaSonGuncelleme = null, mesaj = "Hava durumu önbelleği temizlendi")
+                it.copy(havaSonGuncelleme = null, mesaj = AyarlarMesaji.OnbellekTemizlendi)
             }
         }
     }
@@ -80,10 +92,10 @@ class AyarlarViewModel @Inject constructor(
         _durum.update { it.copy(disaAktarimHazirlaniyor = true) }
         viewModelScope.launch {
             val sonuc = kayitDeposu.kayitlariGetir()
-            val hata = when {
-                sonuc.motorYok -> "Önce bir motor eklemelisin"
-                sonuc.hata != null -> sonuc.hata
-                sonuc.kayitlar.isEmpty() -> "Dışa aktarılacak kayıt yok"
+            val hata: AyarlarMesaji? = when {
+                sonuc.motorYok -> AyarlarMesaji.MotorYok
+                sonuc.hata != null -> AyarlarMesaji.Hata(sonuc.hata)
+                sonuc.kayitlar.isEmpty() -> AyarlarMesaji.KayitYok
                 else -> null
             }
             bekleyenKayitlar = if (hata == null) sonuc.kayitlar else emptyList()
@@ -109,7 +121,11 @@ class AyarlarViewModel @Inject constructor(
         if (hedef == null || kayitlar.isEmpty()) return
         viewModelScope.launch {
             val hata = csvDisaAktarici.yaz(hedef, kayitlar)
-            _durum.update { it.copy(mesaj = hata ?: "${kayitlar.size} kayıt dışa aktarıldı") }
+            _durum.update {
+                it.copy(
+                    mesaj = hata?.let(AyarlarMesaji::Hata) ?: AyarlarMesaji.Aktarildi(kayitlar.size)
+                )
+            }
         }
     }
 

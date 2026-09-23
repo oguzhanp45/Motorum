@@ -3,15 +3,25 @@ package com.oguzhanp.motorum
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +29,7 @@ import com.oguzhanp.motorum.data.HatirlatmaIstegi
 import com.oguzhanp.motorum.data.KimlikDeposu
 import com.oguzhanp.motorum.data.hatirlatmaIstegi
 import com.oguzhanp.motorum.model.TemaSecimi
+import com.oguzhanp.motorum.ui.acilis.AcilisEkrani
 import com.oguzhanp.motorum.ui.navigation.Routes
 import com.oguzhanp.motorum.ui.onboarding.OnboardingViewModel
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
@@ -28,7 +39,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val onboardingViewModel: OnboardingViewModel by viewModels()
     private val temaViewModel: TemaViewModel by viewModels()
@@ -81,20 +92,37 @@ class MainActivity : ComponentActivity() {
             MotorumTheme(karanlik = karanlik) {
                 val bitti by onboardingViewModel.onboardingBitti.collectAsStateWithLifecycle()
                 val bekleyenIstek by hatirlatmaIstegi.collectAsStateWithLifecycle()
+                // rememberSaveable: ekran donunce acilis tekrar oynamasin.
+                var acilisSuruyor by rememberSaveable { mutableStateOf(true) }
 
-                if (bitti != null) {
-                    // Uc kosul, sirayla: tanitim bitti mi, oturum acik mi.
-                    MotorumApp(
-                        baslangicRotasi = when {
-                            bitti != true -> Routes.ONBOARDING
-                            // Ic grafa gidiliyor; NavHost onun baslangic
-                            // noktasini (ana sayfa) kendisi seciyor.
-                            kimlikDeposu.oturumAcik -> Routes.ANA_BOLGE
-                            else -> Routes.GIRIS
-                        },
-                        hatirlatmaIstegi = bekleyenIstek,
-                        onHatirlatmaIstegiIslendi = { hatirlatmaIstegi.value = null }
-                    )
+                // Uygulama acilis perdesinin ALTINDA hemen kuruluyor: perde
+                // kalktiginda ilk ekran hazir, beklenmiyor.
+                Box(Modifier.fillMaxSize()) {
+                    if (bitti != null) {
+                        // Uc kosul, sirayla: tanitim bitti mi, oturum acik mi.
+                        MotorumApp(
+                            baslangicRotasi = when {
+                                bitti != true -> Routes.ONBOARDING
+                                // Ic grafa gidiliyor; NavHost onun baslangic
+                                // noktasini (ana sayfa) kendisi seciyor.
+                                kimlikDeposu.oturumAcik -> Routes.ANA_BOLGE
+                                else -> Routes.GIRIS
+                            },
+                            hatirlatmaIstegi = bekleyenIstek,
+                            onHatirlatmaIstegiIslendi = { hatirlatmaIstegi.value = null }
+                        )
+                    }
+
+                    AnimatedVisibility(
+                        visible = acilisSuruyor,
+                        enter = EnterTransition.None,
+                        exit = fadeOut(tween(ACILIS_CIKIS_MS))
+                    ) {
+                        AcilisEkrani(
+                            hazir = bitti != null && secim != null,
+                            onBitti = { acilisSuruyor = false }
+                        )
+                    }
                 }
             }
         }
@@ -119,6 +147,9 @@ class MainActivity : ComponentActivity() {
 
 // enableEdgeToEdge'in kendi varsayilan perde renkleri: 3 tusla gezinen
 // telefonlarda alt cubugun arkasi. Hareketle gezinmede hic gorunmuyor.
+// Acilis perdesinin kalkma suresi.
+private const val ACILIS_CIKIS_MS = 300
+
 private val ACIK_PERDE = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
 private val KOYU_PERDE = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 

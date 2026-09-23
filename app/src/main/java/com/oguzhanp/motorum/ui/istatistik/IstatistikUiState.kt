@@ -1,13 +1,16 @@
 package com.oguzhanp.motorum.ui.istatistik
 
+import androidx.annotation.StringRes
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.model.Kategori
 
 // Donem bir ekran filtresi, model degil: kayitta boyle bir alan yok,
 // sadece listeyi daraltmak icin var. O yuzden model/ altinda degil burada.
-enum class Donem(val etiket: String) {
-    BU_AY("Bu ay"),
-    BU_YIL("Bu yıl"),
-    TUMU("Tümü")
+// etiket metin degil kimligi: cipin yazisini ekran seciyor.
+enum class Donem(@StringRes val etiket: Int) {
+    BU_AY(R.string.donem_bu_ay),
+    BU_YIL(R.string.donem_bu_yil),
+    TUMU(R.string.donem_tumu)
 }
 
 data class KategoriPayi(

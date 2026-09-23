@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sistem acilis ekraninin ikonu: beyaz "M", seritsiz.
+     Kutu 288 dp (Android 12 acilis ikonunun olcusu); M ortada 96 dp.
+     Compose'daki acilis ekrani ilk karede ayni M'yi ayni yere ve ayni
+     boyda ciziyor, boylece sistemden Compose'a geciste ekranda hicbir sey
+     degismiyor ve iki ayri ekran hissi olmuyor. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <!-- 64'luk cizim 1.5 kat buyutulup (96) ortaya tasiniyor: (288 - 96) / 2 = 96 -->
+    <group
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:translateX="96"
+        android:translateY="96">
+        <path
+            android:pathData="M12 51V24.5c0-6.2 9-6.2 9 0v11.8c0 6.2 9 6.2 9 0V24.5c0-6.2 9-6.2 9 0v11.8c0 6.2 9 6.2 9 0V51"
+            android:strokeColor="#FFF9FAFB"
+            android:strokeWidth="7"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
+</vector>
