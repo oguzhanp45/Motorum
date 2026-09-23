@@ -1,7 +1,7 @@
 package com.oguzhanp.motorum.di
 
-import com.oguzhanp.motorum.data.HavaDurumuServisi
-import com.oguzhanp.motorum.data.OPENWEATHER_ADRESI
+import com.oguzhanp.motorum.data.hava.HavaDurumuServisi
+import com.oguzhanp.motorum.data.hava.OPENWEATHER_ADRESI
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
