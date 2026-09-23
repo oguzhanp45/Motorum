@@ -14,6 +14,8 @@ interface HavaDurumuServisi {
         @Query("lon") boylam: Double,
         @Query("appid") anahtar: String,
         @Query("units") birim: String = "metric",
-        @Query("lang") dil: String = "tr"
+        // Aciklama metnini ("hafif yağmur") servis bu dilde gonderiyor.
+        // Varsayilani yok: cagiran taraf uygulamanin dilini veriyor.
+        @Query("lang") dil: String
     ): HavaDurumuYaniti
 }

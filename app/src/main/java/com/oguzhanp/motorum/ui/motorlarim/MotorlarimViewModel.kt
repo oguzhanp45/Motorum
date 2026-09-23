@@ -2,6 +2,7 @@ package com.oguzhanp.motorum.ui.motorlarim
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oguzhanp.motorum.data.HatirlatmaZamanlayici
 import com.oguzhanp.motorum.data.MotorDeposu
 import com.oguzhanp.motorum.model.Motor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MotorlarimViewModel @Inject constructor(
-    private val depo: MotorDeposu
+    private val depo: MotorDeposu,
+    private val zamanlayici: HatirlatmaZamanlayici
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MotorlarimUiState())
@@ -66,6 +68,8 @@ class MotorlarimViewModel @Inject constructor(
             if (hata != null) {
                 _uiState.update { it.copy(yukleniyor = false, hata = hata) }
             } else {
+                // Silinen motorun bakim ve belge bildirimleri artik calmasin.
+                zamanlayici.motorunHatirlatmalariniSil(motorId)
                 // Silinen motor secili olansa depo bir sonraki cozumlemede
                 // kalanlarin en eskisine dusuyor; listeyi bastan cekmek yeterli.
                 yukle()

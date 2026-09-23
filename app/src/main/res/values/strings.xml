@@ -7,4 +7,341 @@
          hepsi istenildiginde buraya tasinacak. -->
     <string name="zorunlu_alan">Bu alan zorunlu</string>
     <string name="gecerli_sayi">Zorunlu alan — geçerli bir sayı girin</string>
+
+    <!-- Ayarlar > Gorunum > Dil. Dil adlari cevrilmiyor: her dil kendi adini
+         kendi dilinde yaziyor, listede oyle taniniyor. -->
+    <string name="dil">Dil</string>
+
+    <!-- Alt bar sekmeleri. Ayarlar sekmesinin adi ayni zamanda o sayfanin basligi. -->
+    <string name="sekme_ana_sayfa">Ana Sayfa</string>
+    <string name="sekme_motorlarim">Motorlarım</string>
+    <string name="sekme_ayarlar">Ayarlar</string>
+
+    <!-- Ayarlar: bolum basliklari -->
+    <string name="bolum_bildirimler">BİLDİRİMLER</string>
+    <string name="bolum_gorunum">GÖRÜNÜM</string>
+    <string name="bolum_motor">MOTOR</string>
+    <string name="bolum_veriler">VERİLER</string>
+    <string name="bolum_hesap">HESAP</string>
+
+    <!-- Ayarlar: izin satirlari -->
+    <string name="bakim_hatirlatmalari">Bakım hatırlatmaları</string>
+    <string name="bildirim_izni_gerekiyor">Bildirim izni gerekiyor</string>
+    <string name="konum_izni">Konum izni</string>
+    <string name="konum_izni_gerekiyor">Hava durumu için gerekiyor</string>
+    <string name="izin_telefon_ayarlarindan">Telefon ayarlarından açabilirsin</string>
+    <string name="izin_verildi">İzin verildi</string>
+    <string name="izin_verilmedi">Verilmedi</string>
+
+    <!-- Ayarlar: gorunum -->
+    <string name="tema">Tema</string>
+    <string name="tema_acik">Açık</string>
+    <string name="tema_karanlik">Karanlık</string>
+    <!-- Hem temada hem dilde "telefonun ayarini izle" secenegi. -->
+    <string name="secim_sistem">Sistem</string>
+
+    <!-- Ayarlar: motor ve veriler -->
+    <string name="belgeler">Belgeler</string>
+    <string name="belgeler_aciklama">Sigorta, muayene ve kasko bitiş tarihleri</string>
+    <string name="hava_onbellegini_temizle">Hava durumu önbelleğini temizle</string>
+    <string name="son_guncelleme">Son güncelleme: %1$s</string>
+    <string name="onbellek_bos">Önbellek boş</string>
+    <string name="kayitlari_disa_aktar">Kayıtları dışa aktar</string>
+    <string name="disa_aktar_aciklama">Seçili motorun kayıtları, CSV dosyası</string>
+
+    <!-- Ayarlar: hesap -->
+    <string name="cikis_yap">Çıkış yap</string>
+    <string name="cikis_onayi">Hesabından çıkmak istediğine emin misin?</string>
+    <string name="iptal">İptal</string>
+
+    <!-- Ayarlar: snackbar mesajlari -->
+    <string name="onbellek_temizlendi">Hava durumu önbelleği temizlendi</string>
+    <string name="once_motor_ekle">Önce bir motor eklemelisin</string>
+    <string name="disa_aktarilacak_kayit_yok">Dışa aktarılacak kayıt yok</string>
+    <string name="kayit_disa_aktarildi">%1$d kayıt dışa aktarıldı</string>
+
+    <!-- Kategori adlari. CSV'ye yazilan ad bunlardan degil, Kategori.etiket'ten
+         geliyor: disa aktarilan dosya her zaman ayni sutun degerlerini tasisin. -->
+    <string name="kategori_yakit">Yakıt</string>
+    <string name="kategori_road_trip">Road Trip</string>
+    <string name="kategori_bakim">Bakım</string>
+    <string name="kategori_aksesuar">Aksesuar</string>
+
+    <!-- Kategoriye gore degisen not alani etiketi -->
+    <string name="not_istasyon">İstasyon (isteğe bağlı)</string>
+    <string name="not_serbest">Not (isteğe bağlı)</string>
+    <string name="not_dukkan">Dükkan (isteğe bağlı)</string>
+
+    <!-- Ana sayfa: ozet karti ve filtre -->
+    <string name="filtre_tumu">Tümü</string>
+    <string name="genel_istatistikler">GENEL İSTATİSTİKLER</string>
+    <string name="istatistik_detayi">İstatistik detayı</string>
+    <string name="toplam_tutar">Toplam Tutar</string>
+    <string name="toplam_litre">Toplam Litre</string>
+    <string name="gidilen_yol">Gidilen Yol</string>
+
+    <!-- Ana sayfa: liste -->
+    <string name="sil">Sil</string>
+    <string name="zamani_geldi">Zamanı geldi</string>
+    <string name="hatirlatma_yapildi">Yapıldı · %1$s</string>
+    <string name="yolculuk_devam">devam ediyor</string>
+    <string name="kayit_silindi">Kayıt silindi</string>
+    <string name="geri_al">Geri Al</string>
+    <string name="kayitlar_geliyor">Kayıtların geliyor…</string>
+
+    <!-- Ana sayfa: bos ve hatali durumlar -->
+    <string name="cevrimdisi_aciklama">Kayıtların güvende. Bağlanınca kaldığın yerden devam edeceksin.</string>
+    <string name="tekrar_dene">Tekrar Dene</string>
+    <string name="motor_yok_baslik">Henüz motorun yok</string>
+    <string name="motor_yok_aciklama">İlk motorunu ekle, yakıt ve bakım harcamaların tek yerde toplansın.</string>
+    <string name="motor_ekle">Motor Ekle</string>
+    <string name="kayit_yok_baslik">Bu motorda kayıt yok</string>
+    <string name="kayit_yok_aciklama">Depoyu doldurduğunda ya da bakım yaptırdığında buraya ekle; aylık özet kendiliğinden oluşur.</string>
+    <string name="ilk_kaydi_ekle">İlk Kaydı Ekle</string>
+    <string name="filtrede_kayit_yok">Bu filtrede kayıt yok.</string>
+
+    <!-- Kayit Ekle ve Kayit Detayi -->
+    <string name="geri">Geri</string>
+    <string name="kaydet">Kaydet</string>
+    <string name="son_kayittan_doldur">Son kayıttan doldur</string>
+    <string name="kayit_detayi">Kayıt Detayı</string>
+    <string name="tekrarla">Tekrarla</string>
+    <string name="kategori_etiketi">Kategori: </string>
+    <string name="guncelle">Güncelle</string>
+    <string name="kaydi_sil">Kaydı sil</string>
+    <string name="kaydi_sil_onayi">Bu kaydı silmek istediğine emin misin?</string>
+    <string name="yaptirdim">Yaptırdım</string>
+    <string name="bir_hafta_ertele">1 hafta ertele</string>
+
+    <!-- Form alanlari -->
+    <string name="dolum_tarihi">Dolum tarihi</string>
+    <string name="dolum_tarihi_aciklama">Yakıt aldığın gün</string>
+    <string name="litre">Litre</string>
+    <string name="tutar_tl">Tutar (₺)</string>
+    <string name="aktif_km">Aktif km</string>
+    <string name="aktif_km_istege_bagli">Aktif km (isteğe bağlı)</string>
+    <string name="sayac_aciklama">Sayacın o anki değeri. Gidilen yolu hesaplamaya yardım eder.</string>
+    <string name="sayac_uyari">Son kayıttaki sayaç %1$s. Geçmişe ait bir kayıt giriyorsan sorun değil.</string>
+    <string name="sayac_son_kayit">Son kayıttaki sayaç %1$s.</string>
+    <string name="alim_tarihi">Alım tarihi</string>
+    <string name="alim_tarihi_aciklama">Aksesuarı aldığın gün</string>
+    <string name="aksesuar_adi">Aksesuar adı</string>
+    <string name="baslangic">Başlangıç</string>
+    <string name="bitis">Bitiş</string>
+    <string name="bitis_km_hatasi">Başlangıç km\'sinden büyük bir değer girin</string>
+    <string name="masraf_istege_bagli">Masraf (₺) — isteğe bağlı</string>
+    <string name="sehir">Şehir</string>
+    <string name="molalar">Molalar</string>
+    <string name="mola_yer">Yer</string>
+    <string name="mola_ekle">Mola ekle</string>
+    <string name="molayi_sil">Molayı sil</string>
+    <string name="bakim_turu">Bakım türü</string>
+    <string name="bakim_tarihi">Bakım tarihi</string>
+    <string name="bakim_tarihi_aciklama">Bakımı yaptırdığın gün</string>
+
+    <!-- Bakim sablonu cipleri. Secilince bu ad bakim turu alanina yaziliyor,
+         yani kayda hangi dildeyse o adla giriyor: alan zaten serbest metin. -->
+    <string name="sablon_yag">Yağ değişimi</string>
+    <string name="sablon_zincir">Zincir</string>
+    <string name="sablon_fren">Fren balatası</string>
+    <string name="sablon_lastik">Lastik</string>
+    <string name="sablon_filtre">Filtre</string>
+    <string name="sablon_secili">%1$s ✓</string>
+
+    <!-- Hatirlatma blogu -->
+    <string name="bakim_zamani_hatirlat">Bakım zamanı hatırlat</string>
+    <string name="hatirlatma_kapali">Kapalı</string>
+    <string name="aralik_ozel">Özel</string>
+    <string name="aralik_bir_yil">1 yıl</string>
+    <plurals name="aralik_ay">
+        <item quantity="one">%d ay</item>
+        <item quantity="other">%d ay</item>
+    </plurals>
+    <string name="hatirlatma_ozeti">%1$s sonra · %2$s</string>
+    <string name="hatirlatildi">%1$s · hatırlatıldı</string>
+    <string name="hatirlatma_gelecek_tarih">Hatırlatma için gelecekte bir tarih ve saat seç</string>
+    <string name="hatirlatma_izin_yok">Bildirim izni verilmedi. Tarih kaydedilecek ama hatırlatma gelmeyecek.</string>
+
+    <!-- Tarih ve saat seciciler -->
+    <string name="tarih">Tarih</string>
+    <string name="tarih_sec">Tarih seç</string>
+    <string name="saat">Saat</string>
+    <string name="saat_sec">Saat seç</string>
+    <string name="tamam">Tamam</string>
+
+    <!-- Motorlarim -->
+    <string name="motorlar_geliyor">Motorların geliyor…</string>
+    <string name="cevrimdisi_motor_aciklama">Motorların güvende. Bağlanınca kaldığın yerden devam edeceksin.</string>
+    <string name="motoru_sil">Motoru sil</string>
+    <string name="motor_sil_onayi_bos">\"%1$s\" motorunu silmek üzeresin. Bu işlem geri alınamaz.</string>
+    <plurals name="motor_sil_onayi">
+        <item quantity="one">\"%1$s\" motorunu ve altındaki %2$d kaydı silmek üzeresin. Bu işlem geri alınamaz.</item>
+        <item quantity="other">\"%1$s\" motorunu ve altındaki %2$d kaydı silmek üzeresin. Bu işlem geri alınamaz.</item>
+    </plurals>
+    <string name="plaka_yok">Plaka yok</string>
+    <string name="secili_motor">Seçili motor</string>
+    <string name="bu_motora_gec">Bu motora geç</string>
+    <string name="motor_menusu">Motor menüsü</string>
+    <string name="duzenle">Düzenle</string>
+
+    <!-- Motor cipi ve secim paneli -->
+    <string name="yukleniyor">Yükleniyor…</string>
+    <string name="motor_yok_kisa">Motor yok</string>
+    <string name="baglanti_yok_kisa">Bağlantı yok</string>
+    <string name="motor_sec">Motor seç</string>
+    <string name="motor_sec_baslik">Motor Seç</string>
+
+    <!-- Motor formu -->
+    <string name="motoru_duzenle">Motoru Düzenle</string>
+    <string name="marka">Marka</string>
+    <string name="marka_ipucu">Örn: Yamaha, Honda</string>
+    <string name="marka_zorunlu">Marka zorunlu</string>
+    <string name="model">Model</string>
+    <string name="model_ipucu">Örn: MT-07, CRF 250</string>
+    <string name="model_zorunlu">Model zorunlu</string>
+    <string name="plaka">Plaka (isteğe bağlı)</string>
+    <string name="plaka_ipucu">Örn: 34 BKR 102</string>
+    <string name="motor_fotografi">Motor fotoğrafı</string>
+    <string name="fotograf_ekle">Fotoğraf ekle</string>
+    <string name="motor_fotografi_baslik">Motor Fotoğrafı</string>
+    <string name="galeriden_sec">Galeriden Seç</string>
+    <string name="fotograf_cek">Fotoğraf Çek</string>
+    <string name="kaldir">Kaldır</string>
+
+    <!-- Belge turleri. CSV gibi veriyle giden yerlerde BelgeTuru.etiket
+         kullaniliyor; bunlar sadece ekran adlari. -->
+    <string name="belge_turu_sigorta">Sigorta</string>
+    <string name="belge_turu_muayene">Muayene</string>
+    <string name="belge_turu_kasko">Kasko</string>
+    <string name="belge_turu_diger">Diğer</string>
+
+    <!-- Belgeler karti -->
+    <string name="belge_ekle">Belge ekle</string>
+    <string name="tarih_eklenmedi">Tarih eklenmedi</string>
+    <string name="belge_bitiyor">%1$s bitiyor</string>
+    <string name="belge_suresi_doldu">%1$s süresi doldu</string>
+    <string name="dun">Dün</string>
+    <plurals name="gun_once">
+        <item quantity="one">%d gün önce</item>
+        <item quantity="other">%d gün önce</item>
+    </plurals>
+    <string name="dolan_belge_alt">%1$s · %2$s</string>
+    <string name="yeni_tarihi_gir">Yeni tarihi gir</string>
+    <string name="kalan_bugun">Bugün</string>
+    <plurals name="kalan_gun">
+        <item quantity="one">%d gün</item>
+        <item quantity="other">%d gün</item>
+    </plurals>
+    <plurals name="kalan_ay">
+        <item quantity="one">%d ay</item>
+        <item quantity="other">%d ay</item>
+    </plurals>
+
+    <!-- Belgeler sayfasi ve belge formu -->
+    <string name="belgeler_sayfa_aciklama">Seçili motorun belgelerinin bitiş tarihleri. Bitişe yaklaşınca seçtiğin gün kadar önce hatırlatılır.</string>
+    <string name="belge_ekle_baslik">Belge Ekle</string>
+    <string name="belgeyi_duzenle">Belgeyi Düzenle</string>
+    <string name="bolum_belge_turu">BELGE TÜRÜ</string>
+    <string name="belge_adi">Belge adı</string>
+    <string name="belge_adi_ipucu">Örn: Ehliyet, Egzoz muayenesi</string>
+    <string name="belge_adi_zorunlu">Belgenin adını yaz</string>
+    <string name="belge_var_uyarisi">Bu motorun kayıtlı bir %1$s belgesi var; kaydedince onun yerine geçer.</string>
+    <string name="bitis_tarihi">Bitiş tarihi</string>
+    <string name="bitis_tarihi_aciklama">Belgenin geçerliliğinin bittiği gün</string>
+    <string name="bolum_kac_gun_once">KAÇ GÜN ÖNCE HATIRLAT</string>
+    <string name="belgeyi_sil">Belgeyi sil</string>
+    <string name="belge_sil_onayi">Bu belge ve tarihi silinecek.</string>
+    <string name="suresi_dolunca_yenile">Süresi dolunca yenile</string>
+    <string name="yenile_aciklama">Tarihi kendiliğinden ileri taşır</string>
+    <plurals name="yenile_yil">
+        <item quantity="one">%d yıl</item>
+        <item quantity="other">%d yıl</item>
+    </plurals>
+    <string name="kac_ayda_bir">Kaç ayda bir?</string>
+    <string name="ozel_ay_hatasi">1 ile 120 arasında bir ay sayısı yaz</string>
+
+    <!-- Bildirim kanallari -->
+    <string name="kanal_bakim_aciklama">Planladığın bakımların zamanı geldiğinde bildirir.</string>
+    <string name="kanal_belge">Belge hatırlatmaları</string>
+    <string name="kanal_belge_aciklama">Sigorta, muayene ve kasko bitmeden önce bildirir.</string>
+
+    <!-- Bakim bildirimi -->
+    <string name="bakim_varsayilan">Bakım</string>
+    <string name="bildirim_bakim_baslik">%1$s zamanı</string>
+    <string name="bildirim_bakim_metin">%1$s · %2$s bunu kurmuştun.</string>
+    <string name="bakim_tarihli">%1$s bakımda</string>
+    <string name="bakim_tarihli_eski">%1$s tarihindeki bakımda</string>
+
+    <!-- Belge bildirimi -->
+    <string name="bildirim_belge_bugun">%1$s bugün bitiyor</string>
+    <string name="bildirim_belge_yarin">%1$s yarın bitiyor</string>
+    <plurals name="bildirim_belge_gun">
+        <item quantity="one">%1$s %2$d gün sonra bitiyor</item>
+        <item quantity="other">%1$s %2$d gün sonra bitiyor</item>
+    </plurals>
+    <string name="bildirim_belge_metin">%1$s · Bitiş: %2$s</string>
+    <string name="bildirim_belge_yenileme">%1$s Tarih kendiliğinden yenilenecek.</string>
+
+    <!-- Istatistikler -->
+    <string name="istatistikler">İstatistikler</string>
+    <string name="bolum_toplam_harcama">TOPLAM HARCAMA</string>
+    <string name="bolum_kategori_dagilimi">KATEGORİ DAĞILIMI</string>
+    <string name="bolum_yakit">YAKIT</string>
+    <string name="bolum_litre_fiyati">LİTRE FİYATI</string>
+    <string name="bolum_yol">YOL</string>
+    <plurals name="kayit_adedi">
+        <item quantity="one">%1$d kayıt · aylık ortalama %2$s</item>
+        <item quantity="other">%1$d kayıt · aylık ortalama %2$s</item>
+    </plurals>
+    <string name="toplam_litre_satiri">Toplam litre</string>
+    <string name="ortalama_litre_fiyati">Ortalama litre fiyatı</string>
+    <string name="en_ucuz_dolum">En ucuz dolum</string>
+    <string name="en_pahali_dolum">En pahalı dolum</string>
+    <string name="gidilen_yol_satiri">Gidilen yol</string>
+    <string name="en_uzun_yolculuk">En uzun yolculuk</string>
+    <string name="km_basi_maliyet">Km başı yakıt maliyeti</string>
+    <string name="yol_aciklamasi">Girilen sayaç değerlerinden hesaplanıyor: en yüksek okuma eksi en düşük. Motorun ömür boyu kilometresi değil, kayıt tutmaya başladığından beri gidilen yol.</string>
+    <string name="donemde_kayit_yok">Bu dönemde kayıt yok</string>
+
+    <!-- Izin diyaloglari -->
+    <string name="bildirim_izni_baslik">Bildirim izni</string>
+    <string name="bildirim_izni_metin">Bakım zamanı geldiğinde sana haber verebilmemiz için bildirim izni gerekiyor.</string>
+    <string name="konum_izni_metin">Bulunduğun yerin hava durumunu gösterebilmemiz için konum izni gerekiyor. Konum yalnızca hava durumu sorgusunda kullanılıyor, hiçbir yerde saklanmıyor.</string>
+    <string name="devam">Devam</string>
+    <string name="vazgec">Vazgeç</string>
+
+    <!-- Hatirlatma paneli -->
+    <string name="panel_zamani_geldi">%1$s zamanı geldi</string>
+    <string name="panel_hatirlatmasi">%1$s hatırlatması</string>
+    <string name="panel_alt_satir">%1$s tarihli bakım · %2$s</string>
+    <string name="hatirlatmayi_kapat">Hatırlatmayı kapat</string>
+
+    <!-- Hava durumu seridi -->
+    <string name="hava_aliniyor">Hava durumu alınıyor…</string>
+    <string name="hava_alinamadi">Hava durumu alınamadı</string>
+    <string name="tekrar_dene_kisa">Tekrar dene</string>
+    <string name="hava_konum_izni">Hava durumu için konum izni gerekiyor</string>
+    <string name="hava_konum_ayarlar">Konum iznini telefon ayarlarından verebilirsin</string>
+    <string name="izin_ver">İzin ver</string>
+    <string name="ayarlara_git">Ayarlara git</string>
+
+    <!-- Giris ve uye ol -->
+    <string name="giris_yap">Giriş yap</string>
+    <string name="uye_ol">Üye ol</string>
+    <string name="hesabin_yok_mu">Hesabın yok mu?</string>
+    <string name="zaten_hesabin_var_mi">Zaten hesabın var mı?</string>
+    <string name="eposta">E-posta</string>
+    <string name="eposta_ipucu">ornek@motorum.com</string>
+    <string name="eposta_hatali">Geçerli bir e-posta adresi gir</string>
+    <string name="sifre">Şifre</string>
+    <string name="sifre_kisa">Şifre en az %1$d karakter olmalı</string>
+    <string name="sifremi_unuttum">Şifremi unuttum</string>
+    <string name="sifreyi_goster">Şifreyi göster</string>
+    <string name="sifreyi_gizle">Şifreyi gizle</string>
+    <string name="sifre_olcutu">En az %1$d karakter</string>
+    <string name="sifre_olcutu_tamam">En az %1$d karakter ✓</string>
+    <string name="donem_bos_aciklama">Başka bir dönem seçebilir ya da yeni kayıt ekleyebilirsin.</string>
+    <string name="donem_bu_ay">Bu ay</string>
+    <string name="donem_bu_yil">Bu yıl</string>
+    <string name="donem_tumu">Tümü</string>
 </resources>

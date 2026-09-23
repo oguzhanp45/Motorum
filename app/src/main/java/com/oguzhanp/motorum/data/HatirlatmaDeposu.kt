@@ -31,8 +31,19 @@ data class HatirlatmaKaydi(
     val buluttaGuncellenecek: Boolean = false,
     // Bildirimden "Yaptirdim" dendi ama internet yoktu. Alarmi yok, sadece
     // buluta yazilmayi bekliyor.
-    val yapildiBekliyor: Boolean = false
+    val yapildiBekliyor: Boolean = false,
+    // Ayni altyapi belgeleri de tasiyor. Eski kayitlarda bu alan yok:
+    // varsayilan bakim. Belgede kayitId "belge-{motor}-{belge}" bicimde.
+    val tur: String = TUR_BAKIM,
+    // Sadece belgede dolu: bildirim metni ve bir sonraki donem icin.
+    val belgeAdi: String = "",
+    val belgeBitis: Long = 0L,
+    val belgeYenileAy: Int? = null,
+    val belgeKacGunOnce: Int = 0
 )
+
+internal const val TUR_BAKIM = "BAKIM"
+internal const val TUR_BELGE = "BELGE"
 
 // Ayarlardan ve hava onbelleginden ayri dosya: silinmesi digerlerini etkilemesin.
 private val Context.hatirlatmaDataStore: DataStore<Preferences> by preferencesDataStore(name = "hatirlatmalar")

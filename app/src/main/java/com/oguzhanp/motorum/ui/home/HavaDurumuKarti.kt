@@ -22,12 +22,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppShape
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.HavaDurumu
@@ -62,7 +64,7 @@ fun HavaDurumuKarti(
 
         HavaDurumuHali.Yukleniyor -> BilgiSeridi(
             ikon = null,
-            metin = "Hava durumu alınıyor…",
+            metin = stringResource(R.string.hava_aliniyor),
             eylem = null,
             onEylem = {},
             modifier = modifier
@@ -70,8 +72,8 @@ fun HavaDurumuKarti(
 
         HavaDurumuHali.Alinamadi -> BilgiSeridi(
             ikon = MotorumIkonlari.BulutYok,
-            metin = "Hava durumu alınamadı",
-            eylem = "Tekrar dene",
+            metin = stringResource(R.string.hava_alinamadi),
+            eylem = stringResource(R.string.tekrar_dene_kisa),
             onEylem = onTekrarDene,
             modifier = modifier
         )
@@ -85,9 +87,10 @@ fun HavaDurumuKarti(
         // Google'in kalici ret icin onerdigi yol da bu.
         is HavaDurumuHali.IzinYok -> BilgiSeridi(
             ikon = MotorumIkonlari.Konum,
-            metin = if (hal.izinIstendi) "Konum iznini telefon ayarlarından verebilirsin"
-            else "Hava durumu için konum izni gerekiyor",
-            eylem = if (hal.izinIstendi) "Ayarlara git" else "İzin ver",
+            metin = stringResource(
+                if (hal.izinIstendi) R.string.hava_konum_ayarlar else R.string.hava_konum_izni
+            ),
+            eylem = stringResource(if (hal.izinIstendi) R.string.ayarlara_git else R.string.izin_ver),
             onEylem = if (hal.izinIstendi) ({ uygulamaAyarlariniAc(baglam) }) else onIzinIste,
             modifier = modifier
         )

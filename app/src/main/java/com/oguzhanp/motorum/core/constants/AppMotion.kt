@@ -18,4 +18,11 @@ object AppMotion {
 
     // Sayfa ve bolum degisimleri; ozet kartinin tek satira inmesi de bu.
     const val SAYFA = 320
+
+    // Ekranlar arasi gecis (tasarim: Hareket). Gelen ekran yavaslayarak
+    // yerlesiyor (egri), giden hizlanarak cekiliyor (cikisEgrisi) ve biraz
+    // daha kisa: beklemek hep giriste olsun.
+    const val EKRAN_GIRIS = 300
+    const val EKRAN_CIKIS = 250
+    val cikisEgrisi = CubicBezierEasing(0.4f, 0f, 1f, 1f)
 }

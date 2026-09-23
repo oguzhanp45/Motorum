@@ -60,13 +60,13 @@ fun TripNoktasiAlanlari(
         OutlinedTextField(
             value = form.kmYazi,
             onValueChange = { onDegis(form.copy(kmYazi = it, kmHatali = false)) },
-            label = { Text("Aktif km") },
+            label = { Text(stringResource(R.string.aktif_km)) },
             isError = form.kmHatali,
             supportingText = {
                 when {
                     form.kmHatali -> Text(kmMesaji)
                     sayacGeride -> Text(
-                        text = "Son kayıttaki sayaç ${formatKm(sonOkuma)}.",
+                        text = stringResource(R.string.sayac_son_kayit, formatKm(sonOkuma)),
                         color = UyariMetin
                     )
                 }
@@ -79,7 +79,7 @@ fun TripNoktasiAlanlari(
         OutlinedTextField(
             value = form.sehir,
             onValueChange = { onDegis(form.copy(sehir = it, sehirHatali = false)) },
-            label = { Text("Şehir") },
+            label = { Text(stringResource(R.string.sehir)) },
             isError = form.sehirHatali,
             supportingText = { if (form.sehirHatali) Text(stringResource(R.string.zorunlu_alan)) },
             singleLine = true,
@@ -93,7 +93,7 @@ fun TripNoktasiAlanlari(
 private fun TripNoktasiAlanlariPreview() {
     MotorumTheme {
         TripNoktasiAlanlari(
-            baslik = "Başlangıç",
+            baslik = stringResource(R.string.baslangic),
             form = TripNoktasiFormu(),
             onDegis = {}
         )

@@ -26,7 +26,7 @@ class GirisViewModel @Inject constructor(
     }
 
     fun formDegis(yeni: KimlikFormu) {
-        _uiState.update { it.copy(form = yeni, hata = null) }
+        _uiState.update { it.copy(form = yeni, hata = null, bilgi = null) }
     }
 
     fun girisYap() {
@@ -36,11 +36,35 @@ class GirisViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
-            _uiState.update { it.copy(yukleniyor = true, hata = null) }
+            _uiState.update { it.copy(yukleniyor = true, hata = null, bilgi = null) }
             // Depo basarida null, hatada Turkce mesaj donduruyor.
             val hata = depo.girisYap(kontrol.eposta.trim(), kontrol.sifre)
             _uiState.update {
                 it.copy(yukleniyor = false, hata = hata, basarili = hata == null)
+            }
+        }
+    }
+
+    // "Sifremi unuttum": yazili e-postaya Firebase'in sifre yenileme postasini
+    // gonderiyor. Ayri bir ekran yok; e-posta alani bos ya da bozuksa once onu istiyoruz.
+    fun sifreSifirla() {
+        val form = _uiState.value.form
+        if (!form.epostaGecerli) {
+            _uiState.update {
+                it.copy(form = form.copy(epostaHatali = true), hata = null, bilgi = null)
+            }
+            return
+        }
+        viewModelScope.launch {
+            _uiState.update { it.copy(yukleniyor = true, hata = null, bilgi = null) }
+            val eposta = form.eposta.trim()
+            val hata = depo.sifreSifirla(eposta)
+            _uiState.update {
+                it.copy(
+                    yukleniyor = false,
+                    hata = hata,
+                    bilgi = if (hata == null) "Şifre yenileme bağlantısı $eposta adresine gönderildi" else null
+                )
             }
         }
     }

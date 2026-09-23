@@ -1,5 +1,6 @@
 package com.oguzhanp.motorum.ui.home
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,15 +18,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppElevation
 import com.oguzhanp.motorum.core.constants.AppShape
 import com.oguzhanp.motorum.core.constants.AppSpacing
+import com.oguzhanp.motorum.ui.components.basilincaKucul
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MetinSolgun
 import com.oguzhanp.motorum.ui.theme.MotorumTheme
@@ -44,12 +49,15 @@ fun ToplamCard(
 ) {
     // Card'in onClick alan surumu kullaniliyor: dokunma dalgasi kartin
     // kosesine kadar dogru cikiyor, disina Modifier.clickable sarmaya gerek yok.
+    // Basilinca kart hafifce kuculuyor ve golgesi iniyor (tasarim: Dokunma).
+    val etkilesim = remember { MutableInteractionSource() }
     Card(
         onClick = onTikla,
+        interactionSource = etkilesim,
         shape = AppShape.kart,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.kart),
-        modifier = modifier
+        elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.kart, pressedElevation = 0.dp),
+        modifier = Modifier.basilincaKucul(etkilesim).then(modifier)
     ) {
         Column(
             modifier = Modifier
@@ -59,7 +67,7 @@ fun ToplamCard(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "GENEL İSTATİSTİKLER",
+                    text = stringResource(R.string.genel_istatistikler),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.8.sp,
@@ -70,7 +78,7 @@ fun ToplamCard(
                 // buyutmeden ya da buton koymadan detay sayfasina isaret ediyor.
                 Icon(
                     imageVector = MotorumIkonlari.Cevron,
-                    contentDescription = "İstatistik detayı",
+                    contentDescription = stringResource(R.string.istatistik_detayi),
                     tint = MetinSolgun,
                     modifier = Modifier.size(20.dp)
                 )
@@ -83,19 +91,19 @@ fun ToplamCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Metrik(
-                    baslik = "Toplam Tutar",
+                    baslik = stringResource(R.string.toplam_tutar),
                     deger = formatTl(toplamTutar),
                     modifier = Modifier.weight(1f)
                 )
                 Ayirici()
                 Metrik(
-                    baslik = "Toplam Litre",
+                    baslik = stringResource(R.string.toplam_litre),
                     deger = formatLitre(toplamLitre),
                     modifier = Modifier.weight(1f)
                 )
                 Ayirici()
                 Metrik(
-                    baslik = "Gidilen Yol",
+                    baslik = stringResource(R.string.gidilen_yol),
                     deger = formatKm(gidilenYol),
                     modifier = Modifier.weight(1f)
                 )

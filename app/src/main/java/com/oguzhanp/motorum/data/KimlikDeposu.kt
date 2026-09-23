@@ -34,6 +34,15 @@ class KimlikDeposu @Inject constructor(
         hataMesaji(hata)
     }
 
+    // Firebase, adresin kayitli olup olmadigini soylemiyor (hesap tahmin
+    // edilemesin diye); kayitli degilse de basarili donuyor, posta gitmiyor.
+    suspend fun sifreSifirla(eposta: String): String? = try {
+        auth.sendPasswordResetEmail(eposta).await()
+        null
+    } catch (hata: Exception) {
+        hataMesaji(hata)
+    }
+
     fun cikisYap() {
         auth.signOut()
     }

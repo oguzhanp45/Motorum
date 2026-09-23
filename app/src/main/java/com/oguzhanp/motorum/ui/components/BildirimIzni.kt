@@ -15,8 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.oguzhanp.motorum.R
 
 // Android 12 ve altinda boyle bir izin yok, bildirim dogrudan gosteriliyor.
 fun bildirimIzniVerildiMi(baglam: Context): Boolean =
@@ -50,24 +52,23 @@ fun rememberBildirimIzni(onSonuc: (verildi: Boolean) -> Unit): () -> Unit {
                 aciklamaAcik = false
                 onSonuc(false)
             },
-            title = { Text("Bildirim izni") },
+            title = { Text(stringResource(R.string.bildirim_izni_baslik)) },
             text = {
                 Text(
-                    "Bakım zamanı geldiğinde sana haber verebilmemiz için " +
-                            "bildirim izni gerekiyor."
+                    stringResource(R.string.bildirim_izni_metin)
                 )
             },
             confirmButton = {
                 TextButton(onClick = {
                     aciklamaAcik = false
                     isteyici.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }) { Text("Devam") }
+                }) { Text(stringResource(R.string.devam)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     aciklamaAcik = false
                     onSonuc(false)
-                }) { Text("Vazgeç") }
+                }) { Text(stringResource(R.string.vazgec)) }
             }
         )
     }

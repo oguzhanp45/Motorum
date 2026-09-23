@@ -1,5 +1,6 @@
 package com.oguzhanp.motorum.ui.ekle
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oguzhanp.motorum.data.HatirlatmaZamanlayici
@@ -16,11 +17,27 @@ import javax.inject.Inject
 @HiltViewModel
 class KayitEkleViewModel @Inject constructor(
     private val depo: KayitDeposu,
-    private val zamanlayici: HatirlatmaZamanlayici
+    private val zamanlayici: HatirlatmaZamanlayici,
+    kayitliDurum: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(KayitEkleUiState())
     val uiState = _uiState.asStateFlow()
+
+    // Kayit Detayi'ndaki "tekrarla"dan gelindiyse kopyalanacak kaydin kimligi.
+    private val kopyaId: String? = kayitliDurum.get<String>("kopya")?.takeIf { it.isNotBlank() }
+    private var kopyaUygulandi = false
+
+    // Kopyadan acildiysa form zaten dolu: "son kayittan doldur" seridi gereksiz.
+    val kopyadan: Boolean get() = kopyaId != null
+
+    // Liste ana sayfanin ViewModel'inde; ekran onu verince kopya bir kez uygulaniyor.
+    fun kopyaUygula(kayitlar: List<Kayit>) {
+        if (kopyaUygulandi || kopyaId == null) return
+        val kayit = kayitlar.firstOrNull { it.id == kopyaId } ?: return
+        kopyaUygulandi = true
+        _uiState.update { it.copy(form = kayittanForm(kayit)) }
+    }
 
     fun guncelle(yeni: KayitEkleUiState) {
         _uiState.value = yeni

@@ -1,5 +1,6 @@
 package com.oguzhanp.motorum.ui.motorlarim
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,10 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.model.Motor
+import com.oguzhanp.motorum.ui.components.basilincaKucul
 import com.oguzhanp.motorum.ui.theme.AksiyonMaviZemin
 import com.oguzhanp.motorum.ui.theme.MetinIkincil
 import com.oguzhanp.motorum.ui.theme.MetinSolgun
@@ -43,9 +47,12 @@ fun MotorKarti(
 ) {
     var menuAcik by remember { mutableStateOf(false) }
 
+    // Basilinca kart hafifce kuculuyor (tasarim: Dokunma).
+    val etkilesim = remember { MutableInteractionSource() }
     Card(
         onClick = onTikla,
-        modifier = modifier,
+        interactionSource = etkilesim,
+        modifier = Modifier.basilincaKucul(etkilesim).then(modifier),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             // Secili kart acik mavi zeminli: bottom sheet'teki secim satiriyla
@@ -73,7 +80,7 @@ fun MotorKarti(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = motor.plaka.ifBlank { "Plaka yok" },
+                    text = motor.plaka.ifBlank { stringResource(R.string.plaka_yok) },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (motor.plaka.isBlank()) MetinSolgun else MetinIkincil
                 )
@@ -82,7 +89,7 @@ fun MotorKarti(
             Icon(
                 imageVector = if (secili) MotorumIkonlari.Onay
                 else MotorumIkonlari.BosDaire,
-                contentDescription = if (secili) "Seçili motor" else "Bu motora geç",
+                contentDescription = stringResource(if (secili) R.string.secili_motor else R.string.bu_motora_gec),
                 tint = if (secili) MaterialTheme.colorScheme.primary else MetinSolgun
             )
 
@@ -93,13 +100,13 @@ fun MotorKarti(
                 IconButton(onClick = { menuAcik = true }) {
                     Icon(
                         MotorumIkonlari.DahaFazla,
-                        contentDescription = "Motor menüsü",
+                        contentDescription = stringResource(R.string.motor_menusu),
                         tint = MetinIkincil
                     )
                 }
                 DropdownMenu(expanded = menuAcik, onDismissRequest = { menuAcik = false }) {
                     DropdownMenuItem(
-                        text = { Text("Düzenle") },
+                        text = { Text(stringResource(R.string.duzenle)) },
                         leadingIcon = { Icon(MotorumIkonlari.Duzenle, contentDescription = null) },
                         onClick = {
                             menuAcik = false
@@ -107,7 +114,7 @@ fun MotorKarti(
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Sil", color = MaterialTheme.colorScheme.error) },
+                        text = { Text(stringResource(R.string.sil), color = MaterialTheme.colorScheme.error) },
                         leadingIcon = {
                             Icon(
                                 MotorumIkonlari.Sil,

@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,11 +43,13 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppMotion
 import com.oguzhanp.motorum.core.constants.AppShape
 import com.oguzhanp.motorum.ui.components.Anahtar
@@ -139,7 +142,11 @@ fun HatirlatmaBlogu(
                     color = MetinAna
                 )
                 Text(
-                    text = if (acik) ozet(secilenAy, tarihMillis, saat, dakika, gecmis) else "Kapalı",
+                    text = if (acik) {
+                        ozet(secilenAy, tarihMillis, saat, dakika, gecmis)
+                    } else {
+                        stringResource(R.string.hatirlatma_kapali)
+                    },
                     style = TextStyle(
                         fontFamily = Inter,
                         fontSize = 10.5.sp,
@@ -168,14 +175,14 @@ fun HatirlatmaBlogu(
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     HATIRLATMA_ARALIKLARI.forEach { ay ->
                         AralikCipi(
-                            metin = "$ay ay",
+                            metin = aralikEtiketi(ay),
                             secili = secilenAy == ay,
                             onTikla = { onAralikSec(ay) }
                         )
                     }
                     // Ozel: takvimi bugunle aciyor, secilen gun "Ozel" oluyor.
                     AralikCipi(
-                        metin = "Özel",
+                        metin = stringResource(R.string.aralik_ozel),
                         secili = secilenAy == null,
                         onTikla = { tarihAcik = System.currentTimeMillis() }
                     )
@@ -197,7 +204,7 @@ fun HatirlatmaBlogu(
 
                 if (hatali) {
                     Text(
-                        text = "Hatırlatma için gelecekte bir tarih ve saat seç",
+                        text = stringResource(R.string.hatirlatma_gelecek_tarih),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -207,7 +214,7 @@ fun HatirlatmaBlogu(
                 // bildirim gelmiyor. Kullanicinin bunu tam burada bilmesi gerekiyor.
                 if (!bildirimIzniVar) {
                     Text(
-                        text = "Bildirim izni verilmedi. Tarih kaydedilecek ama hatırlatma gelmeyecek.",
+                        text = stringResource(R.string.hatirlatma_izin_yok),
                         style = MaterialTheme.typography.bodySmall,
                         color = MetinIkincil
                     )
@@ -234,12 +241,15 @@ fun HatirlatmaBlogu(
 }
 
 // "3 ay sonra · 12 Haziran, 10:00" ya da Ozel'de sadece "12 Haziran, 10:00".
+// Composable: yazilar dile gore stringResource'tan geliyor.
+@Composable
+@ReadOnlyComposable
 private fun ozet(ay: Int?, tarihMillis: Long, saat: Int?, dakika: Int?, gecmis: Boolean): String {
     val zaman = formatGunAy(tarihMillis) +
             if (saat != null && dakika != null) ", " + formatSaat(saat, dakika) else ""
     return when {
-        gecmis -> "$zaman · hatırlatıldı"
-        ay != null -> "$ay ay sonra · $zaman"
+        gecmis -> stringResource(R.string.hatirlatildi, zaman)
+        ay != null -> stringResource(R.string.hatirlatma_ozeti, aralikEtiketi(ay), zaman)
         else -> zaman
     }
 }

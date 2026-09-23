@@ -110,13 +110,19 @@ class KayitViewModel @Inject constructor(
     // Bildirimden gelindi. Bildirim baska bir motora aitse once o motor
     // seciliyor ve listesi cekiliyor; panel ancak kayit listedeyken acilabilir.
     fun hatirlatmaPaneliniAc(kayitId: String, motorId: String) {
+        motoraGec(motorId) { _uiState.update { it.copy(panelKayitId = kayitId) } }
+    }
+
+    // Bildirim o an secili olmayan bir motora aitse once o motor seciliyor ve
+    // listesi cekiliyor; sonra istenen is (panel, Belgeler sayfasi) yapiliyor.
+    fun motoraGec(motorId: String, sonra: () -> Unit) {
         viewModelScope.launch {
             if (motorDeposu.seciliMotorId() != motorId) {
                 motorDeposu.seciliMotoruDegistir(motorId)
                 _uiState.update { it.copy(kayitlar = emptyList(), yukleniyor = true, hata = null) }
                 yukleVeEsitle()
             }
-            _uiState.update { it.copy(panelKayitId = kayitId) }
+            sonra()
         }
     }
 

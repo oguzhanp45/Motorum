@@ -11,6 +11,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.oguzhanp.motorum.data.HatirlatmaIstegi
 import com.oguzhanp.motorum.ui.ayarlar.AyarlarSayfasi
+import com.oguzhanp.motorum.ui.belge.BelgeSayfasi
+import com.oguzhanp.motorum.ui.belge.BelgelerSayfasi
 import com.oguzhanp.motorum.ui.detay.KayitDetaySayfasi
 import com.oguzhanp.motorum.ui.ekle.KayitEkleSayfasi
 import com.oguzhanp.motorum.ui.home.AnaSayfa
@@ -23,6 +25,10 @@ import com.oguzhanp.motorum.ui.kimlik.UyeOlViewModel
 import com.oguzhanp.motorum.ui.motorlarim.MotorDetaySayfasi
 import com.oguzhanp.motorum.ui.motorlarim.MotorlarimSayfasi
 import com.oguzhanp.motorum.ui.navigation.Routes
+import com.oguzhanp.motorum.ui.navigation.ekranCikisi
+import com.oguzhanp.motorum.ui.navigation.ekranGirisi
+import com.oguzhanp.motorum.ui.navigation.geriCikisi
+import com.oguzhanp.motorum.ui.navigation.geriGirisi
 import com.oguzhanp.motorum.ui.onboarding.OnboardingSayfasi
 import com.oguzhanp.motorum.ui.onboarding.OnboardingViewModel
 
@@ -81,7 +87,20 @@ fun MotorumApp(
 
     NavHost(
         navController = navController,
-        startDestination = baslangicRotasi
+        startDestination = baslangicRotasi,
+        // Gecisler tek yerde (Gecisler.kt): her ekran turune gore alttan,
+        // sagdan ya da yerinde. Ekran eklerken buraya dokunmak gerekmiyor,
+        // sadece rotayi Gecisler.kt'deki listeye eklemek yetiyor.
+        enterTransition = { ekranGirisi() },
+        exitTransition = { ekranCikisi() },
+        popEnterTransition = { geriGirisi() },
+        popExitTransition = { geriCikisi() },
+        // Parmakla geri kaydirma (tahminli geri) ayri iki kural kullaniyor ve
+        // Navigation'in varsayilani sayfayi %70'e kucultuyor. Verilmezse geri
+        // hareketinde sayfa once kuculup sonra gidiyordu; ayni kurallari
+        // buraya da veriyoruz. (Int: kaydirmanin hangi kenardan basladigi.)
+        predictivePopEnterTransition = { geriGirisi() },
+        predictivePopExitTransition = { geriCikisi() }
     ) {
         composable(Routes.ONBOARDING) {
             OnboardingSayfasi(
@@ -130,7 +149,8 @@ fun MotorumApp(
             composable(Routes.AYARLAR) {
                 AyarlarSayfasi(
                     onSekmeTikla = ::sekmeyeGec,
-                    onCikisYapildi = ::girisEDon
+                    onCikisYapildi = ::girisEDon,
+                    onBelgelerTikla = { navController.navigate(Routes.BELGELER) }
                 )
             }
         }
@@ -154,7 +174,10 @@ fun MotorumApp(
             val id = backStackEntry.arguments?.getString("id") ?: return@composable
             MotorDetaySayfasi(navController = navController, motorId = id)
         }
-        composable(Routes.KAYIT_EKLE) {
+        composable(
+            route = Routes.KAYIT_EKLE_KALIBI,
+            arguments = listOf(navArgument("kopya") { type = NavType.StringType; defaultValue = "" })
+        ) {
             // ekleViewModel verilmiyor: ekran onu kendisi uretiyor (hiltViewModel() varsayilani)
             KayitEkleSayfasi(
                 navController = navController,
@@ -168,6 +191,19 @@ fun MotorumApp(
                 navController = navController,
                 kayitId = id
             )
+        }
+        composable(
+            route = Routes.BELGE,
+            arguments = listOf(
+                navArgument("id") { type = NavType.StringType; defaultValue = "" },
+                navArgument("tur") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) {
+            // Parametreleri sayfanin ViewModel'i kendisi okuyor (SavedStateHandle).
+            BelgeSayfasi(navController = navController)
+        }
+        composable(Routes.BELGELER) {
+            BelgelerSayfasi(navController = navController)
         }
         composable(Routes.ISTATISTIK) {
             // Ayni viewModel veriliyor: istatistik sayfasinin kendi deposu yok,
@@ -189,7 +225,15 @@ fun MotorumApp(
             popUpTo(Routes.ANA_SAYFA)
             launchSingleTop = true
         }
-        viewModel.hatirlatmaPaneliniAc(istek.kayitId, istek.motorId)
+        if (istek.belgeler) {
+            // Belge bildirimi: once dogru motor, sonra Belgeler sayfasi. Sira
+            // onemli; sayfa acilir acilmaz secili motorun belgelerini cekiyor.
+            viewModel.motoraGec(istek.motorId) {
+                navController.navigate(Routes.BELGELER) { launchSingleTop = true }
+            }
+        } else {
+            viewModel.hatirlatmaPaneliniAc(istek.kayitId, istek.motorId)
+        }
         onHatirlatmaIstegiIslendi()
     }
 }

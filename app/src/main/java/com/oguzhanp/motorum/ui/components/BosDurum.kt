@@ -12,6 +12,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,9 +29,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -124,18 +127,21 @@ fun BosDurum(
 
 @Composable
 private fun EylemDugmesi(metin: String, ikon: ImageVector, ana: Boolean, onTikla: () -> Unit) {
-    val zemin = if (ana) Murekkep else MaterialTheme.colorScheme.surface
+    // Basilinca kuculuyor; ana (murekkep) dugme ayrica bir ton koyulasiyor.
+    val etkilesim = remember { MutableInteractionSource() }
+    val zemin = if (ana) basiliMurekkep(etkilesim) else MaterialTheme.colorScheme.surface
     val yazi = if (ana) MurekkepUstu else Murekkep
 
     Row(
         modifier = Modifier
+            .basilincaKucul(etkilesim, DUGME_BASILI)
             // Ana dugmenin golgesi var, cerceveli dugmenin yok: goz once
             // doldurulmus olana gitsin.
             .shadow(if (ana) 6.dp else 0.dp, AppShape.buton, spotColor = Murekkep.copy(alpha = 0.3f))
             .clip(AppShape.buton)
             .background(zemin)
             .then(if (ana) Modifier else Modifier.border(1.5.dp, SekmeZemin, AppShape.buton))
-            .clickable(onClick = onTikla)
+            .clickable(interactionSource = etkilesim, indication = ripple(), onClick = onTikla)
             .padding(horizontal = 22.dp, vertical = 13.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)

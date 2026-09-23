@@ -26,6 +26,9 @@ private val KOD = intPreferencesKey("kod")
 private val RUZGAR_HIZI = doublePreferencesKey("ruzgar_hizi")
 private val GORUS_MESAFESI = intPreferencesKey("gorus_mesafesi")
 private val ZAMAN = longPreferencesKey("zaman")
+// Aciklama metni servisten hangi dilde alindiysa o. Dil degisince onbellekteki
+// metin yanlis dilde kaliyor; bu yuzden dili de sakliyoruz.
+private val DIL = stringPreferencesKey("dil")
 
 // Bu surenin altindaki veri taze sayiliyor.
 private const val TAZELIK_SURESI_MS = 60 * 60 * 1000L
@@ -37,10 +40,13 @@ class HavaDurumuOnbellegi @Inject constructor(
 
     // Bayatsa null donuyor. Tarih kontrolu burada bitiyor, cagiran tarafin
     // ayrica bakmasi gerekmiyor.
-    suspend fun tazeOku(): HavaDurumu? {
+    // dil: su an gecerli uygulama dili. Onbellek baska dilde yazildiysa
+    // bayat sayiliyor, kart yeni istekte dogru dille doluyor.
+    suspend fun tazeOku(dil: String): HavaDurumu? {
         val tercihler = context.havaDataStore.data.first()
         val zaman = tercihler[ZAMAN] ?: return null
         if (System.currentTimeMillis() - zaman > TAZELIK_SURESI_MS) return null
+        if (tercihler[DIL] != dil) return null
 
         return HavaDurumu(
             sehir = tercihler[SEHIR] ?: return null,
@@ -63,7 +69,7 @@ class HavaDurumuOnbellegi @Inject constructor(
 
     // Tek edit blogu: DataStore yedi anahtari butun olarak yaziyor,
     // yarim kalmis bir onbellek olusmuyor.
-    suspend fun yaz(hava: HavaDurumu) {
+    suspend fun yaz(hava: HavaDurumu, dil: String) {
         context.havaDataStore.edit { tercihler ->
             tercihler[SEHIR] = hava.sehir
             tercihler[SICAKLIK] = hava.sicaklik
@@ -71,6 +77,7 @@ class HavaDurumuOnbellegi @Inject constructor(
             tercihler[KOD] = hava.kod
             tercihler[RUZGAR_HIZI] = hava.ruzgarHizi
             tercihler[GORUS_MESAFESI] = hava.gorusMesafesi
+            tercihler[DIL] = dil
             tercihler[ZAMAN] = System.currentTimeMillis()
         }
     }

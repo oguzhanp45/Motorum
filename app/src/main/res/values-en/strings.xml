@@ -4,4 +4,303 @@
     <string name="kayit_ekle">Add Entry</string>
     <string name="zorunlu_alan">This field is required</string>
     <string name="gecerli_sayi">Required — enter a valid number</string>
+    <string name="dil">Language</string>
+
+    <string name="sekme_ana_sayfa">Home</string>
+    <string name="sekme_motorlarim">My Bikes</string>
+    <string name="sekme_ayarlar">Settings</string>
+
+    <string name="bolum_bildirimler">NOTIFICATIONS</string>
+    <string name="bolum_gorunum">APPEARANCE</string>
+    <string name="bolum_motor">BIKE</string>
+    <string name="bolum_veriler">DATA</string>
+    <string name="bolum_hesap">ACCOUNT</string>
+
+    <string name="bakim_hatirlatmalari">Service reminders</string>
+    <string name="bildirim_izni_gerekiyor">Needs notification permission</string>
+    <string name="konum_izni">Location permission</string>
+    <string name="konum_izni_gerekiyor">Needed for the weather</string>
+    <string name="izin_telefon_ayarlarindan">You can turn it on in phone settings</string>
+    <string name="izin_verildi">Allowed</string>
+    <string name="izin_verilmedi">Not allowed</string>
+
+    <string name="tema">Theme</string>
+    <string name="tema_acik">Light</string>
+    <string name="tema_karanlik">Dark</string>
+    <string name="secim_sistem">System</string>
+
+    <string name="belgeler">Documents</string>
+    <string name="belgeler_aciklama">Insurance, inspection and casco expiry dates</string>
+    <string name="hava_onbellegini_temizle">Clear weather cache</string>
+    <string name="son_guncelleme">Last updated: %1$s</string>
+    <string name="onbellek_bos">Cache is empty</string>
+    <string name="kayitlari_disa_aktar">Export entries</string>
+    <string name="disa_aktar_aciklama">Entries of the selected bike, CSV file</string>
+
+    <string name="cikis_yap">Sign out</string>
+    <string name="cikis_onayi">Are you sure you want to sign out of your account?</string>
+    <string name="iptal">Cancel</string>
+
+    <string name="onbellek_temizlendi">Weather cache cleared</string>
+    <string name="once_motor_ekle">Add a bike first</string>
+    <string name="disa_aktarilacak_kayit_yok">No entries to export</string>
+    <string name="kayit_disa_aktarildi">%1$d entries exported</string>
+
+    <string name="kategori_yakit">Fuel</string>
+    <string name="kategori_road_trip">Road Trip</string>
+    <string name="kategori_bakim">Service</string>
+    <string name="kategori_aksesuar">Accessory</string>
+
+    <string name="not_istasyon">Station (optional)</string>
+    <string name="not_serbest">Note (optional)</string>
+    <string name="not_dukkan">Shop (optional)</string>
+
+    <string name="filtre_tumu">All</string>
+    <string name="genel_istatistikler">OVERALL STATS</string>
+    <string name="istatistik_detayi">Statistics detail</string>
+    <string name="toplam_tutar">Total Spent</string>
+    <string name="toplam_litre">Total Litres</string>
+    <string name="gidilen_yol">Distance</string>
+
+    <string name="sil">Delete</string>
+    <string name="zamani_geldi">Due now</string>
+    <string name="hatirlatma_yapildi">Done · %1$s</string>
+    <string name="yolculuk_devam">in progress</string>
+    <string name="kayit_silindi">Entry deleted</string>
+    <string name="geri_al">Undo</string>
+    <string name="kayitlar_geliyor">Loading your entries…</string>
+
+    <string name="cevrimdisi_aciklama">Your entries are safe. You will pick up where you left off once you are back online.</string>
+    <string name="tekrar_dene">Try Again</string>
+    <string name="motor_yok_baslik">No bikes yet</string>
+    <string name="motor_yok_aciklama">Add your first bike so fuel and service costs gather in one place.</string>
+    <string name="motor_ekle">Add Bike</string>
+    <string name="kayit_yok_baslik">No entries for this bike</string>
+    <string name="kayit_yok_aciklama">Add one when you fill up or get a service; the monthly summary builds itself.</string>
+    <string name="ilk_kaydi_ekle">Add First Entry</string>
+    <string name="filtrede_kayit_yok">No entries in this filter.</string>
+
+    <string name="geri">Back</string>
+    <string name="kaydet">Save</string>
+    <string name="son_kayittan_doldur">Fill from last entry</string>
+    <string name="kayit_detayi">Entry Details</string>
+    <string name="tekrarla">Repeat</string>
+    <string name="kategori_etiketi">Category: </string>
+    <string name="guncelle">Update</string>
+    <string name="kaydi_sil">Delete entry</string>
+    <string name="kaydi_sil_onayi">Are you sure you want to delete this entry?</string>
+    <string name="yaptirdim">Done</string>
+    <string name="bir_hafta_ertele">Snooze 1 week</string>
+
+    <string name="dolum_tarihi">Fill-up date</string>
+    <string name="dolum_tarihi_aciklama">The day you bought fuel</string>
+    <string name="litre">Litres</string>
+    <string name="tutar_tl">Amount (₺)</string>
+    <string name="aktif_km">Odometer</string>
+    <string name="aktif_km_istege_bagli">Odometer (optional)</string>
+    <string name="sayac_aciklama">The odometer reading right now. Helps work out the distance.</string>
+    <string name="sayac_uyari">The last entry read %1$s. That is fine if you are adding an older entry.</string>
+    <string name="sayac_son_kayit">The last entry read %1$s.</string>
+    <string name="alim_tarihi">Purchase date</string>
+    <string name="alim_tarihi_aciklama">The day you bought the accessory</string>
+    <string name="aksesuar_adi">Accessory name</string>
+    <string name="baslangic">Start</string>
+    <string name="bitis">End</string>
+    <string name="bitis_km_hatasi">Enter a value greater than the starting odometer</string>
+    <string name="masraf_istege_bagli">Cost (₺) — optional</string>
+    <string name="sehir">City</string>
+    <string name="molalar">Stops</string>
+    <string name="mola_yer">Place</string>
+    <string name="mola_ekle">Add stop</string>
+    <string name="molayi_sil">Delete stop</string>
+    <string name="bakim_turu">Service type</string>
+    <string name="bakim_tarihi">Service date</string>
+    <string name="bakim_tarihi_aciklama">The day it was serviced</string>
+
+    <string name="sablon_yag">Oil change</string>
+    <string name="sablon_zincir">Chain</string>
+    <string name="sablon_fren">Brake pads</string>
+    <string name="sablon_lastik">Tyres</string>
+    <string name="sablon_filtre">Filter</string>
+    <string name="sablon_secili">%1$s ✓</string>
+
+    <string name="bakim_zamani_hatirlat">Remind me when it is due</string>
+    <string name="hatirlatma_kapali">Off</string>
+    <string name="aralik_ozel">Custom</string>
+    <string name="aralik_bir_yil">1 year</string>
+    <plurals name="aralik_ay">
+        <item quantity="one">%d month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+    <string name="hatirlatma_ozeti">in %1$s · %2$s</string>
+    <string name="hatirlatildi">%1$s · reminded</string>
+    <string name="hatirlatma_gelecek_tarih">Pick a date and time in the future for the reminder</string>
+    <string name="hatirlatma_izin_yok">Notification permission was not granted. The date is saved but no reminder will arrive.</string>
+
+    <string name="tarih">Date</string>
+    <string name="tarih_sec">Pick date</string>
+    <string name="saat">Time</string>
+    <string name="saat_sec">Pick time</string>
+    <string name="tamam">OK</string>
+
+    <string name="motorlar_geliyor">Loading your bikes…</string>
+    <string name="cevrimdisi_motor_aciklama">Your bikes are safe. You will pick up where you left off once you are back online.</string>
+    <string name="motoru_sil">Delete bike</string>
+    <string name="motor_sil_onayi_bos">You are about to delete \"%1$s\". This cannot be undone.</string>
+    <plurals name="motor_sil_onayi">
+        <item quantity="one">You are about to delete \"%1$s\" and the %2$d entry under it. This cannot be undone.</item>
+        <item quantity="other">You are about to delete \"%1$s\" and the %2$d entries under it. This cannot be undone.</item>
+    </plurals>
+    <string name="plaka_yok">No plate</string>
+    <string name="secili_motor">Selected bike</string>
+    <string name="bu_motora_gec">Switch to this bike</string>
+    <string name="motor_menusu">Bike menu</string>
+    <string name="duzenle">Edit</string>
+
+    <string name="yukleniyor">Loading…</string>
+    <string name="motor_yok_kisa">No bike</string>
+    <string name="baglanti_yok_kisa">No connection</string>
+    <string name="motor_sec">Pick bike</string>
+    <string name="motor_sec_baslik">Pick a Bike</string>
+
+    <string name="motoru_duzenle">Edit Bike</string>
+    <string name="marka">Make</string>
+    <string name="marka_ipucu">e.g. Yamaha, Honda</string>
+    <string name="marka_zorunlu">Make is required</string>
+    <string name="model">Model</string>
+    <string name="model_ipucu">e.g. MT-07, CRF 250</string>
+    <string name="model_zorunlu">Model is required</string>
+    <string name="plaka">Plate (optional)</string>
+    <string name="plaka_ipucu">e.g. 34 ABC 102</string>
+    <string name="motor_fotografi">Bike photo</string>
+    <string name="fotograf_ekle">Add photo</string>
+    <string name="motor_fotografi_baslik">Bike Photo</string>
+    <string name="galeriden_sec">Pick from Gallery</string>
+    <string name="fotograf_cek">Take Photo</string>
+    <string name="kaldir">Remove</string>
+
+    <string name="belge_turu_sigorta">Insurance</string>
+    <string name="belge_turu_muayene">Inspection</string>
+    <string name="belge_turu_kasko">Casco</string>
+    <string name="belge_turu_diger">Other</string>
+
+    <string name="belge_ekle">Add document</string>
+    <string name="tarih_eklenmedi">No date yet</string>
+    <string name="belge_bitiyor">expires %1$s</string>
+    <string name="belge_suresi_doldu">%1$s has expired</string>
+    <string name="dun">Yesterday</string>
+    <plurals name="gun_once">
+        <item quantity="one">%d day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+    <string name="dolan_belge_alt">%1$s · %2$s</string>
+    <string name="yeni_tarihi_gir">Enter the new date</string>
+    <string name="kalan_bugun">Today</string>
+    <plurals name="kalan_gun">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="kalan_ay">
+        <item quantity="one">%d month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+
+    <string name="belgeler_sayfa_aciklama">Expiry dates of the selected bike\'s documents. You are reminded the chosen number of days before each one expires.</string>
+    <string name="belge_ekle_baslik">Add Document</string>
+    <string name="belgeyi_duzenle">Edit Document</string>
+    <string name="bolum_belge_turu">DOCUMENT TYPE</string>
+    <string name="belge_adi">Document name</string>
+    <string name="belge_adi_ipucu">e.g. Licence, Emissions test</string>
+    <string name="belge_adi_zorunlu">Enter the name of the document</string>
+    <string name="belge_var_uyarisi">This bike already has a %1$s document; saving will replace it.</string>
+    <string name="bitis_tarihi">Expiry date</string>
+    <string name="bitis_tarihi_aciklama">The day the document stops being valid</string>
+    <string name="bolum_kac_gun_once">REMIND ME THIS MANY DAYS BEFORE</string>
+    <string name="belgeyi_sil">Delete document</string>
+    <string name="belge_sil_onayi">This document and its date will be deleted.</string>
+    <string name="suresi_dolunca_yenile">Renew when it expires</string>
+    <string name="yenile_aciklama">Moves the date forward on its own</string>
+    <plurals name="yenile_yil">
+        <item quantity="one">%d year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <string name="kac_ayda_bir">Every how many months?</string>
+    <string name="ozel_ay_hatasi">Enter a number of months between 1 and 120</string>
+
+    <string name="kanal_bakim_aciklama">Tells you when a service you planned is due.</string>
+    <string name="kanal_belge">Document reminders</string>
+    <string name="kanal_belge_aciklama">Tells you before insurance, inspection or casco expires.</string>
+
+    <string name="bakim_varsayilan">Service</string>
+    <string name="bildirim_bakim_baslik">%1$s is due</string>
+    <string name="bildirim_bakim_metin">%1$s · you set this up from the service on %2$s.</string>
+    <string name="bakim_tarihli">%1$s</string>
+    <string name="bakim_tarihli_eski">%1$s</string>
+
+    <string name="bildirim_belge_bugun">%1$s expires today</string>
+    <string name="bildirim_belge_yarin">%1$s expires tomorrow</string>
+    <plurals name="bildirim_belge_gun">
+        <item quantity="one">%1$s expires in %2$d day</item>
+        <item quantity="other">%1$s expires in %2$d days</item>
+    </plurals>
+    <string name="bildirim_belge_metin">%1$s · Expires: %2$s</string>
+    <string name="bildirim_belge_yenileme">%1$s The date will renew on its own.</string>
+
+    <string name="istatistikler">Statistics</string>
+    <string name="bolum_toplam_harcama">TOTAL SPENT</string>
+    <string name="bolum_kategori_dagilimi">BY CATEGORY</string>
+    <string name="bolum_yakit">FUEL</string>
+    <string name="bolum_litre_fiyati">PRICE PER LITRE</string>
+    <string name="bolum_yol">DISTANCE</string>
+    <plurals name="kayit_adedi">
+        <item quantity="one">%1$d entry · %2$s per month on average</item>
+        <item quantity="other">%1$d entries · %2$s per month on average</item>
+    </plurals>
+    <string name="toplam_litre_satiri">Total litres</string>
+    <string name="ortalama_litre_fiyati">Average price per litre</string>
+    <string name="en_ucuz_dolum">Cheapest fill-up</string>
+    <string name="en_pahali_dolum">Priciest fill-up</string>
+    <string name="gidilen_yol_satiri">Distance covered</string>
+    <string name="en_uzun_yolculuk">Longest trip</string>
+    <string name="km_basi_maliyet">Fuel cost per km</string>
+    <string name="yol_aciklamasi">Worked out from the odometer values you entered: highest reading minus lowest. Not the bike\'s lifetime mileage, only the distance since you started keeping entries.</string>
+    <string name="donemde_kayit_yok">No entries in this period</string>
+
+    <string name="bildirim_izni_baslik">Notification permission</string>
+    <string name="bildirim_izni_metin">We need notification permission so we can tell you when a service is due.</string>
+    <string name="konum_izni_metin">We need location permission to show the weather where you are. Location is used only for the weather request and is never stored.</string>
+    <string name="devam">Continue</string>
+    <string name="vazgec">Not now</string>
+
+    <string name="panel_zamani_geldi">%1$s is due</string>
+    <string name="panel_hatirlatmasi">%1$s reminder</string>
+    <string name="panel_alt_satir">Service on %1$s · %2$s</string>
+    <string name="hatirlatmayi_kapat">Turn off the reminder</string>
+
+    <string name="hava_aliniyor">Getting the weather…</string>
+    <string name="hava_alinamadi">Could not get the weather</string>
+    <string name="tekrar_dene_kisa">Try again</string>
+    <string name="hava_konum_izni">The weather needs location permission</string>
+    <string name="hava_konum_ayarlar">You can grant location in phone settings</string>
+    <string name="izin_ver">Allow</string>
+    <string name="ayarlara_git">Open settings</string>
+
+    <string name="giris_yap">Sign in</string>
+    <string name="uye_ol">Sign up</string>
+    <string name="hesabin_yok_mu">No account yet?</string>
+    <string name="zaten_hesabin_var_mi">Already have an account?</string>
+    <string name="eposta">E-mail</string>
+    <string name="eposta_ipucu">you@example.com</string>
+    <string name="eposta_hatali">Enter a valid e-mail address</string>
+    <string name="sifre">Password</string>
+    <string name="sifre_kisa">Password must be at least %1$d characters</string>
+    <string name="sifremi_unuttum">Forgot my password</string>
+    <string name="sifreyi_goster">Show password</string>
+    <string name="sifreyi_gizle">Hide password</string>
+    <string name="sifre_olcutu">At least %1$d characters</string>
+    <string name="sifre_olcutu_tamam">At least %1$d characters ✓</string>
+    <string name="donem_bos_aciklama">You can pick another period or add a new entry.</string>
+    <string name="donem_bu_ay">This month</string>
+    <string name="donem_bu_yil">This year</string>
+    <string name="donem_tumu">All</string>
 </resources>

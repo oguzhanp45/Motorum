@@ -6,7 +6,9 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
+import com.oguzhanp.motorum.model.Belge
 import com.oguzhanp.motorum.model.Kayit
+import java.util.Calendar
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,7 +22,10 @@ private const val BIR_HAFTA_MS = 7L * 24 * 60 * 60 * 1000
 // saniye sonra caliyor: sistem acilisi bitsin, bildirim kaybolmasin.
 private const val GECIKEN_ICIN_BEKLEME_MS = 10_000L
 
-// Alarmlarin tek sahibi. Uc kaynaktan besleniyor:
+// Belge hatirlatmasi bitisten "kac gun once" gunun bu saatinde caliyor.
+private const val BELGE_SAATI = 10
+
+// Alarmlarin tek sahibi (bakim ve belge). Uc kaynaktan besleniyor:
 // - Kayit eklenip duzenlenince (esitle / iptal),
 // - Telefon acilinca (yenidenKur): Android alarmlari yeniden baslatmada siliyor,
 // - Uygulama acilip kayitlar gelince (buluttanEsitle): yeniden yukleme ya da
@@ -88,7 +93,8 @@ class HatirlatmaZamanlayici @Inject constructor(
         val motorId = motorDeposu.seciliMotorId() ?: return
         val simdi = System.currentTimeMillis()
         val bakimlar = kayitlar.filterIsInstance<Kayit.Bakim>().associateBy { it.id }
-        val yereldekiler = depo.hepsi().filter { it.motorId == motorId }
+        // Sadece bakim hatirlatmalari: belgeleri belgeleriEsitle yonetiyor.
+        val yereldekiler = depo.hepsi().filter { it.motorId == motorId && it.tur == TUR_BAKIM }
 
         yereldekiler.forEach { yerel ->
             val bulutta = bakimlar[yerel.kayitId]
@@ -133,6 +139,43 @@ class HatirlatmaZamanlayici @Inject constructor(
         eksikler.forEach { bakim ->
             kur(bakim.hatirlatmaKaydi(bakim.hatirlatmaMillis!!, motorId, motorAdi))
         }
+    }
+
+    // ------------------------------------------------------------ BELGELER
+
+    // Secili motorun belge listesi geldikten sonra (Belgeler karti). Her belge
+    // icin istenen hatirlatma hesaplaniyor; telefondakiyle ayni degilse
+    // yeniden kuruluyor, listede olmayanlar kaldiriliyor.
+    suspend fun belgeleriEsitle(belgeler: List<Belge>) {
+        val motor = motorDeposu.seciliMotor() ?: return
+        val istenenler = belgeler.mapNotNull { it.hatirlatmaKaydi(motor.id, motor.adi) }
+            .associateBy { it.kayitId }
+        val yereldekiler = depo.hepsi().filter { it.tur == TUR_BELGE && it.motorId == motor.id }
+
+        yereldekiler.forEach { yerel ->
+            if (istenenler[yerel.kayitId] != yerel) iptal(yerel.kayitId)
+        }
+        istenenler.values.forEach { istenen ->
+            if (yereldekiler.none { it == istenen }) kur(istenen)
+        }
+    }
+
+    // Belge alarmi caldi. Yenileme aciksa bir sonraki donemin hatirlatmasi
+    // hemen kuruluyor: kullanici uygulamayi hic acmasa da gelecek yil yine
+    // haber alsin. Buluttaki tarih, kart bir sonraki acilista ileri tasiyor.
+    suspend fun belgeCaldi(kayit: HatirlatmaKaydi) {
+        val ay = kayit.belgeYenileAy
+        if (ay == null) {
+            depo.sil(kayit.kayitId)
+            return
+        }
+        val yeniBitis = ayEkle(kayit.belgeBitis, ay)
+        kur(kayit.copy(belgeBitis = yeniBitis, zaman = belgeHatirlatmaZamani(yeniBitis, kayit.belgeKacGunOnce)))
+    }
+
+    // Motor silinince onun butun hatirlatmalari (bakim ve belge) da gidiyor.
+    suspend fun motorunHatirlatmalariniSil(motorId: String) {
+        depo.hepsi().filter { it.motorId == motorId }.forEach { iptal(it.kayitId) }
     }
 
     private suspend fun kur(kayit: HatirlatmaKaydi) {
@@ -185,3 +228,45 @@ private fun Kayit.Bakim.hatirlatmaKaydi(zaman: Long, motorId: String, motorAdi: 
         bakimTarihi = tarihMillis,
         zaman = zaman
     )
+
+// Belgenin hatirlatmasi. Bu donemin hatirlatma ani gectiyse:
+// - yenileme aciksa bir sonraki donemin hatirlatmasi (alarm calinca kurulanla ayni),
+// - degilse null: kart zaten gosteriyor, gecmise alarm kurmuyoruz.
+private fun Belge.hatirlatmaKaydi(motorId: String, motorAdi: String): HatirlatmaKaydi? {
+    val simdi = System.currentTimeMillis()
+    var bitis = bitisMillis
+    var zaman = belgeHatirlatmaZamani(bitis, kacGunOnce)
+    if (zaman <= simdi) {
+        val ay = yenileAy ?: return null
+        bitis = ayEkle(bitis, ay)
+        zaman = belgeHatirlatmaZamani(bitis, kacGunOnce)
+        if (zaman <= simdi) return null
+    }
+    return HatirlatmaKaydi(
+        kayitId = "belge-$motorId-$id",
+        motorId = motorId,
+        motorAdi = motorAdi,
+        bakimTuru = "",
+        bakimTarihi = 0L,
+        zaman = zaman,
+        tur = TUR_BELGE,
+        belgeAdi = gorunenAd,
+        belgeBitis = bitis,
+        belgeYenileAy = yenileAy,
+        belgeKacGunOnce = kacGunOnce
+    )
+}
+
+// Bitis gununden "kac gun once", saat 10:00.
+private fun belgeHatirlatmaZamani(bitis: Long, kacGunOnce: Int): Long =
+    Calendar.getInstance().apply {
+        timeInMillis = bitis
+        add(Calendar.DAY_OF_MONTH, -kacGunOnce)
+        set(Calendar.HOUR_OF_DAY, BELGE_SAATI)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
+
+private fun ayEkle(millis: Long, ay: Int): Long =
+    Calendar.getInstance().apply { timeInMillis = millis; add(Calendar.MONTH, ay) }.timeInMillis

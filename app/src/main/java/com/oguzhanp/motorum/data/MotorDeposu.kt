@@ -169,12 +169,13 @@ class MotorDeposu @Inject constructor(
             val uid = auth.currentUser?.uid ?: return OTURUM_YOK
             val motorBelgesi = motorlarKoleksiyonu(uid).document(motorId)
 
-            val kayitlar = motorBelgesi
-                .collection(KOLEKSIYON_KAYITLAR)
-                .get(Source.SERVER).await()
-                .documents
+            // Firestore alt koleksiyonlari kendiliginden silmiyor: motorla
+            // birlikte kayitlari ve belgeleri tek tek siliyoruz.
+            val silinecekler = listOf(KOLEKSIYON_KAYITLAR, KOLEKSIYON_BELGELER).flatMap { koleksiyon ->
+                motorBelgesi.collection(koleksiyon).get(Source.SERVER).await().documents
+            }
 
-            kayitlar.chunked(TOPLU_SILME_PARCASI).forEach { parca ->
+            silinecekler.chunked(TOPLU_SILME_PARCASI).forEach { parca ->
                 val toplu = firestore.batch()
                 parca.forEach { toplu.delete(it.reference) }
                 toplu.commit().await()

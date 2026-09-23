@@ -6,6 +6,8 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.MemoryCacheSettings
+import com.oguzhanp.motorum.R
+import com.oguzhanp.motorum.data.BELGE_KANALI
 import com.oguzhanp.motorum.data.BILDIRIM_KANALI
 import dagger.hilt.android.HiltAndroidApp
 
@@ -30,10 +32,16 @@ class MotorumUygulamasi : Application() {
     private fun bildirimKanaliniKur() {
         val kanal = NotificationChannelCompat
             .Builder(BILDIRIM_KANALI, NotificationManagerCompat.IMPORTANCE_DEFAULT)
-            .setName("Bakım hatırlatmaları")
-            .setDescription("Planladığın bakımların zamanı geldiğinde bildirir.")
+            .setName(getString(R.string.bakim_hatirlatmalari))
+            .setDescription(getString(R.string.kanal_bakim_aciklama))
             .build()
 
-        NotificationManagerCompat.from(this).createNotificationChannel(kanal)
+        val belgeKanali = NotificationChannelCompat
+            .Builder(BELGE_KANALI, NotificationManagerCompat.IMPORTANCE_DEFAULT)
+            .setName(getString(R.string.kanal_belge))
+            .setDescription(getString(R.string.kanal_belge_aciklama))
+            .build()
+
+        NotificationManagerCompat.from(this).createNotificationChannelsCompat(listOf(kanal, belgeKanali))
     }
 }

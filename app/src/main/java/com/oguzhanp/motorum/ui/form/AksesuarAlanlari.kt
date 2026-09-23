@@ -30,15 +30,15 @@ fun AksesuarAlanlari(
         TarihSecici(
             tarihMillis = form.tarihMillis,
             onTarihSec = { onDegis(form.copy(tarihMillis = it)) },
-            etiket = "Alım tarihi",
-            aciklama = "Aksesuarı aldığın gün",
+            etiket = stringResource(R.string.alim_tarihi),
+            aciklama = stringResource(R.string.alim_tarihi_aciklama),
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
             value = form.aksesuarAdi,
             onValueChange = { onDegis(form.copy(aksesuarAdi = it, aksesuarAdiHatali = false)) },
-            label = { Text("Aksesuar adı") },
+            label = { Text(stringResource(R.string.aksesuar_adi)) },
             isError = form.aksesuarAdiHatali,
             supportingText = { if (form.aksesuarAdiHatali) Text(stringResource(R.string.zorunlu_alan)) },
             singleLine = true,
@@ -48,7 +48,7 @@ fun AksesuarAlanlari(
         OutlinedTextField(
             value = form.tutarYazi,
             onValueChange = { onDegis(form.copy(tutarYazi = it, tutarHatali = false)) },
-            label = { Text("Tutar (₺)") },
+            label = { Text(stringResource(R.string.tutar_tl)) },
             isError = form.tutarHatali,
             supportingText = { if (form.tutarHatali) Text(stringResource(R.string.gecerli_sayi)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),

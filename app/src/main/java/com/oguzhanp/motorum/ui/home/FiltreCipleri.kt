@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.oguzhanp.motorum.R
 import com.oguzhanp.motorum.core.constants.AppShape
 import com.oguzhanp.motorum.core.constants.AppSpacing
 import com.oguzhanp.motorum.model.Kategori
@@ -24,7 +26,7 @@ import com.oguzhanp.motorum.ui.theme.MotorumTheme
 
 // Listeyi kategoriye gore daraltan cipler. null = "Tumu".
 //
-// Cipler Kategori.etiket kullaniyor, rozet degil: rozet ("DOLUM", "SERVIS")
+// Cipler kategorinin kendi adini kullaniyor, rozet degil: rozet ("DOLUM", "SERVIS")
 // kaydin turunu anlatan bir sozcuk, filtre ise kategorinin kendi adi olmali.
 //
 // LazyRow cunku bes cip dar telefonlarda satira sigmiyor; maketteki dort cipin
@@ -45,7 +47,7 @@ fun FiltreCipleri(
     ) {
         items(secenekler) { kategori ->
             Cip(
-                metin = kategori?.etiket ?: "Tümü",
+                metin = kategori?.let { stringResource(it.ad) } ?: stringResource(R.string.filtre_tumu),
                 seciliMi = kategori == secili,
                 // Secili olmayan kategori cipi kendi pastel rengiyle duruyor,
                 // boylece renk kodu filtreye bakmadan da okunuyor.
