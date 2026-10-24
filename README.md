@@ -21,7 +21,7 @@ Jetpack Compose ile yazılmış, Firebase üzerinde çalışan tek modüllü bir
 | **Motorlarım** | **Belgeler** | **Ayarlar** |
 | <img src="docs/gorseller/04-motorlarim.png" width="240" alt="Motorlarım"> | <img src="docs/gorseller/05-belgeler.png" width="240" alt="Belgeler"> | <img src="docs/gorseller/06-settings.png" width="240" alt="Ayarlar"> |
 <p align="center">
-  <img src="docs/gorseller/motorum.gif" width="280" alt="Motorum tanıtım">
+  <img src="docs/gorseller/motorum-readme.gif" width="280" alt="Motorum tanıtım">
 </p>
 
 Uygulama açılış animasyonuyla başlıyor, ilk kurulumda tanıtım ekranları ve giriş / üye ol
