@@ -20,6 +20,9 @@ Jetpack Compose ile yazılmış, Firebase üzerinde çalışan tek modüllü bir
 | <img src="docs/gorseller/01-ana-sayfa.png" width="240" alt="Ana sayfa"> | <img src="docs/gorseller/02-kayit-ekle.png" width="240" alt="Kayıt ekleme"> | <img src="docs/gorseller/03-istatistik.png" width="240" alt="İstatistik"> |
 | **Motorlarım** | **Belgeler** | **Ayarlar** |
 | <img src="docs/gorseller/04-motorlarim.png" width="240" alt="Motorlarım"> | <img src="docs/gorseller/05-belgeler.png" width="240" alt="Belgeler"> | <img src="docs/gorseller/06-settings.png" width="240" alt="Ayarlar"> |
+<p align="center">
+  <img src="docs/gorseller/motorum.gif" width="280" alt="Motorum tanıtım">
+</p>
 
 Uygulama açılış animasyonuyla başlıyor, ilk kurulumda tanıtım ekranları ve giriş / üye ol
 adımlarından geçiyor. Ana bölge üç sekmeden oluşuyor: **Ana Sayfa** (kayıt listesi, özet
